@@ -4,7 +4,7 @@ An interactive research slide deck about humanoid skill chaining and risk-condit
 
 [Open the slides](https://jnskkmhr.github.io/skill_chaining_idea/)
 
-Use the arrow keys or navigation buttons to move between slides. Use Print to export all 12 slides to PDF.
+Use the arrow keys or navigation buttons to move between slides. Use Print to export all 13 slides to PDF.
 
 The site is a self-contained `index.html` with inline styles, scripts, and vector illustrations. Open it directly in a browser to preview changes. GitHub Pages serves the root of the `gh-pages` branch.
 

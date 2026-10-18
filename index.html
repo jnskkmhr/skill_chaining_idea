@@ -172,25 +172,25 @@
     .mini-diagram { margin:8px 0 12px; } .mini-diagram svg { max-height:150px; }
     .milestone-diagram { margin:0 0 12px; } .milestone-diagram svg { height:100px; }
     .skill-strip svg { max-height:155px; }
-    #slide-10 .v-label { font-size:18px; }
-    #slide-11 .mini-diagram svg { max-height:90px; }
-    #slide-11 .card { padding:18px; }
-    #slide-11 .mini-diagram .v-node-text { font-size:24px; }
-    #slide-11 .mini-diagram .v-sub { font-size:21px; paint-order:stroke; stroke:var(--paper); stroke-width:3px; }
+    #slide-11 .v-label { font-size:18px; }
+    #slide-12 .mini-diagram svg { max-height:90px; }
+    #slide-12 .card { padding:18px; }
+    #slide-12 .mini-diagram .v-node-text { font-size:24px; }
+    #slide-12 .mini-diagram .v-sub { font-size:21px; paint-order:stroke; stroke:var(--paper); stroke-width:3px; }
     @media screen and (min-width:761px) and (max-height:800px) {
       .diagram { margin:6px 0 10px; } .diagram svg { max-height:205px; }
       .graph-diagram svg { max-height:280px; }
       .mini-diagram svg { max-height:110px; } .skill-strip svg { max-height:115px; }
       .milestone-diagram svg { height:80px; }
       .visual-notes { gap:10px; } .visual-notes p,.visual-summary p { font-size:15px; }
-      #slide-11 .mini-diagram svg { max-height:65px; } #slide-11 .card { padding:14px; }
+      #slide-12 .mini-diagram svg { max-height:65px; } #slide-12 .card { padding:14px; }
     }
     @media screen and (min-width:761px) and (max-height:650px) {
       .diagram svg { max-height:170px; } .graph-diagram svg { max-height:235px; }
       .mini-diagram svg { max-height:90px; } .skill-strip svg { max-height:95px; }
       .milestone-diagram svg { height:65px; } .visual-notes p { font-size:14px; }
       .visual-pair { margin:4px 0 8px; } .visual-summary p { font-size:14px; }
-      #slide-11 .mini-diagram svg { max-height:54px; } #slide-11 td,#slide-11 th { padding:6px 12px; }
+      #slide-12 .mini-diagram svg { max-height:54px; } #slide-12 td,#slide-12 th { padding:6px 12px; }
     }
     @media (max-width:760px) {
       .visual-pair,.visual-summary { grid-template-columns:1fr; gap:16px; }
@@ -207,12 +207,31 @@
       .visual-pair { grid-template-columns:1.4fr 1fr; } .visual-summary { grid-template-columns:1fr 1fr; }
       .visual-notes p,.visual-summary p { font-size:15px; }
     }
+    /* Keep the worked action example and learning loop readable at presentation sizes. */
+    #slide-9 .visual-pair { grid-template-columns:1.65fr 1fr; }
+    #slide-9 td,#slide-9 th { padding:9px 10px; }
+    #slide-9 td:first-child { white-space:nowrap; }
+    #slide-9 .diagram svg { max-height:130px; }
+    #slide-10 .diagram svg { max-height:245px; }
+    @media screen and (min-width:761px) and (max-height:800px) {
+      #slide-9 .diagram svg { max-height:100px; }
+      #slide-10 .diagram svg { max-height:190px; }
+    }
+    @media screen and (min-width:761px) and (max-height:650px) {
+      #slide-9 .diagram svg { max-height:80px; }
+      #slide-9 td,#slide-9 th { padding:6px 8px; }
+      #slide-10 .diagram svg { max-height:160px; }
+    }
+    @media (max-width:760px) {
+      #slide-9 .visual-pair { grid-template-columns:1fr; }
+      #slide-9 .diagram svg,#slide-10 .diagram svg { max-height:none; }
+    }
   </style>
 </head>
 <body>
   <header>
     <div class="brand">Whole-body humanoid navigation</div>
-    <div class="status">Research proposal · Methods and experiments</div>
+    <div class="status">Updated Oct 18 · Segment selection + RL</div>
   </header>
   <main id="deck">
     <section class="slide" id="slide-1" aria-labelledby="title-1">
@@ -302,7 +321,7 @@
       <defs><marker id="skill-synthesis-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
       <path d="M112 155H232" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="172" y="135" class="v-edge-label chosen-label" text-anchor="middle">Walk</text><path d="M298 139Q358 62 437 65" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="355" y="75" class="v-edge-label chosen-label" text-anchor="middle">Jump</text><path d="M503 65Q596 57 666 137" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="599" y="77" class="v-edge-label chosen-label" text-anchor="middle">Crouch</text><path d="M298 174Q365 244 437 245" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="350" y="253" class="v-edge-label" text-anchor="middle">Hand-supported</text><text x="350" y="275" class="v-edge-label" text-anchor="middle">step</text><path d="M503 245Q595 252 666 174" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="602" y="236" class="v-edge-label" text-anchor="middle">Crouch</text><path d="M732 155H887" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="810" y="135" class="v-edge-label chosen-label" text-anchor="middle">Walk</text><path d="M79 189Q90 354 437 354" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="243" y="338" class="v-edge-label" text-anchor="middle">Walk around</text><path d="M503 354Q919 354 920 190" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="741" y="338" class="v-edge-label" text-anchor="middle">Walk</text><circle cx="79" cy="155" r="33" class="v-state chosen-state"/><text x="79" y="161" class="v-node-text" text-anchor="middle">A</text><text x="79" y="212" class="v-sub" text-anchor="middle">Start</text><circle cx="265" cy="155" r="33" class="v-state chosen-state"/><g transform="translate(265 173) scale(.46)" class="v-robot green-robot"><circle cx="0" cy="-75" r="9"/><path d="M0 -60L0 -27L-14 0M0 -27L14 0M0 -50L-22 -32M0 -50L22 -32"/></g><text x="265" y="212" class="v-sub" text-anchor="middle">Before obstacle</text><circle cx="470" cy="65" r="33" class="v-state chosen-state"/><g transform="translate(470 83) scale(.46)" class="v-robot green-robot"><circle cx="0" cy="-75" r="9"/><path d="M0 -60L0 -27L-14 0M0 -27L14 0M0 -50L-22 -32M0 -50L22 -32"/></g><text x="470" y="122" class="v-sub" text-anchor="middle">After jump</text><circle cx="470" cy="245" r="33" class="v-state"/><g transform="translate(470 263) scale(.46)" class="v-robot green-robot"><circle cx="5" cy="-72" r="9"/><path d="M5 -57L-3 -30L-22 0M-3 -30L24 -24L37 -24M3 -48L33 -53L53 -53M3 -48L-19 -34"/></g><text x="470" y="302" class="v-sub" text-anchor="middle">After hand support</text><circle cx="699" cy="155" r="33" class="v-state chosen-state"/><g transform="translate(699 173) scale(.46)" class="v-robot green-robot"><circle cx="20" cy="-49" r="9"/><path d="M9 -36L-13 -23L18 -13L-2 0M-13 -23L-30 -10L-38 0M9 -36L35 -22"/></g><text x="699" y="212" class="v-sub" text-anchor="middle">Under beam</text><circle cx="920" cy="155" r="33" class="v-state chosen-state"/><text x="920" y="161" class="v-node-text" text-anchor="middle">B</text><text x="920" y="212" class="v-sub" text-anchor="middle">Goal pose g</text><circle cx="470" cy="354" r="33" class="v-state"/><g transform="translate(470 372) scale(.46)" class="v-robot green-robot"><circle cx="0" cy="-75" r="9"/><path d="M0 -60L0 -27L-14 0M0 -27L14 0M0 -50L-22 -32M0 -50L22 -32"/></g><text x="470" y="411" class="v-sub" text-anchor="middle">Detour</text><text x="500" y="18" class="v-sub" text-anchor="middle">Selected sequence: walk → jump → crouch → walk</text>
       </svg><figcaption>Nodes: reference-frame states placed in the scene. Edges: trajectory segments or validated transition motions. Skill labels summarize these segments.</figcaption></figure>
-      <p class="callout">The GNN selects a segment: motion clip m, start frame i, and end frame j, placed in the observed scene.</p>
+      <p class="callout">Each candidate edge fixes a clip m, start i, end j, and scene placement. The GNN learns which candidate to select.</p>
       <p class="footnote">Candidate nodes retain clip/frame identity, pose, velocity, and contacts. Connect compatible exits and entries using validated transition motions; never assume an instantaneous state jump.</p>
     </section>
 
@@ -399,61 +418,89 @@
     </section>
 
     <section class="slide" id="slide-9" aria-labelledby="title-9" hidden>
-      <p class="eyebrow">09 / How the GNN planner works</p>
-      <h2 id="title-9">The GNN selects a trajectory segment.</h2>
-      <figure class="diagram" tabindex="0" aria-label="Graph neural network selects a motion clip and frame interval for the tracker">
-        <svg viewBox="0 0 1100 355" role="img" aria-labelledby="gnn-title gnn-desc">
-          <title id="gnn-title">Temporal segment encoding, graph message passing, and reference execution</title>
-          <desc id="gnn-desc">Candidate edges retain motion clip identity, entry and exit frames, and scene placement. A temporal encoder processes each ordered frame sequence. The GNN scores valid segment edges using current observations, reference phase, goal, and risk budget. The tracker advances through the chosen segment and checks the next transition against the actual robot state.</desc>
-          <defs><marker id="gnn-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
-          <text x="550" y="23" class="v-sub v-bold" text-anchor="middle">CONDITION ON OBSERVATIONS, GOAL g = (x, y, z, yaw), AND RISK BUDGET δ</text>
-          <rect x="20" y="46" width="290" height="130" rx="13" class="v-box"/>
-          <text x="165" y="77" class="v-label v-bold" text-anchor="middle">1. Encode each segment</text>
-          <text x="165" y="107" class="v-sub" text-anchor="middle">Frames i…j → temporal encoder</text>
-          <text x="165" y="133" class="v-sub" text-anchor="middle">Process frames in time order</text>
-          <text x="165" y="159" class="v-sub" text-anchor="middle">Keep clip identity and contacts</text>
-          <rect x="405" y="46" width="290" height="130" rx="13" class="v-box tint-box"/>
-          <text x="550" y="77" class="v-label v-bold" text-anchor="middle">2. Pass messages</text>
-          <path d="M450 113H539M559 113H650M450 119L540 148M560 148L650 119" class="v-edge"/>
-          <circle cx="445" cy="115" r="10" class="v-state chosen-state"/>
-          <circle cx="550" cy="112" r="10" class="v-state chosen-state"/>
-          <circle cx="550" cy="151" r="10" class="v-state"/>
-          <circle cx="655" cy="115" r="10" class="v-state chosen-state"/>
-          <path d="M525 101H475M625 101H575" class="v-edge training-edge" marker-end="url(#gnn-arrow)"/>
-          <rect x="790" y="46" width="290" height="130" rx="13" class="v-box"/>
-          <text x="935" y="77" class="v-label v-bold" text-anchor="middle">3. Select a segment edge</text>
-          <text x="935" y="107" class="v-sub" text-anchor="middle">Probability for each valid segment</text>
-          <text x="935" y="133" class="v-sub" text-anchor="middle">Output: (clip m, start i, end j)</text>
-          <text x="935" y="159" class="v-sub" text-anchor="middle">Filter by state, phase, and scene</text>
-          <path d="M310 110H398" class="v-edge" marker-end="url(#gnn-arrow)"/>
-          <path d="M695 110H783" class="v-edge" marker-end="url(#gnn-arrow)"/>
-          <rect x="790" y="239" width="290" height="76" rx="13" class="v-box tint-box"/>
-          <text x="935" y="270" class="v-label v-bold" text-anchor="middle">Multi-motion tracker</text>
-          <text x="935" y="297" class="v-sub" text-anchor="middle">Robot state + reference window</text>
-          <path d="M935 176V232" class="v-edge" marker-end="url(#gnn-arrow)"/>
-          <text x="948" y="213" class="v-sub">Segment m[i:j]</text>
-          <rect x="405" y="239" width="290" height="76" rx="13" class="v-box"/>
-          <text x="550" y="270" class="v-label v-bold" text-anchor="middle">Robot execution</text>
-          <text x="550" y="297" class="v-sub" text-anchor="middle">Observe state + reference phase</text>
-          <path d="M790 277H702" class="v-edge" marker-end="url(#gnn-arrow)"/>
-          <text x="743" y="258" class="v-sub" text-anchor="middle">Joint targets</text>
-          <path d="M405 277H165V183" class="v-edge" marker-end="url(#gnn-arrow)"/>
-          <text x="165" y="315" class="v-sub" text-anchor="middle">Update graph from observations</text>
-          <text x="550" y="350" class="v-sub" text-anchor="middle">Track frames in order; switch only at a valid exit when the measured robot state permits the transition.</text>
+      <p class="eyebrow">09 / What the GNN outputs</p>
+      <h2 id="title-9">The GNN scores candidate segments.</h2>
+      <figure class="diagram" tabindex="0" aria-label="Ordered reference segments become graph edge scores and selection probabilities">
+        <svg viewBox="0 0 1100 150" role="img" aria-labelledby="score-title score-desc">
+          <title id="score-title">Temporal encoding, graph message passing, edge scoring, and selection</title>
+          <desc id="score-desc">One shared temporal encoder reads each candidate's ordered reference frames. The GNN exchanges features between connected frame states. A shared scoring network produces one number per candidate edge. Mask invalid entries and normalize scores into selection probabilities using softmax.</desc>
+          <defs><marker id="score-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
+          <rect x="10" y="25" width="230" height="87" rx="13" class="v-box"/>
+          <text x="125" y="58" class="v-label v-bold" text-anchor="middle">Temporal encoder</text>
+          <text x="125" y="86" class="v-sub" text-anchor="middle">Ordered frames i…j</text>
+          <rect x="295" y="25" width="230" height="87" rx="13" class="v-box tint-box"/>
+          <text x="410" y="58" class="v-label v-bold" text-anchor="middle">GNN messages</text>
+          <text x="410" y="86" class="v-sub" text-anchor="middle">Connected entry / exit states</text>
+          <rect x="580" y="25" width="230" height="87" rx="13" class="v-box"/>
+          <text x="695" y="58" class="v-label v-bold" text-anchor="middle">Shared edge scorer</text>
+          <text x="695" y="86" class="v-sub" text-anchor="middle">One number per segment</text>
+          <rect x="865" y="25" width="225" height="87" rx="13" class="v-box tint-box"/>
+          <text x="977" y="58" class="v-label v-bold" text-anchor="middle">Mask + softmax</text>
+          <text x="977" y="86" class="v-sub" text-anchor="middle">Selection probabilities</text>
+          <path d="M240 68H288" class="v-edge" marker-end="url(#score-arrow)"/>
+          <path d="M525 68H573" class="v-edge" marker-end="url(#score-arrow)"/>
+          <path d="M810 68H858" class="v-edge" marker-end="url(#score-arrow)"/>
+          <text x="550" y="144" class="v-sub" text-anchor="middle">Context: observations, current reference frame, scene, goal g, and risk budget δ</text>
         </svg>
-        <figcaption>A temporal encoder summarizes each ordered segment for the GNN. Keep the original frames: the tracker receives the selected reference sequence, not just its encoding.</figcaption>
       </figure>
-      <div class="visual-summary">
-        <p><strong>Message passing:</strong> exchange features across connected entry and exit states. Later segments can influence the selected jump and landing state.</p>
-        <p><strong>Selection:</strong> score discrete (m, i, j) candidates with validated scene placements. Choosing an edge chooses the clip and both boundaries.</p>
+      <div class="visual-pair"><div class="table-wrap"><table>
+        <thead><tr><th>Candidate action</th><th>Current entry condition</th><th>GNN score</th><th>Probability</th></tr></thead>
+        <tbody>
+          <tr><td>A: Jump[10:100]</td><td>Valid approach</td><td>0.00</td><td>25%</td></tr>
+          <tr><td>B: Jump[20:100]</td><td>Valid approach</td><td>1.10</td><td>75%</td></tr>
+          <tr><td>C: Jump[60:100]</td><td>Mid-flight: invalid</td><td>Excluded</td><td>0%</td></tr>
+        </tbody>
+      </table></div>
+      <div class="visual-notes">
+        <p><strong>Softmax:</strong> converts scores to probabilities: p(e) = exp(score(e)) / sum over valid candidates. These are selection probabilities, not success estimates.</p>
+        <p><strong>Action B:</strong> retrieve clip Jump, frames 20–100, at its stored scene placement. Send the original frame sequence to the frozen tracker.</p>
       </div>
-      <p class="callout">Train with the tracker frozen: select a segment → execute its frames → measure navigation outcomes → update the GNN.</p>
-      <p class="footnote">Input includes the active clip and current frame (reference phase). Train using elapsed time and complete navigation outcomes under δ. GNN background: <a href="https://arxiv.org/abs/1511.05493">Gated Graph Sequence Neural Networks</a>.</p>
+      </div>
+      <p class="callout">Sample an edge during training. Action B selects the clip and frames 20–100 together.</p>
+      <p class="footnote">Illustrative scores, not results. Both approach entries assume validated connecting motions. Candidates may differ in clip, entry, exit, and placement. The GNN ranks supplied candidates; it does not generate frame boundaries.</p>
     </section>
 
     <section class="slide" id="slide-10" aria-labelledby="title-10" hidden>
-      <p class="eyebrow">10 / Related work</p>
-      <h2 id="title-10">Combine established methods; test the integration.</h2>
+      <p class="eyebrow">10 / How the GNN learns — proposed RL baseline</p>
+      <h2 id="title-10">Execution outcomes train the GNN.</h2>
+      <figure class="diagram" tabindex="0" aria-label="Policy-gradient training loop with a frozen tracker">
+        <svg viewBox="0 0 1100 260" role="img" aria-labelledby="learn-title learn-desc">
+          <title id="learn-title">Sample a segment, execute it, evaluate the navigation return, and update its selection probability</title>
+          <desc id="learn-desc">The GNN samples a candidate segment. A frozen tracker executes the segment in simulation. Collect time, failures, and later goal completion. Compare the observed future return to a learned value baseline. PPO updates the temporal encoder, GNN, and edge scorer using the sampled action's probability; it does not differentiate through the tracker or physics.</desc>
+          <defs><marker id="learn-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
+          <rect x="10" y="30" width="240" height="100" rx="13" class="v-box tint-box"/>
+          <text x="130" y="66" class="v-label v-bold" text-anchor="middle">1. Sample segment B</text>
+          <text x="130" y="96" class="v-sub" text-anchor="middle">Record p(B) and graph context</text>
+          <rect x="295" y="30" width="240" height="100" rx="13" class="v-box"/>
+          <text x="415" y="66" class="v-label v-bold" text-anchor="middle">2. Execute reference</text>
+          <text x="415" y="96" class="v-sub" text-anchor="middle">Frozen tracker + simulation</text>
+          <rect x="580" y="30" width="240" height="100" rx="13" class="v-box"/>
+          <text x="700" y="66" class="v-label v-bold" text-anchor="middle">3. Evaluate the attempt</text>
+          <text x="700" y="96" class="v-sub" text-anchor="middle">Goal, elapsed time, failures</text>
+          <rect x="865" y="30" width="225" height="100" rx="13" class="v-box tint-box"/>
+          <text x="977" y="66" class="v-label v-bold" text-anchor="middle">4. PPO update</text>
+          <text x="977" y="96" class="v-sub" text-anchor="middle">Change the scoring weights</text>
+          <path d="M250 80H288" class="v-edge" marker-end="url(#learn-arrow)"/>
+          <path d="M535 80H573" class="v-edge" marker-end="url(#learn-arrow)"/>
+          <path d="M820 80H858" class="v-edge" marker-end="url(#learn-arrow)"/>
+          <path d="M977 130V220H130V137" class="v-edge training-edge" marker-end="url(#learn-arrow)"/>
+          <text x="550" y="178" class="v-label v-bold" text-anchor="middle">Advantage = observed future return − predicted future return</text>
+          <text x="550" y="207" class="v-sub" text-anchor="middle">Positive: increase B’s probability. Negative: decrease it. Repeat across many navigation attempts.</text>
+          <text x="550" y="252" class="v-sub" text-anchor="middle">Train: temporal encoder + GNN + edge scorer + value predictor. Keep the motion tracker frozen.</text>
+        </svg>
+        <figcaption>PPO = proximal policy optimization, a reinforcement-learning update. “Return” is accumulated reward; a value predictor estimates it from the current context.</figcaption>
+      </figure>
+      <div class="visual-summary">
+        <p><strong>Credit across skills:</strong> include later crouching and goal completion when evaluating the earlier jump. Account for each segment’s actual duration.</p>
+        <p><strong>Risk conditioning:</strong> reward completion and penalize elapsed time and failures. Increase the failure penalty for a budget δ when measured episode risk exceeds it.</p>
+      </div>
+      <p class="callout">The update uses the sampled edge’s log-probability and advantage. No “best segment” label or gradient through physics is required.</p>
+      <p class="footnote">A proposed budget-dependent penalty scheme; validate failure rates separately for each δ. A single successful rollout is not a risk estimate. Methods: <a href="https://arxiv.org/abs/1707.06347">PPO</a> and <a href="https://arxiv.org/abs/1705.10528">constrained reinforcement learning</a>.</p>
+    </section>
+
+    <section class="slide" id="slide-11" aria-labelledby="title-11" hidden>
+      <p class="eyebrow">11 / Related work</p>
+      <h2 id="title-11">Combine established methods; test the integration.</h2>
 <figure class="diagram " tabindex="0" aria-label="method foundations diagram">
       <svg viewBox="0 0 1000 282" role="img" aria-labelledby="method-foundations-title"><title id="method-foundations-title">Method foundations</title>
       <defs><marker id="method-foundations-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
@@ -463,9 +510,9 @@
       <p class="footnote"><a href="https://arxiv.org/html/2602.15827v1">PHP</a> combines motion synthesis and teacher–student training. We borrow the idea of diverse transitions; our proposed GNN planner uses the graph directly at inference. Novelty requires further review and experiments.</p>
     </section>
 
-    <section class="slide" id="slide-11" aria-labelledby="title-11" hidden>
-      <p class="eyebrow">11 / Evaluation</p>
-      <h2 id="title-11">Risk conditioning produces different motion.</h2>
+    <section class="slide" id="slide-12" aria-labelledby="title-12" hidden>
+      <p class="eyebrow">12 / Evaluation</p>
+      <h2 id="title-12">Risk conditioning produces different motion.</h2>
       <div class="grid two">
         <div class="card"><h3>Fixed-route courses</h3><figure class="diagram mini-diagram" tabindex="0" aria-label="fixed route course diagram">
       <svg viewBox="0 0 455 158" role="img" aria-labelledby="fixed-route-course-title"><title id="fixed-route-course-title">Fixed route course</title>
@@ -489,9 +536,9 @@
       <p class="footnote">Compare with reactive skill selection and graph search using fixed transition estimates. Match skill libraries and training budgets; evaluate across training seeds. A conservative policy must still make progress toward B.</p>
     </section>
 
-    <section class="slide" id="slide-12" aria-labelledby="title-12" hidden>
-      <p class="eyebrow">12 / First implementation</p>
-      <h2 id="title-12">Train the tracker, then the graph planner.</h2>
+    <section class="slide" id="slide-13" aria-labelledby="title-13" hidden>
+      <p class="eyebrow">13 / First implementation</p>
+      <h2 id="title-13">Train the tracker, then the graph planner.</h2>
       <div class="grid three">
         <div class="card"><span class="number">01 / TRAIN TRACKER</span><figure class="diagram milestone-diagram" tabindex="0" aria-label="validate skills diagram">
       <svg viewBox="0 0 220 145" role="img" aria-labelledby="validate-skills-title"><title id="validate-skills-title">Validate skills</title>
@@ -502,7 +549,7 @@
       <svg viewBox="0 0 220 160" role="img" aria-labelledby="build-planner-title"><title id="build-planner-title">Synthesize alternative routes</title>
       <defs><marker id="build-planner-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
       <path d="M40 85L100 35L170 85" class="v-edge" marker-end="url(#build-planner-arrow)"/><path d="M40 85L100 135L170 85" class="v-edge" marker-end="url(#build-planner-arrow)"/><circle cx="40" cy="85" r="12" class="v-state chosen-state"/><circle cx="100" cy="35" r="12" class="v-state chosen-state"/><circle cx="100" cy="135" r="12" class="v-state chosen-state"/><circle cx="170" cy="85" r="12" class="v-state chosen-state"/>
-      </svg></figure><h3>GNN segment selection</h3><p>Freeze the tracker. Use reinforcement learning to train the segment encoder and GNN from navigation completion, time, and risk.</p></div>
+      </svg></figure><h3>GNN segment selection</h3><p>Freeze the tracker. Train the temporal encoder, GNN, edge scorer, and value predictor with sampled segment rollouts and navigation rewards.</p></div>
         <div class="card tint"><span class="number">OPTIONAL / FINE-TUNE</span><figure class="diagram milestone-diagram" tabindex="0" aria-label="fine-tune tracker with frozen planner diagram">
       <svg viewBox="0 0 260 145" role="img" aria-labelledby="fine-tune-tracker-title"><title id="fine-tune-tracker-title">Fine-tune tracker</title>
       <defs><marker id="fine-tune-tracker-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
@@ -518,7 +565,7 @@
     <nav class="dots" aria-label="Choose slide"></nav>
     <div class="controls">
       <button class="nav-button" id="previous" type="button" aria-label="Previous slide">←</button>
-      <span id="counter" aria-live="polite" aria-atomic="true">01 / 12</span>
+      <span id="counter" aria-live="polite" aria-atomic="true">01 / 13</span>
       <button class="nav-button" id="next" type="button" aria-label="Next slide">→</button>
       <button class="nav-button" id="print" type="button" aria-label="Print all slides">Print</button>
     </div>
