@@ -288,22 +288,22 @@
       </svg></figure>
       <div class="grid two">
         <div class="card"><h3>Given: a motion repertoire</h3><p>Train one shared multi-motion tracker. Measure which states and terrains it can handle.</p></div>
-        <div class="card tint"><h3>Learn next: graph planning</h3><p>Freeze the tracker while learning transition predictions for graph search. Optionally fine-tune the tracker afterward.</p></div>
+        <div class="card tint"><h3>Learn next: graph planning</h3><p>Freeze the tracker and train a graph neural network (GNN) to choose the next skill. Optionally fine-tune the tracker afterward.</p></div>
       </div>
       <p class="callout">Fixed skill categories do not require frozen controllers. Keep a frozen-library baseline to measure the value of adaptation.</p>
       <p class="footnote">A skill includes a feedback controller and conditions for starting and ending. A missing capability requires a detour or a new skill. Foundation: <a href="https://www.sciencedirect.com/science/article/pii/S0004370299000521">Sutton, Precup &amp; Singh: options</a>.</p>
     </section>
 
     <section class="slide" id="slide-5" aria-labelledby="title-5" hidden>
-      <p class="eyebrow">05 / Graph search at inference</p>
-      <h2 id="title-5">Search the skill graph to reach the goal.</h2>
+      <p class="eyebrow">05 / Graph input at inference</p>
+      <h2 id="title-5">Give the planner a graph of skill transitions.</h2>
 <figure class="diagram graph-diagram" tabindex="0" aria-label="skill synthesis diagram">
       <svg viewBox="0 0 1000 424" role="img" aria-labelledby="skill-synthesis-title"><title id="skill-synthesis-title">Skill synthesis</title>
       <defs><marker id="skill-synthesis-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
       <path d="M112 155H232" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="172" y="135" class="v-edge-label chosen-label" text-anchor="middle">Walk</text><path d="M298 139Q358 62 437 65" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="355" y="75" class="v-edge-label chosen-label" text-anchor="middle">Jump</text><path d="M503 65Q596 57 666 137" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="599" y="77" class="v-edge-label chosen-label" text-anchor="middle">Crouch</text><path d="M298 174Q365 244 437 245" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="350" y="253" class="v-edge-label" text-anchor="middle">Hand-supported</text><text x="350" y="275" class="v-edge-label" text-anchor="middle">step</text><path d="M503 245Q595 252 666 174" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="602" y="236" class="v-edge-label" text-anchor="middle">Crouch</text><path d="M732 155H887" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="810" y="135" class="v-edge-label chosen-label" text-anchor="middle">Walk</text><path d="M79 189Q90 354 437 354" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="243" y="338" class="v-edge-label" text-anchor="middle">Walk around</text><path d="M503 354Q919 354 920 190" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="741" y="338" class="v-edge-label" text-anchor="middle">Walk</text><circle cx="79" cy="155" r="33" class="v-state chosen-state"/><text x="79" y="161" class="v-node-text" text-anchor="middle">A</text><text x="79" y="212" class="v-sub" text-anchor="middle">Start</text><circle cx="265" cy="155" r="33" class="v-state chosen-state"/><g transform="translate(265 173) scale(.46)" class="v-robot green-robot"><circle cx="0" cy="-75" r="9"/><path d="M0 -60L0 -27L-14 0M0 -27L14 0M0 -50L-22 -32M0 -50L22 -32"/></g><text x="265" y="212" class="v-sub" text-anchor="middle">Before obstacle</text><circle cx="470" cy="65" r="33" class="v-state chosen-state"/><g transform="translate(470 83) scale(.46)" class="v-robot green-robot"><circle cx="0" cy="-75" r="9"/><path d="M0 -60L0 -27L-14 0M0 -27L14 0M0 -50L-22 -32M0 -50L22 -32"/></g><text x="470" y="122" class="v-sub" text-anchor="middle">After jump</text><circle cx="470" cy="245" r="33" class="v-state"/><g transform="translate(470 263) scale(.46)" class="v-robot green-robot"><circle cx="5" cy="-72" r="9"/><path d="M5 -57L-3 -30L-22 0M-3 -30L24 -24L37 -24M3 -48L33 -53L53 -53M3 -48L-19 -34"/></g><text x="470" y="302" class="v-sub" text-anchor="middle">After hand support</text><circle cx="699" cy="155" r="33" class="v-state chosen-state"/><g transform="translate(699 173) scale(.46)" class="v-robot green-robot"><circle cx="20" cy="-49" r="9"/><path d="M9 -36L-13 -23L18 -13L-2 0M-13 -23L-30 -10L-38 0M9 -36L35 -22"/></g><text x="699" y="212" class="v-sub" text-anchor="middle">Under beam</text><circle cx="920" cy="155" r="33" class="v-state chosen-state"/><text x="920" y="161" class="v-node-text" text-anchor="middle">B</text><text x="920" y="212" class="v-sub" text-anchor="middle">Goal pose g</text><circle cx="470" cy="354" r="33" class="v-state"/><g transform="translate(470 372) scale(.46)" class="v-robot green-robot"><circle cx="0" cy="-75" r="9"/><path d="M0 -60L0 -27L-14 0M0 -27L14 0M0 -50L-22 -32M0 -50L22 -32"/></g><text x="470" y="411" class="v-sub" text-anchor="middle">Detour</text><text x="500" y="18" class="v-sub" text-anchor="middle">Selected sequence: walk → jump → crouch → walk</text>
       </svg><figcaption>Nodes: robot-state regions at locations. Edges: skill execution. Green: one selected sequence. Dashed: alternatives.</figcaption></figure>
-      <p class="callout">At inference, update feasible edges from perception and search for a route to g under risk budget δ.</p>
-      <p class="footnote">Execute the next skill, observe its outcome, and replan at valid transition points. Edge predictions depend on robot state and scene; validate whole-sequence risk.</p>
+      <p class="callout">Perception updates the graph. The GNN chooses the next skill edge using goal g and risk budget δ.</p>
+      <p class="footnote">Construct scene-specific candidates from the offline library: nodes describe robot-state regions; edges carry skill references and execution data. Graph construction is a separate design choice.</p>
     </section>
 
     <section class="slide" id="slide-6" aria-labelledby="title-6" hidden>
@@ -359,26 +359,61 @@
       <defs><marker id="offline-loop-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
       <rect x="30" y="45" width="250" height="112" rx="13" class="v-box"/><text x="155.0" y="98.0" class="v-label v-bold" text-anchor="middle">Agent proposes</text><text x="155.0" y="124.0" class="v-sub" text-anchor="middle">Routes, skills, contacts</text><rect x="375" y="45" width="250" height="112" rx="13" class="v-box tint-box"/><text x="500.0" y="98.0" class="v-label v-bold" text-anchor="middle">Simulation evaluates</text><text x="500.0" y="124.0" class="v-sub" text-anchor="middle">Time, failures, final states</text><rect x="720" y="45" width="250" height="112" rx="13" class="v-box"/><text x="845.0" y="98.0" class="v-label v-bold" text-anchor="middle">Update models</text><text x="845.0" y="124.0" class="v-sub" text-anchor="middle">Risk and transition data</text><path d="M280 100H370" class="v-edge" marker-end="url(#offline-loop-arrow)"/><path d="M625 100H715" class="v-edge" marker-end="url(#offline-loop-arrow)"/><path d="M845 160V207H155V164" class="v-edge" marker-end="url(#offline-loop-arrow)"/><text x="500" y="200" class="v-edge-label" text-anchor="middle">Measured outcomes guide the next experiments</text>
       </svg></figure>
-      <div class="card tint"><h3>Output: a skill-transition library and execution data</h3><p>Store references, starting conditions, final states, time, and failures. Execute candidates with the frozen tracker to train graph predictions.</p></div>
+      <div class="card tint"><h3>Output: a skill-transition library and execution data</h3><p>Store references, starting conditions, and execution outcomes. Train GNN skill selection through navigation rollouts with the frozen tracker.</p></div>
       <p class="footnote">Test the agent’s value against random search and uncertainty-based sampling, which selects trials where the learned model is least certain. Use equal simulation budgets.</p>
     </section>
 
     <section class="slide" id="slide-9" aria-labelledby="title-9" hidden>
-      <p class="eyebrow">09 / Proposed training and inference</p>
-      <h2 id="title-9">Two stages. Explicit graph search.</h2>
-      <figure class="diagram" tabindex="0" aria-label="Two-stage training and online graph search">
-<svg viewBox="0 0 1100 355" role="img" aria-labelledby="stages-title stages-desc">
-<title id="stages-title">Two training stages and explicit graph search at inference</title>
-<desc id="stages-desc">First train a multi-motion tracker. Freeze it and train the graph planner. Optionally freeze planner parameters and fine-tune the tracker. At inference, observations, goal, and risk budget feed graph prediction and search. The selected reference goes to the tracker, which controls the robot. Robot observations close the loop.</desc>
-<defs><marker id="stages-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><text x="20" y="22" class="v-sub v-bold" text-anchor="start">TRAINING</text><rect x="20" y="40" width="320" height="84" rx="13" class="v-box"/><text x="180.0" y="75" class="v-label v-bold" text-anchor="middle">1. Train motion tracker</text><text x="180.0" y="103" class="v-sub" text-anchor="middle">Reinforcement learning</text><text x="180" y="151" class="v-sub" text-anchor="middle">Shared across reference motions</text><rect x="390" y="40" width="320" height="84" rx="13" class="v-box tint-box"/><text x="550.0" y="75" class="v-label v-bold" text-anchor="middle">2. Learn graph planner</text><text x="550.0" y="103" class="v-sub" text-anchor="middle">Predict transition outcomes</text><text x="550" y="151" class="v-sub" text-anchor="middle">Tracker parameters frozen</text><rect x="760" y="40" width="320" height="84" rx="13" class="v-box"/><text x="920.0" y="75" class="v-label v-bold" text-anchor="middle">Optional: adapt tracker</text><text x="920.0" y="103" class="v-sub" text-anchor="middle">Improve selected transitions</text><text x="920" y="151" class="v-sub" text-anchor="middle">Planner parameters frozen</text><path d="M340 82H383" class="v-edge" marker-end="url(#stages-arrow)"/><path d="M710 82H753" class="v-edge" marker-end="url(#stages-arrow)"/><text x="20" y="196" class="v-sub v-bold" text-anchor="start">INFERENCE: GRAPH SEARCH REMAINS ACTIVE</text><rect x="20" y="214" width="220" height="84" rx="13" class="v-box tint-box"/><text x="130.0" y="249" class="v-label v-bold" text-anchor="middle">Observations + g, δ</text><text x="130.0" y="277" class="v-sub" text-anchor="middle">Depth + robot state</text><rect x="310" y="214" width="270" height="84" rx="13" class="v-box tint-box"/><text x="445.0" y="249" class="v-label v-bold" text-anchor="middle">Graph model + search</text><text x="445.0" y="277" class="v-sub" text-anchor="middle">Select the next skill edge</text><rect x="675" y="214" width="180" height="84" rx="13" class="v-box tint-box"/><text x="765.0" y="249" class="v-label v-bold" text-anchor="middle">Tracker</text><text x="765.0" y="277" class="v-sub" text-anchor="middle">Follow reference</text><rect x="950" y="214" width="130" height="84" rx="13" class="v-box tint-box"/><text x="1015.0" y="249" class="v-label v-bold" text-anchor="middle">Robot</text><text x="1015.0" y="277" class="v-sub" text-anchor="middle">Execute</text><path d="M240 256H303" class="v-edge" marker-end="url(#stages-arrow)"/><path d="M580 256H668" class="v-edge" marker-end="url(#stages-arrow)"/><path d="M855 256H943" class="v-edge" marker-end="url(#stages-arrow)"/><text x="627" y="240" class="v-sub" text-anchor="middle">Reference</text><text x="902" y="240" class="v-sub" text-anchor="middle">Actions</text><path d="M1015 298V342H130V305" class="v-edge" marker-end="url(#stages-arrow)"/><text x="565" y="332" class="v-sub" text-anchor="middle">Observe the outcome; update graph and replan at valid transition points</text></svg>
-        <figcaption>The tracker also receives current joint and body measurements. Its actor and the planner use observations available at deployment; privileged simulator data may support training.</figcaption>
+      <p class="eyebrow">09 / How the GNN planner works</p>
+      <h2 id="title-9">The GNN learns which skill to execute next.</h2>
+      <figure class="diagram" tabindex="0" aria-label="Graph neural network selects a skill and a frozen tracker executes it">
+        <svg viewBox="0 0 1100 355" role="img" aria-labelledby="gnn-title gnn-desc">
+          <title id="gnn-title">Graph input, message passing, skill selection, and execution feedback</title>
+          <desc id="gnn-desc">The GNN receives node and edge features together with observations, goal pose, and risk budget. Connected nodes exchange information through message passing. The GNN outputs probabilities over valid outgoing skill edges. The chosen edge supplies a reference to the tracker. Robot observations update the graph at the next decision point.</desc>
+          <defs><marker id="gnn-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
+          <text x="550" y="23" class="v-sub v-bold" text-anchor="middle">CONDITION ON OBSERVATIONS, GOAL g = (x, y, z, yaw), AND RISK BUDGET δ</text>
+          <rect x="20" y="46" width="290" height="130" rx="13" class="v-box"/>
+          <text x="165" y="77" class="v-label v-bold" text-anchor="middle">1. Encode the graph</text>
+          <text x="165" y="107" class="v-sub" text-anchor="middle">Nodes: position, posture, velocity</text>
+          <text x="165" y="133" class="v-sub" text-anchor="middle">Edges: skill, reference, terrain</text>
+          <text x="165" y="159" class="v-sub" text-anchor="middle">Mark the current state and goal</text>
+          <rect x="405" y="46" width="290" height="130" rx="13" class="v-box tint-box"/>
+          <text x="550" y="77" class="v-label v-bold" text-anchor="middle">2. Pass messages</text>
+          <path d="M450 113H539M559 113H650M450 119L540 148M560 148L650 119" class="v-edge"/>
+          <circle cx="445" cy="115" r="10" class="v-state chosen-state"/>
+          <circle cx="550" cy="112" r="10" class="v-state chosen-state"/>
+          <circle cx="550" cy="151" r="10" class="v-state"/>
+          <circle cx="655" cy="115" r="10" class="v-state chosen-state"/>
+          <path d="M525 101H475M625 101H575" class="v-edge training-edge" marker-end="url(#gnn-arrow)"/>
+          <rect x="790" y="46" width="290" height="130" rx="13" class="v-box"/>
+          <text x="935" y="77" class="v-label v-bold" text-anchor="middle">3. Select a skill edge</text>
+          <text x="935" y="107" class="v-sub" text-anchor="middle">Probability for each valid choice</text>
+          <text x="935" y="133" class="v-sub" text-anchor="middle">Jump · hand support · detour</text>
+          <text x="935" y="159" class="v-sub" text-anchor="middle">Choose from the current state</text>
+          <path d="M310 110H398" class="v-edge" marker-end="url(#gnn-arrow)"/>
+          <path d="M695 110H783" class="v-edge" marker-end="url(#gnn-arrow)"/>
+          <rect x="790" y="239" width="290" height="76" rx="13" class="v-box tint-box"/>
+          <text x="935" y="270" class="v-label v-bold" text-anchor="middle">Multi-motion tracker</text>
+          <text x="935" y="297" class="v-sub" text-anchor="middle">Reference + current robot state</text>
+          <path d="M935 176V232" class="v-edge" marker-end="url(#gnn-arrow)"/>
+          <text x="948" y="213" class="v-sub">Selected reference</text>
+          <rect x="405" y="239" width="290" height="76" rx="13" class="v-box"/>
+          <text x="550" y="270" class="v-label v-bold" text-anchor="middle">Robot execution</text>
+          <text x="550" y="297" class="v-sub" text-anchor="middle">Observe the resulting state</text>
+          <path d="M790 277H702" class="v-edge" marker-end="url(#gnn-arrow)"/>
+          <text x="743" y="258" class="v-sub" text-anchor="middle">Joint targets</text>
+          <path d="M405 277H165V183" class="v-edge" marker-end="url(#gnn-arrow)"/>
+          <text x="165" y="315" class="v-sub" text-anchor="middle">Update graph from observations</text>
+          <text x="550" y="350" class="v-sub" text-anchor="middle">Repeat skill selection at valid transition points; the tracker controls the robot throughout each skill.</text>
+        </svg>
+        <figcaption>GNN = graph neural network. It operates on the graph at inference and directly selects skill edges. No separate graph-search algorithm is required in this proposal.</figcaption>
       </figure>
       <div class="visual-summary">
-        <p><strong>Learn:</strong> scene- and state-dependent edge feasibility, failure probability, time, and final states from execution data.</p>
-        <p><strong>Search:</strong> use those predictions to choose a route toward g under δ. A graph neural network (GNN) is one model option.</p>
+        <p><strong>Message passing:</strong> connected nodes exchange learned features over several rounds. A later crouch can influence which jump the GNN selects.</p>
+        <p><strong>Output:</strong> a distribution over outgoing skill edges. Each edge identifies a motion reference; the tracker converts it into joint targets.</p>
       </div>
-      <p class="callout">Freeze the tracker while learning the planner. Optional tracker fine-tuning keeps planner parameters fixed.</p>
-      <p class="footnote">No teacher–student stage is required. A frozen planner still updates its graph and replans. After tracker changes, revalidate its edge predictions and whole-route risk; reject or recalibrate stale predictions.</p>
+      <p class="callout">Train the GNN with the tracker frozen: select → execute → measure goal progress, time, and failures → update the GNN.</p>
+      <p class="footnote">Risk budget δ must affect the training objective; input conditioning alone gives no risk guarantee. Planning is learned, not exact path search. Architecture background: <a href="https://arxiv.org/abs/1511.05493">Gated Graph Sequence Neural Networks</a>.</p>
     </section>
 
     <section class="slide" id="slide-10" aria-labelledby="title-10" hidden>
@@ -389,8 +424,8 @@
       <defs><marker id="method-foundations-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
       <a href="https://php-parkour.github.io/"><rect x="15" y="24" width="300" height="92" rx="13" class="v-box"/><text x="165.0" y="67.0" class="v-label v-bold" text-anchor="middle">Perceptive Humanoid Parkour</text><text x="165.0" y="93.0" class="v-sub" text-anchor="middle">Diverse motion transitions</text></a><a href="https://sequential-dexterity.github.io/"><rect x="15" y="166" width="300" height="92" rx="13" class="v-box"/><text x="165.0" y="209.0" class="v-label v-bold" text-anchor="middle">Sequential Dexterity</text><text x="165.0" y="235.0" class="v-sub" text-anchor="middle">Transition feasibility</text></a><a href="https://atarilab.github.io/motiondisco.io/"><rect x="685" y="24" width="300" height="92" rx="13" class="v-box"/><text x="835.0" y="67.0" class="v-label v-bold" text-anchor="middle">MotionDisco</text><text x="835.0" y="93.0" class="v-sub" text-anchor="middle">Offline motion discovery</text></a><a href="https://arxiv.org/abs/2103.02828"><rect x="685" y="166" width="300" height="92" rx="13" class="v-box"/><text x="835.0" y="209.0" class="v-label v-bold" text-anchor="middle">STEP</text><text x="835.0" y="235.0" class="v-sub" text-anchor="middle">Risk-aware planning</text></a><rect x="367" y="83" width="266" height="115" rx="13" class="v-box tint-box"/><text x="500.0" y="137.5" class="v-label v-bold" text-anchor="middle">Proposed integration</text><text x="500.0" y="163.5" class="v-sub" text-anchor="middle">Risk-conditioned skill graph</text><path d="M315 70L360 116" class="v-edge" marker-end="url(#method-foundations-arrow)"/><path d="M315 212L360 168" class="v-edge" marker-end="url(#method-foundations-arrow)"/><path d="M685 70L640 116" class="v-edge" marker-end="url(#method-foundations-arrow)"/><path d="M685 212L640 168" class="v-edge" marker-end="url(#method-foundations-arrow)"/>
       </svg><figcaption>Links open the source projects. Arrows indicate ideas used in this proposal, not a claim that prior methods use our graph.</figcaption></figure>
-      <p class="callout">Our proposal: learn graph predictions, then explicitly search for skill sequences during navigation.</p>
-      <p class="footnote"><a href="https://arxiv.org/html/2602.15827v1">PHP</a> combines motion synthesis and teacher–student training. We borrow the idea of diverse transitions; our proposed tracker-and-planner training retains graph search at inference. Novelty requires further review and experiments.</p>
+      <p class="callout">Our proposal: a GNN learns skill selection over an explicit graph; a shared tracker executes its choices.</p>
+      <p class="footnote"><a href="https://arxiv.org/html/2602.15827v1">PHP</a> combines motion synthesis and teacher–student training. We borrow the idea of diverse transitions; our proposed GNN planner uses the graph directly at inference. Novelty requires further review and experiments.</p>
     </section>
 
     <section class="slide" id="slide-11" aria-labelledby="title-11" hidden>
@@ -413,7 +448,7 @@
         <tbody>
           <tr><td>Risk and completion</td><td>Observed failure rate versus budget, uncertainty intervals, goal completion, and timeouts</td></tr>
           <tr><td>Behavior and efficiency</td><td>Skill sequences, hand contacts, route length, and traversal time for completed runs</td></tr>
-          <tr><td>Contribution of each part</td><td>Frozen / fine-tuned tracker; fixed / variable risk input; agent / non-agent sampling; learned / fixed edge models</td></tr>
+          <tr><td>Contribution of each part</td><td>Frozen / fine-tuned tracker; fixed / variable risk input; agent / non-agent sampling; with / without graph message passing</td></tr>
         </tbody>
       </table></div>
       <p class="footnote">Compare with reactive skill selection and graph search using fixed transition estimates. Match skill libraries and training budgets; evaluate across training seeds. A conservative policy must still make progress toward B.</p>
@@ -432,12 +467,12 @@
       <svg viewBox="0 0 220 160" role="img" aria-labelledby="build-planner-title"><title id="build-planner-title">Synthesize alternative routes</title>
       <defs><marker id="build-planner-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
       <path d="M40 85L100 35L170 85" class="v-edge" marker-end="url(#build-planner-arrow)"/><path d="M40 85L100 135L170 85" class="v-edge" marker-end="url(#build-planner-arrow)"/><circle cx="40" cy="85" r="12" class="v-state chosen-state"/><circle cx="100" cy="35" r="12" class="v-state chosen-state"/><circle cx="100" cy="135" r="12" class="v-state chosen-state"/><circle cx="170" cy="85" r="12" class="v-state chosen-state"/>
-      </svg></figure><h3>Perceptive graph planner</h3><p>Learn transition feasibility, time, and resulting states from tracker rollouts. Search the graph using g and δ; test navigation success.</p></div>
+      </svg></figure><h3>GNN skill selection</h3><p>Freeze the tracker. Train the GNN with reinforcement learning from goal completion, time, and failures under different risk budgets.</p></div>
         <div class="card tint"><span class="number">OPTIONAL / FINE-TUNE</span><figure class="diagram milestone-diagram" tabindex="0" aria-label="fine-tune tracker with frozen planner diagram">
       <svg viewBox="0 0 260 145" role="img" aria-labelledby="fine-tune-tracker-title"><title id="fine-tune-tracker-title">Fine-tune tracker</title>
       <defs><marker id="fine-tune-tracker-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
       <rect x="10" y="35" width="105" height="80" rx="13" class="v-box"/><text x="62.5" y="69" class="v-label v-bold" text-anchor="middle">Planner</text><text x="62.5" y="96" class="v-sub" text-anchor="middle">Frozen</text><rect x="150" y="35" width="105" height="80" rx="13" class="v-box tint-box"/><text x="202.5" y="69" class="v-label v-bold" text-anchor="middle">Tracker</text><text x="202.5" y="96" class="v-sub" text-anchor="middle">Train</text><path d="M116 75H144" class="v-edge" marker-end="url(#fine-tune-tracker-arrow)"/>
-      </svg></figure><h3>Adapt the tracker</h3><p>Freeze planner parameters and improve tracking under its selected sequences. Retest graph predictions and risk before deployment.</p></div>
+      </svg></figure><h3>Adapt the tracker</h3><p>Freeze GNN parameters and improve tracking under its selected sequences. The GNN still reacts to observations. Retest navigation risk.</p></div>
       </div>
       <p class="callout">Perception requirement: represent both the floor and the underside of the beam. A single elevation map cannot describe both at the same horizontal position.</p>
       <p class="footnote">Current starting points: motion tracking and perceptive locomotion. Validate the chaining method on rigid obstacles before adding deformable terrain.</p>
