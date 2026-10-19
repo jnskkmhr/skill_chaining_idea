@@ -172,25 +172,18 @@
     .mini-diagram { margin:8px 0 12px; } .mini-diagram svg { max-height:150px; }
     .milestone-diagram { margin:0 0 12px; } .milestone-diagram svg { height:100px; }
     .skill-strip svg { max-height:155px; }
-    #slide-11 .v-label { font-size:18px; }
-    #slide-12 .mini-diagram svg { max-height:90px; }
-    #slide-12 .card { padding:18px; }
-    #slide-12 .mini-diagram .v-node-text { font-size:24px; }
-    #slide-12 .mini-diagram .v-sub { font-size:21px; paint-order:stroke; stroke:var(--paper); stroke-width:3px; }
     @media screen and (min-width:761px) and (max-height:800px) {
       .diagram { margin:6px 0 10px; } .diagram svg { max-height:205px; }
       .graph-diagram svg { max-height:280px; }
       .mini-diagram svg { max-height:110px; } .skill-strip svg { max-height:115px; }
       .milestone-diagram svg { height:80px; }
       .visual-notes { gap:10px; } .visual-notes p,.visual-summary p { font-size:15px; }
-      #slide-12 .mini-diagram svg { max-height:65px; } #slide-12 .card { padding:14px; }
     }
     @media screen and (min-width:761px) and (max-height:650px) {
       .diagram svg { max-height:170px; } .graph-diagram svg { max-height:235px; }
       .mini-diagram svg { max-height:90px; } .skill-strip svg { max-height:95px; }
       .milestone-diagram svg { height:65px; } .visual-notes p { font-size:14px; }
       .visual-pair { margin:4px 0 8px; } .visual-summary p { font-size:14px; }
-      #slide-12 .mini-diagram svg { max-height:54px; } #slide-12 td,#slide-12 th { padding:6px 12px; }
     }
     @media (max-width:760px) {
       .visual-pair,.visual-summary { grid-template-columns:1fr; gap:16px; }
@@ -207,357 +200,167 @@
       .visual-pair { grid-template-columns:1.4fr 1fr; } .visual-summary { grid-template-columns:1fr 1fr; }
       .visual-notes p,.visual-summary p { font-size:15px; }
     }
-    /* Keep the worked action example and learning loop readable at presentation sizes. */
-    #slide-9 .visual-pair { grid-template-columns:1.65fr 1fr; }
-    #slide-9 td,#slide-9 th { padding:9px 10px; }
-    #slide-9 td:first-child { white-space:nowrap; }
-    #slide-9 .diagram svg { max-height:130px; }
-    #slide-10 .diagram svg { max-height:245px; }
+    .graph-diagram svg { max-height:310px; }
+    #slide-8 .diagram svg { max-height:300px; }
     @media screen and (min-width:761px) and (max-height:800px) {
-      #slide-9 .diagram svg { max-height:100px; }
-      #slide-10 .diagram svg { max-height:190px; }
+      .graph-diagram svg { max-height:245px; }
+      #slide-8 .diagram svg { max-height:235px; }
     }
     @media screen and (min-width:761px) and (max-height:650px) {
-      #slide-9 .diagram svg { max-height:80px; }
-      #slide-9 td,#slide-9 th { padding:6px 8px; }
-      #slide-10 .diagram svg { max-height:160px; }
+      .graph-diagram svg { max-height:190px; }
+      #slide-8 .diagram svg { max-height:185px; }
+      .risk-scene svg { max-height:145px; }
     }
     @media (max-width:760px) {
-      #slide-9 .visual-pair { grid-template-columns:1fr; }
-      #slide-9 .diagram svg,#slide-10 .diagram svg { max-height:none; }
+      #slide-8 .diagram svg { max-height:none; }
+    }
+    @media print {
+      #slide-8 .diagram svg { max-height:260px; }
+      .graph-diagram svg { max-height:280px; }
+      .risk-scene svg { max-height:170px; }
+    }
+
+    #slide-7 .diagram svg,#slide-9 .diagram svg { max-height:225px; }
+    @media screen and (min-width:761px) and (max-height:800px) {
+      #slide-9 .diagram svg { max-height:195px; }
+    }
+    @media screen and (min-width:761px) and (max-height:650px) {
+      #slide-7 .diagram svg,#slide-9 .diagram svg { max-height:125px; }
+      #slide-9 .diagram svg { max-height:110px; }
+      #slide-12 .diagram svg,#slide-13 .diagram svg,#slide-14 .diagram svg { max-height:85px; }
+    }
+    @media (max-width:760px) {
+      #slide-7 .diagram svg,#slide-9 .diagram svg { max-height:none; }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="brand">Whole-body humanoid navigation</div>
-    <div class="status">Updated Oct 18 · Segment selection + RL</div>
+    <div class="status">Updated Oct 18 · Agent-aided distillation</div>
   </header>
   <main id="deck">
     <section class="slide" id="slide-1" aria-labelledby="title-1">
-      <div class="grid hero">
-        <div>
-          <p class="eyebrow">01 / Research question</p>
-          <h1 id="title-1">Risk-conditioned<br>navigation</h1>
-          <p class="lead">Reach the same goal with different routes, skills, and contacts.</p>
-          <p class="small">Whole-body navigation from A to B, using perception and a predefined library of skills.</p>
-          <div><span class="tag">Goal pose: SE(2) + z</span><span class="tag">Risk budget</span><span class="tag">Skill composition</span></div>
-        </div>
-        <div class="card tint">
-          <span class="number">PROPOSED HYPOTHESIS</span>
-          <h3>A risk budget controls how the robot reaches its goal.</h3>
-          <figure class="diagram mini-diagram" tabindex="0" aria-label="navigation overview diagram">
-      <svg viewBox="0 0 430 170" role="img" aria-labelledby="navigation-overview-title"><title id="navigation-overview-title">Navigation overview</title>
-      <defs><marker id="navigation-overview-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
-      <path d="M25 130H145 M200 130H405" class="v-ground"/><path d="M65 55Q140 2 225 55" class="v-edge" marker-end="url(#navigation-overview-arrow)"/><path d="M270 74H365" class="v-edge" marker-end="url(#navigation-overview-arrow)"/><g transform="translate(70 125) scale(0.8)" class="v-robot"><circle cx="0" cy="-72" r="9"/><path d="M0 -57L0 -25L-22 0M0 -25L24 -1M0 -48L-22 -30M0 -48L22 -60"/></g><g transform="translate(225 125) scale(0.8)" class="v-robot green-robot"><circle cx="0" cy="-80" r="9"/><path d="M0 -65L10 -37L-12 -25L-26 -9M10 -37L34 -25L19 -10M2 -56L-22 -73M2 -56L24 -80"/></g><g transform="translate(365 125) scale(0.8)" class="v-robot green-robot"><circle cx="20" cy="-49" r="9"/><path d="M9 -36L-13 -23L18 -13L-2 0M-13 -23L-30 -10L-38 0M9 -36L35 -22"/></g><text x="70" y="153" class="v-sub" text-anchor="middle">Walk</text><text x="225" y="153" class="v-sub" text-anchor="middle">Jump</text><text x="365" y="153" class="v-sub" text-anchor="middle">Crouch</text>
-      </svg></figure>
-          <p class="small">At deployment: observation history + goal pose (x, y, z, yaw) + risk budget. The same command applies to every behavior.</p>
-        </div>
-      </div>
-      <p class="footnote">Proposal, not an experimental result. Based on the project research plan.</p>
+      <p class="eyebrow">01 / Research question</p>
+      <h1 id="title-1">Risk-conditioned navigation</h1>
+      <p class="lead">Generate motion references offline. Train a student that acts in closed loop from perception.</p>
+      <figure class="diagram" tabindex="0" aria-label="Agent-generated references train a perceptive navigation student"><svg viewBox="0 0 1000 150" role="img" aria-labelledby="overview-title"><title id="overview-title">Agent-generated references train a perceptive navigation student</title><defs><marker id="overview-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="30" width="275" height="85" rx="12" class="v-box "/><text x="157.5" y="64" text-anchor="middle" class="v-label v-bold">Agent + simulation</text><text x="157.5" y="91" text-anchor="middle" class="v-sub">Generate and evaluate references</text><rect x="365" y="30" width="275" height="85" rx="12" class="v-box "/><text x="502.5" y="64" text-anchor="middle" class="v-label v-bold">Teacher-guided training</text><text x="502.5" y="91" text-anchor="middle" class="v-sub">Imitation + navigation RL</text><rect x="710" y="30" width="270" height="85" rx="12" class="v-box tint-box"/><text x="845.0" y="64" text-anchor="middle" class="v-label v-bold">Perceptive student</text><text x="845.0" y="91" text-anchor="middle" class="v-sub">Goal pose + risk preference</text><path d="M295 72H355" class="v-edge " marker-end="url(#overview-arrow)"/><path d="M640 72H700" class="v-edge " marker-end="url(#overview-arrow)"/></svg></figure><p class="callout">Hypothesis: agent-generated alternatives let one policy reach the same goal with different routes, skills, and contacts.</p><p class="footnote">Research proposal. RL = reinforcement learning. Distillation trains a student to imitate a teacher. Based on the project research plan.</p>
     </section>
 
     <section class="slide" id="slide-2" aria-labelledby="title-2" hidden>
-      <p class="eyebrow">02 / Task formulation</p>
-      <h2 id="title-2">Navigate from A to a target pose B.</h2>
-      <p class="lead">One navigation command for all skills: SE(2) + z, written as g = (x, y, z, yaw).</p>
+      <p class="eyebrow">02 / Task and command</p>
+      <h2 id="title-2">One goal pose. One risk preference.</h2>
+
       <div class="visual-pair"><figure class="diagram " tabindex="0" aria-label="target pose diagram">
       <svg viewBox="0 0 590 300" role="img" aria-labelledby="target-pose-title"><title id="target-pose-title">Target pose</title>
       <defs><marker id="target-pose-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
       <path d="M42 236L190 145H530L382 236Z" class="v-platform"/><path d="M76 214H193" class="v-axis" marker-end="url(#target-pose-arrow)"/><path d="M76 214L137 166" class="v-axis" marker-end="url(#target-pose-arrow)"/><path d="M76 214V110" class="v-axis" marker-end="url(#target-pose-arrow)"/><text x="202" y="220" class="v-sub" text-anchor="middle">x</text><text x="147" y="165" class="v-sub" text-anchor="middle">y</text><text x="69" y="103" class="v-sub" text-anchor="middle">z</text><text x="73" y="249" class="v-sub" text-anchor="middle">World origin</text><ellipse cx="373" cy="184" rx="76" ry="26" class="v-region"/><path d="M373 184V96" class="v-guide"/><g transform="translate(373 184) scale(1.23)" class="v-robot green-robot"><circle cx="0" cy="-75" r="9"/><path d="M0 -60L0 -27L-14 0M0 -27L14 0M0 -50L-22 -32M0 -50L22 -32"/></g><circle cx="373" cy="151" r="5" fill="var(--orange)"/><path d="M406 167Q446 126 395 120" class="v-edge" marker-end="url(#target-pose-arrow)"/><text x="454" y="137" class="v-label" text-anchor="middle">yaw</text><path d="M280 151H356" class="v-axis" marker-end="url(#target-pose-arrow)"/><text x="270" y="145" class="v-sub" text-anchor="middle">Base</text><text x="373" y="45" class="v-label v-bold" text-anchor="middle">Target pose g = (x, y, z, yaw)</text><text x="373" y="275" class="v-sub" text-anchor="middle">Position and yaw tolerances define arrival.</text>
-      </svg></figure><div class="visual-notes">
-        <div><h3>Command</h3><p>Target robot-base position (x, y, z) and yaw in the world frame.</p></div>
-        <div><h3>Success</h3><p>Reach the pose within tolerance and stabilize before timeout.</p></div>
-        <div><h3>Failure</h3><p>A fall or unintended collision. Planned hand support is allowed.</p></div>
-      </div></div>
-      <p class="callout">Risk budget δ = maximum permitted failure probability for the complete navigation attempt.</p>
-      <p class="footnote">SE(2) specifies planar position and yaw; z adds height above the world-frame origin. Perception and robot state are observations. Risk budget δ is a separate preference. Formulation: <a href="https://ojs.aaai.org/index.php/AAAI/article/view/6531">risk-constrained planning</a>.</p>
+      </svg></figure><div class="visual-notes"><div><h3>Goal g = (x, y, z, yaw)</h3><p>Target robot-base position and yaw in the world frame. The same command applies to every skill.</p></div><div><h3>Risk preference β</h3><p>Controls how strongly poor outcomes affect decisions. Supplied to the student at deployment.</p></div><div><h3>Navigation outcome</h3><p>Reach the pose and stabilize before timeout. Record falls and unintended collisions; planned hand support is allowed.</p></div></div></div><p class="callout">β is a preference, not a promised failure probability. A budget δ would require explicit failure constraints and separate validation.</p><p class="footnote">SE(2) specifies planar position and yaw; z adds height relative to the world origin. Perception and robot state are observations.</p>
     </section>
 
     <section class="slide" id="slide-3" aria-labelledby="title-3" hidden>
-      <p class="eyebrow">03 / Controllable behavior</p>
+      <p class="eyebrow">03 / Interactive example</p>
       <h2 id="title-3">Same start and goal. Different behavior.</h2>
-      <p class="lead">Select the fastest candidate sequence whose estimated failure probability fits the budget.</p>
+      <p class="lead">A risk metric compares outcome distributions, rather than assigning a fixed risk label to each skill.</p>
       <figure class="scene risk-scene">
         <svg viewBox="0 0 1000 205" role="img" aria-labelledby="risk-title risk-desc">
           <title id="risk-title">Three alternative navigation sequences from A to B</title>
-          <desc id="risk-desc">Walking around the obstacle takes 14 seconds with 1 percent estimated failure probability. Using hand support takes 9 seconds with 3 percent estimated failure probability. Jumping takes 5 seconds with 8 percent estimated failure probability. All values are illustrative.</desc>
+          <desc id="risk-desc">Three illustrative routes. Jump succeeds with return 100 in 90 percent of attempts; hand support with return 80 in 96 percent; walk around with return 70 in 99 percent. Failure return is minus 100 for all routes.</desc>
           <rect x="442" y="62" width="116" height="86" rx="8" fill="#d6ddd6"/>
           <text x="500" y="109" text-anchor="middle" font-size="15" fill="#536770">Obstacle</text>
-          <g class="route" data-route="jump"><path d="M90 100Q500 -58 910 100"/><text x="500" y="24">Jump · 5 s · 8% failure</text></g>
-          <g class="route" data-route="support"><path d="M90 100L410 48H590L910 100"/><text x="500" y="52">Hand support · 9 s · 3% failure</text></g>
-          <g class="route" data-route="walk"><path d="M90 100L270 165H730L910 100"/><text x="500" y="194">Walk around · 14 s · 1% failure</text></g>
+          <g class="route" data-route="jump"><path d="M90 100Q500 -58 910 100"/><text x="500" y="24">Jump · success return 100 · 10% failure</text></g>
+          <g class="route" data-route="support"><path d="M90 100L410 48H590L910 100"/><text x="500" y="52">Hand support · success return 80 · 4% failure</text></g>
+          <g class="route" data-route="walk"><path d="M90 100L270 165H730L910 100"/><text x="500" y="194">Walk around · success return 70 · 1% failure</text></g>
           <circle cx="90" cy="100" r="19" fill="#192e38"/><circle cx="910" cy="100" r="19" fill="#192e38"/>
           <text x="90" y="106" text-anchor="middle" fill="#fffef9" font-size="18">A</text><text x="910" y="106" text-anchor="middle" fill="#fffef9" font-size="18">B</text>
         </svg>
-        <figcaption>Illustrative routes, times, and whole-sequence risk estimates; not simulation results.</figcaption>
-      </figure>
-      <div class="risk-control"><label for="risk-budget">Risk budget: <output id="risk-value" for="risk-budget">3%</output></label><input id="risk-budget" type="range" min="0" max="10" step="1" value="3" aria-describedby="risk-help"><span id="risk-help" class="small">0%–10% permitted failure probability</span></div>
-      <p class="callout" id="risk-choice" aria-live="polite">Hand support: 9 s, estimated failure probability 3%.</p>
-      <p class="footnote">Risk depends on the robot state and scene. Hand support is not always safer. If no candidate meets the budget, replan or report the goal as infeasible.</p>
+        <figcaption>Illustrative outcome distributions: failure return = −100 for every route. Higher successful return represents faster completion. Return = accumulated navigation reward. These are not measured results.</figcaption>
+      </figure><div class="risk-control"><label for="risk-preference">Worst outcomes averaged: <output id="risk-value" for="risk-preference">60%</output></label><input id="risk-preference" type="range" min="10" max="100" step="1" value="60" aria-describedby="risk-help"><span id="risk-help" class="small">10%: more conservative → 100%: mean return</span></div><p class="callout" id="risk-choice" aria-live="polite"></p><p class="footnote">CVaR means conditional value at risk: here, the average of the worst β fraction of returns. Select the highest score. β = 10% does not mean a 10% failure limit.</p>
     </section>
 
     <section class="slide" id="slide-4" aria-labelledby="title-4" hidden>
-      <p class="eyebrow">04 / Skill-library assumption</p>
-      <h2 id="title-4">Start with predefined, reusable skills.</h2>
+      <p class="eyebrow">04 / Stage 1: motion tracking</p>
+      <h2 id="title-4">Train one tracker across motion references.</h2>
+
       <figure class="diagram skill-strip" tabindex="0" aria-label="available skills diagram">
       <svg viewBox="0 0 1000 180" role="img" aria-labelledby="available-skills-title"><title id="available-skills-title">Available skills</title>
       <defs><marker id="available-skills-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
       <rect x="14" y="10" width="222" height="160" rx="12" class="v-box"/><path d="M53 125H197" class="v-ground"/><g transform="translate(125 122) scale(1)" class="v-robot green-robot"><circle cx="0" cy="-72" r="9"/><path d="M0 -57L0 -25L-22 0M0 -25L24 -1M0 -48L-22 -30M0 -48L22 -60"/></g><text x="125" y="154" class="v-label v-bold" text-anchor="middle">Walk</text><rect x="264" y="10" width="222" height="160" rx="12" class="v-box"/><path d="M303 125H447" class="v-ground"/><g transform="translate(375 122) scale(1)" class="v-robot green-robot"><circle cx="0" cy="-80" r="9"/><path d="M0 -65L10 -37L-12 -25L-26 -9M10 -37L34 -25L19 -10M2 -56L-22 -73M2 -56L24 -80"/></g><text x="375" y="154" class="v-label v-bold" text-anchor="middle">Jump</text><rect x="514" y="10" width="222" height="160" rx="12" class="v-box"/><path d="M553 125H697" class="v-ground"/><rect x="565" y="41" width="130" height="12" fill="var(--ink)"/><g transform="translate(625 122) scale(1)" class="v-robot green-robot"><circle cx="20" cy="-49" r="9"/><path d="M9 -36L-13 -23L18 -13L-2 0M-13 -23L-30 -10L-38 0M9 -36L35 -22"/></g><text x="625" y="154" class="v-label v-bold" text-anchor="middle">Crouch</text><rect x="764" y="10" width="222" height="160" rx="12" class="v-box"/><path d="M803 125H947" class="v-ground"/><path d="M918 72H957V125H918Z" class="v-platform"/><g transform="translate(875 122) scale(1)" class="v-robot green-robot"><circle cx="5" cy="-72" r="9"/><path d="M5 -57L-3 -30L-22 0M-3 -30L24 -24L37 -24M3 -48L33 -53L53 -53M3 -48L-19 -34"/></g><text x="875" y="154" class="v-label v-bold" text-anchor="middle">Hand-supported step</text>
-      </svg></figure>
-      <div class="grid two">
-        <div class="card"><h3>Given: a motion repertoire</h3><p>Each motion is an ordered trajectory of poses, velocities, and contacts. Train one shared tracker across motions and valid entry frames.</p></div>
-        <div class="card tint"><h3>Learn next: graph planning</h3><p>Freeze the tracker and train a graph neural network (GNN) to choose the next trajectory segment. Optionally fine-tune the tracker afterward.</p></div>
-      </div>
-      <p class="callout">Fixed skill categories do not require frozen controllers. Keep a frozen-library baseline to measure the value of adaptation.</p>
-      <p class="footnote">A skill includes a feedback controller and conditions for starting and ending. A missing capability requires a detour or a new skill. Foundation: <a href="https://www.sciencedirect.com/science/article/pii/S0004370299000521">Sutton, Precup &amp; Singh: options</a>.</p>
+      </svg></figure><div class="grid two"><div class="card"><h3>Reference input</h3><p>An ordered sequence of poses, velocities, and contacts. Train across clips, valid entry frames, and transition motions.</p></div><div class="card"><h3>Feedback control</h3><p>The tracker receives the current robot state and upcoming reference frames, then outputs joint commands. Freeze it for initial student training.</p></div></div><p class="callout">A reference specifies desired motion. The tracking policy corrects errors while executing it.</p><p class="footnote">Proposed shared multi-motion RL tracker. A predefined repertoire is a useful starting assumption; synthesis cannot create an unsupported physical capability.</p>
     </section>
 
     <section class="slide" id="slide-5" aria-labelledby="title-5" hidden>
-      <p class="eyebrow">05 / Graph input at inference</p>
-      <h2 id="title-5">Give the planner a graph of skill transitions.</h2>
-<figure class="diagram graph-diagram" tabindex="0" aria-label="skill synthesis diagram">
+      <p class="eyebrow">05 / Offline synthesis</p>
+      <h2 id="title-5">The agent proposes alternative trajectories.</h2>
+
+      <figure class="diagram graph-diagram" tabindex="0" aria-label="skill synthesis diagram">
       <svg viewBox="0 0 1000 424" role="img" aria-labelledby="skill-synthesis-title"><title id="skill-synthesis-title">Skill synthesis</title>
       <defs><marker id="skill-synthesis-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
-      <path d="M112 155H232" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="172" y="135" class="v-edge-label chosen-label" text-anchor="middle">Walk</text><path d="M298 139Q358 62 437 65" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="355" y="75" class="v-edge-label chosen-label" text-anchor="middle">Jump</text><path d="M503 65Q596 57 666 137" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="599" y="77" class="v-edge-label chosen-label" text-anchor="middle">Crouch</text><path d="M298 174Q365 244 437 245" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="350" y="253" class="v-edge-label" text-anchor="middle">Hand-supported</text><text x="350" y="275" class="v-edge-label" text-anchor="middle">step</text><path d="M503 245Q595 252 666 174" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="602" y="236" class="v-edge-label" text-anchor="middle">Crouch</text><path d="M732 155H887" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="810" y="135" class="v-edge-label chosen-label" text-anchor="middle">Walk</text><path d="M79 189Q90 354 437 354" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="243" y="338" class="v-edge-label" text-anchor="middle">Walk around</text><path d="M503 354Q919 354 920 190" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="741" y="338" class="v-edge-label" text-anchor="middle">Walk</text><circle cx="79" cy="155" r="33" class="v-state chosen-state"/><text x="79" y="161" class="v-node-text" text-anchor="middle">A</text><text x="79" y="212" class="v-sub" text-anchor="middle">Start</text><circle cx="265" cy="155" r="33" class="v-state chosen-state"/><g transform="translate(265 173) scale(.46)" class="v-robot green-robot"><circle cx="0" cy="-75" r="9"/><path d="M0 -60L0 -27L-14 0M0 -27L14 0M0 -50L-22 -32M0 -50L22 -32"/></g><text x="265" y="212" class="v-sub" text-anchor="middle">Before obstacle</text><circle cx="470" cy="65" r="33" class="v-state chosen-state"/><g transform="translate(470 83) scale(.46)" class="v-robot green-robot"><circle cx="0" cy="-75" r="9"/><path d="M0 -60L0 -27L-14 0M0 -27L14 0M0 -50L-22 -32M0 -50L22 -32"/></g><text x="470" y="122" class="v-sub" text-anchor="middle">After jump</text><circle cx="470" cy="245" r="33" class="v-state"/><g transform="translate(470 263) scale(.46)" class="v-robot green-robot"><circle cx="5" cy="-72" r="9"/><path d="M5 -57L-3 -30L-22 0M-3 -30L24 -24L37 -24M3 -48L33 -53L53 -53M3 -48L-19 -34"/></g><text x="470" y="302" class="v-sub" text-anchor="middle">After hand support</text><circle cx="699" cy="155" r="33" class="v-state chosen-state"/><g transform="translate(699 173) scale(.46)" class="v-robot green-robot"><circle cx="20" cy="-49" r="9"/><path d="M9 -36L-13 -23L18 -13L-2 0M-13 -23L-30 -10L-38 0M9 -36L35 -22"/></g><text x="699" y="212" class="v-sub" text-anchor="middle">Under beam</text><circle cx="920" cy="155" r="33" class="v-state chosen-state"/><text x="920" y="161" class="v-node-text" text-anchor="middle">B</text><text x="920" y="212" class="v-sub" text-anchor="middle">Goal pose g</text><circle cx="470" cy="354" r="33" class="v-state"/><g transform="translate(470 372) scale(.46)" class="v-robot green-robot"><circle cx="0" cy="-75" r="9"/><path d="M0 -60L0 -27L-14 0M0 -27L14 0M0 -50L-22 -32M0 -50L22 -32"/></g><text x="470" y="411" class="v-sub" text-anchor="middle">Detour</text><text x="500" y="18" class="v-sub" text-anchor="middle">Selected sequence: walk → jump → crouch → walk</text>
-      </svg><figcaption>Nodes: reference-frame states placed in the scene. Edges: trajectory segments or validated transition motions. Skill labels summarize these segments.</figcaption></figure>
-      <p class="callout">Each candidate edge fixes a clip m, start i, end j, and scene placement. The GNN learns which candidate to select.</p>
-      <p class="footnote">Candidate nodes retain clip/frame identity, pose, velocity, and contacts. Connect compatible exits and entries using validated transition motions; never assume an instantaneous state jump.</p>
+      <path d="M112 155H232" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="172" y="135" class="v-edge-label chosen-label" text-anchor="middle">Walk</text><path d="M298 139Q358 62 437 65" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="355" y="75" class="v-edge-label chosen-label" text-anchor="middle">Jump</text><path d="M503 65Q596 57 666 137" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="599" y="77" class="v-edge-label chosen-label" text-anchor="middle">Crouch</text><path d="M298 174Q365 244 437 245" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="350" y="253" class="v-edge-label" text-anchor="middle">Hand-supported</text><text x="350" y="275" class="v-edge-label" text-anchor="middle">step</text><path d="M503 245Q595 252 666 174" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="602" y="236" class="v-edge-label" text-anchor="middle">Crouch</text><path d="M732 155H887" class="v-edge chosen-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="810" y="135" class="v-edge-label chosen-label" text-anchor="middle">Walk</text><path d="M79 189Q90 354 437 354" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="243" y="338" class="v-edge-label" text-anchor="middle">Walk around</text><path d="M503 354Q919 354 920 190" class="v-edge alternative-edge" marker-end="url(#skill-synthesis-arrow)"/><text x="741" y="338" class="v-edge-label" text-anchor="middle">Walk</text><circle cx="79" cy="155" r="33" class="v-state chosen-state"/><text x="79" y="161" class="v-node-text" text-anchor="middle">A</text><text x="79" y="212" class="v-sub" text-anchor="middle">Start</text><circle cx="265" cy="155" r="33" class="v-state chosen-state"/><g transform="translate(265 173) scale(.46)" class="v-robot green-robot"><circle cx="0" cy="-75" r="9"/><path d="M0 -60L0 -27L-14 0M0 -27L14 0M0 -50L-22 -32M0 -50L22 -32"/></g><text x="265" y="212" class="v-sub" text-anchor="middle">Before obstacle</text><circle cx="470" cy="65" r="33" class="v-state chosen-state"/><g transform="translate(470 83) scale(.46)" class="v-robot green-robot"><circle cx="0" cy="-75" r="9"/><path d="M0 -60L0 -27L-14 0M0 -27L14 0M0 -50L-22 -32M0 -50L22 -32"/></g><text x="470" y="122" class="v-sub" text-anchor="middle">After jump</text><circle cx="470" cy="245" r="33" class="v-state"/><g transform="translate(470 263) scale(.46)" class="v-robot green-robot"><circle cx="5" cy="-72" r="9"/><path d="M5 -57L-3 -30L-22 0M-3 -30L24 -24L37 -24M3 -48L33 -53L53 -53M3 -48L-19 -34"/></g><text x="470" y="302" class="v-sub" text-anchor="middle">After hand support</text><circle cx="699" cy="155" r="33" class="v-state chosen-state"/><g transform="translate(699 173) scale(.46)" class="v-robot green-robot"><circle cx="20" cy="-49" r="9"/><path d="M9 -36L-13 -23L18 -13L-2 0M-13 -23L-30 -10L-38 0M9 -36L35 -22"/></g><text x="699" y="212" class="v-sub" text-anchor="middle">Under beam</text><circle cx="920" cy="155" r="33" class="v-state chosen-state"/><text x="920" y="161" class="v-node-text" text-anchor="middle">B</text><text x="920" y="212" class="v-sub" text-anchor="middle">Goal pose g</text><circle cx="470" cy="354" r="33" class="v-state"/><g transform="translate(470 372) scale(.46)" class="v-robot green-robot"><circle cx="0" cy="-75" r="9"/><path d="M0 -60L0 -27L-14 0M0 -27L14 0M0 -50L-22 -32M0 -50L22 -32"/></g><text x="470" y="411" class="v-sub" text-anchor="middle">Detour</text><text x="500" y="18" class="v-sub" text-anchor="middle">Agent proposes several complete sequences for the same A → B task</text>
+      </svg><figcaption>Offline synthesis graph: nodes are boundary states; edges are motion segments or validated transitions. Each path defines a candidate reference.</figcaption></figure><p class="callout">Choose route, clip, entry frame, exit frame, and scene placement → stitch → test in simulation → revise.</p><p class="footnote">This graph illustrates reference construction. The proposed deployed student does not use a GNN or graph search. Agent decisions are evaluated by executing the reference with the tracker.</p>
     </section>
 
     <section class="slide" id="slide-6" aria-labelledby="title-6" hidden>
-      <p class="eyebrow">06 / Transition example</p>
-      <h2 id="title-6">The next obstacle changes the jump.</h2>
-      <p class="lead">Command a goal pose beyond the beam. The policy chooses how to cross the gap and crouch beneath the beam.</p>
-      <figure class="scene">
-        <svg viewBox="0 0 1000 260" role="img" aria-labelledby="scene-title scene-desc">
-          <title id="scene-title">Jump across a gap and crouch beneath a beam</title>
-          <desc id="scene-desc">A robot approaches a gap from the left. A dashed jump path reaches a landing region on the right, followed closely by an overhead beam. The robot must land in a state from which it can crouch.</desc>
-          <defs><marker id="arrowhead" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7" fill="none" stroke="#096c60" stroke-width="1.5"/></marker></defs>
-          <path d="M30 211H290V250H30Z M465 211H970V250H465Z" fill="#d6ddd6"/>
-          <path d="M30 211H290 M465 211H970" stroke="#192e38" stroke-width="3"/>
-          <rect x="705" y="70" width="250" height="28" rx="3" fill="#192e38"/>
-          <rect x="485" y="204" width="170" height="7" rx="3" fill="#096c60"/>
-          <path d="M235 153Q360 6 560 155" fill="none" stroke="#096c60" stroke-width="3" stroke-dasharray="7 6" marker-end="url(#arrowhead)"/>
-          <g fill="none" stroke="#192e38" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="200" cy="104" r="12" fill="#f5f3ec" stroke-width="4"/>
-            <path d="M200 122L203 160L179 185L175 205 M203 160L225 183L242 205 M201 132L178 153 M201 132L222 148"/>
-          </g>
-          <g fill="none" stroke="#096c60" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="789" cy="132" r="12" fill="#f5f3ec" stroke-width="4"/>
-            <path d="M776 147L752 166L789 180L765 205 M752 166L731 186L717 205 M772 150L805 164"/>
-          </g>
-          <g fill="#536770" font-size="16"><text x="104" y="244">Approach</text><text x="332" y="242">Gap</text><text x="493" y="242">Landing region</text><text x="730" y="55">Overhead beam</text></g>
-          <text x="322" y="45" fill="#096c60" font-size="17" font-weight="650">Plan the landing</text>
-          <path d="M650 124H703" stroke="#b44925" stroke-width="2"/>
-          <text x="595" y="113" fill="#b44925" font-size="14">Short spacing</text>
-        </svg>
-        <figcaption>Conceptual example; geometry and robot poses are illustrative.</figcaption>
-      </figure>
-      <p class="callout">Evaluate the full sequence: a successful jump can still leave the robot unable to crouch in time.</p>
+      <p class="eyebrow">06 / Stitching: PHP precedent</p>
+      <h2 id="title-6">Match the entry. Smooth the switch.</h2>
+
+      <figure class="diagram" tabindex="0" aria-label="Motion matching followed by a decaying transition offset"><svg viewBox="0 0 1000 250" role="img" aria-labelledby="stitch-title"><title id="stitch-title">Motion matching followed by a decaying transition offset</title><defs><marker id="stitch-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="25" width="280" height="80" rx="12" class="v-box "/><text x="160.0" y="59" text-anchor="middle" class="v-label v-bold">Locomotion</text><text x="160.0" y="86" text-anchor="middle" class="v-sub">Search compatible entry frames</text><rect x="360" y="25" width="280" height="80" rx="12" class="v-box tint-box"/><text x="500.0" y="59" text-anchor="middle" class="v-label v-bold">Jump segment</text><text x="500.0" y="86" text-anchor="middle" class="v-sub">Preserve takeoff → landing</text><rect x="700" y="25" width="280" height="80" rx="12" class="v-box "/><text x="840.0" y="59" text-anchor="middle" class="v-label v-bold">Locomotion</text><text x="840.0" y="86" text-anchor="middle" class="v-sub">Resume motion matching</text><path d="M300 65H350" class="v-edge " marker-end="url(#stitch-arrow)"/><path d="M640 65H690" class="v-edge " marker-end="url(#stitch-arrow)"/><text x="210" y="150" text-anchor="middle" class="v-label v-bold">At the switch: align the new motion</text><text x="210" y="178" text-anchor="middle" class="v-sub">Match feet, velocity, and future root path</text><path d="M550 210H950 M550 210V130" class="v-axis"/><path d="M550 140C620 140 640 202 720 206S850 210 950 210" class="v-edge"/><text x="765" y="145" text-anchor="middle" class="v-sub">Motion offset decays smoothly</text><text x="940" y="236" text-anchor="middle" class="v-sub">Time</text></svg></figure><div class="grid two"><div class="card"><h3>Motion matching</h3><p>Search annotated entry windows using foot state, root velocity, and the desired future root path.</p></div><div class="card"><h3>Inertialization</h3><p>Apply the current-to-target motion offset at the switch, then decay it with a damped spring. Play the main maneuver through its annotated end.</p></div></div><p class="footnote">PHP: <a href="https://arxiv.org/html/2602.15827v1#S3.SS2">motion synthesis</a> and <a href="https://arxiv.org/html/2602.15827v1#A1.SS3">inertialization</a>. Smooth references still need physical validation with the tracker; arbitrary cuts during flight are excluded.</p>
     </section>
 
     <section class="slide" id="slide-7" aria-labelledby="title-7" hidden>
-      <p class="eyebrow">07 / Temporal segment selection — proposed baseline</p>
-      <h2 id="title-7">Choose the clip, entry frame, and exit frame.</h2>
-      <figure class="diagram" tabindex="0" aria-label="Jump and crouch reference timelines with selected frame intervals">
-        <svg viewBox="0 0 1100 310" role="img" aria-labelledby="segments-title segments-desc">
-          <title id="segments-title">Select Jump[20:100], then a validated transition into Crouch[12:70]</title>
-          <desc id="segments-desc">A jump reference contains approach, takeoff, flight, and landing. Its selected interval starts at frame 20 and ends after landing at frame 100. A validated transition motion connects this exit to frame 12 of the crouch clip, which plays to frame 70. Frame indices are illustrative and local to each clip.</desc>
-          <defs><marker id="segments-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
-          <text x="20" y="98" class="v-label v-bold">Jump clip</text>
-          <text x="500" y="22" class="v-label v-bold" text-anchor="middle">Selected segment: Jump[20:100]</text>
-          <text x="320" y="57" class="v-sub" text-anchor="middle">Approach</text>
-          <text x="470" y="57" class="v-sub" text-anchor="middle">Takeoff</text>
-          <text x="620" y="57" class="v-sub" text-anchor="middle">Flight</text>
-          <text x="780" y="57" class="v-sub" text-anchor="middle">Landing</text>
-          <rect x="470" y="73" width="310" height="36" rx="6" fill="#f3e0d5"/>
-          <path d="M180 91H1020" class="v-guide"/>
-          <path d="M320 91H880" class="v-edge chosen-edge" marker-end="url(#segments-arrow)"/>
-          <circle cx="320" cy="91" r="9" class="v-state chosen-state"/>
-          <circle cx="880" cy="91" r="9" class="v-state chosen-state"/>
-          <text x="180" y="129" class="v-sub" text-anchor="middle">0</text>
-          <text x="320" y="129" class="v-sub v-bold" text-anchor="middle">i = 20</text>
-          <text x="880" y="129" class="v-sub v-bold" text-anchor="middle">j = 100</text>
-          <text x="1020" y="129" class="v-sub" text-anchor="middle">120</text>
-          <path d="M880 102V171H292V218" class="v-edge training-edge" marker-end="url(#segments-arrow)"/>
-          <text x="595" y="160" class="v-sub" text-anchor="middle">Validated transition motion: match pose, velocity, and contacts</text>
-          <text x="20" y="237" class="v-label v-bold">Crouch clip</text>
-          <path d="M180 230H1020" class="v-guide"/>
-          <path d="M292 230H833" class="v-edge chosen-edge" marker-end="url(#segments-arrow)"/>
-          <circle cx="292" cy="230" r="9" class="v-state chosen-state"/>
-          <circle cx="833" cy="230" r="9" class="v-state chosen-state"/>
-          <text x="180" y="268" class="v-sub" text-anchor="middle">0</text>
-          <text x="292" y="268" class="v-sub v-bold" text-anchor="middle">i = 12</text>
-          <text x="833" y="268" class="v-sub v-bold" text-anchor="middle">j = 70</text>
-          <text x="1020" y="268" class="v-sub" text-anchor="middle">90</text>
-          <text x="565" y="214" class="v-label v-bold" text-anchor="middle">Selected segment: Crouch[12:70]</text>
-          <text x="600" y="303" class="v-sub" text-anchor="middle">Different entry / exit pairs from the same clip are different graph candidates.</text>
-        </svg>
-        <figcaption>Frame indices are illustrative and local to each clip. Green: selected reference frames. Orange: preserve the complete takeoff-to-landing interval.</figcaption>
-      </figure>
-      <div class="visual-summary">
-        <p><strong>Build candidates:</strong> sample entry and exit frames in valid contact windows. Validate segments and connecting motions with the tracker.</p>
-        <p><strong>Choose at runtime:</strong> exclude entries incompatible with robot pose, velocity, contacts, or terrain. The GNN scores the remaining intervals.</p>
-      </div>
-      <p class="callout">Keep original reference timing. Advance from i to j; check the actual exit state before switching. Do not restart or cut a jump in flight.</p>
-      <p class="footnote">Each candidate also stores a validated placement in the scene. If tracking leaves the valid range, use a tested recovery or terminate the trial. Entry-window precedent: <a href="https://arxiv.org/html/2602.15827v1#S3.SS2">PHP motion matching</a>. The external command remains g + δ.</p>
+      <p class="eyebrow">07 / Which reference trains the student?</p>
+      <h2 id="title-7">Select a reference for the task and risk.</h2>
+
+      <figure class="diagram" tabindex="0" aria-label="Risk-dependent selection from evaluated reference alternatives"><svg viewBox="0 0 1000 205" role="img" aria-labelledby="select-title"><title id="select-title">Risk-dependent selection from evaluated reference alternatives</title><defs><marker id="select-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="25" width="275" height="85" rx="12" class="v-box "/><text x="157.5" y="59" text-anchor="middle" class="v-label v-bold">Evaluate each reference</text><text x="157.5" y="86" text-anchor="middle" class="v-sub">Repeated tracker executions</text><rect x="365" y="25" width="275" height="85" rx="12" class="v-box "/><text x="502.5" y="59" text-anchor="middle" class="v-label v-bold">Store execution outcomes</text><text x="502.5" y="86" text-anchor="middle" class="v-sub">Completion, time, falls, collisions</text><rect x="710" y="25" width="270" height="85" rx="12" class="v-box tint-box"/><text x="845.0" y="59" text-anchor="middle" class="v-label v-bold">Select for sampled β</text><text x="845.0" y="86" text-anchor="middle" class="v-sub">Use the chosen risk metric</text><path d="M295 68H355" class="v-edge " marker-end="url(#select-arrow)"/><path d="M640 68H700" class="v-edge " marker-end="url(#select-arrow)"/><path d="M845 115V155H150V115" class="v-edge training-edge" marker-end="url(#select-arrow)"/><text x="495" y="185" text-anchor="middle" class="v-sub">Student failures guide the next round of agent proposals</text></svg></figure><div class="grid two"><div class="card"><h3>Build the library</h3><p>Store scene, valid starting states, goal, reference timing, and outcomes across randomized executions. Keep failure counts.</p></div><div class="card"><h3>Select a training example</h3><p>Sample scene + start + goal + β. Rank compatible references by the risk metric. Use a consistent tie-break when routes are equally good.</p></div></div><p class="callout">Generate multiple alternatives for the same task. Otherwise the student can associate behavior with the scene and ignore β.</p><p class="footnote">If no reference is executable from the sampled start, regenerate or resample. Teacher outcome estimates guide supervision; they do not establish the student’s risk.</p>
     </section>
 
     <section class="slide" id="slide-8" aria-labelledby="title-8" hidden>
-      <p class="eyebrow">08 / Offline discovery</p>
-      <h2 id="title-8">The agent proposes. Simulation evaluates.</h2>
-      <p class="lead">An offline agent proposes motion segments and transitions; the tracker executes them in simulation.</p>
-<figure class="diagram " tabindex="0" aria-label="offline loop diagram">
-      <svg viewBox="0 0 1000 232" role="img" aria-labelledby="offline-loop-title"><title id="offline-loop-title">Offline loop</title>
-      <defs><marker id="offline-loop-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
-      <rect x="30" y="45" width="250" height="112" rx="13" class="v-box"/><text x="155.0" y="98.0" class="v-label v-bold" text-anchor="middle">Agent proposes</text><text x="155.0" y="124.0" class="v-sub" text-anchor="middle">Clips, entry frames, exit frames</text><rect x="375" y="45" width="250" height="112" rx="13" class="v-box tint-box"/><text x="500.0" y="98.0" class="v-label v-bold" text-anchor="middle">Simulation evaluates</text><text x="500.0" y="124.0" class="v-sub" text-anchor="middle">Time, failures, final states</text><rect x="720" y="45" width="250" height="112" rx="13" class="v-box"/><text x="845.0" y="98.0" class="v-label v-bold" text-anchor="middle">Update models</text><text x="845.0" y="124.0" class="v-sub" text-anchor="middle">Risk and transition data</text><path d="M280 100H370" class="v-edge" marker-end="url(#offline-loop-arrow)"/><path d="M625 100H715" class="v-edge" marker-end="url(#offline-loop-arrow)"/><path d="M845 160V207H155V164" class="v-edge" marker-end="url(#offline-loop-arrow)"/><text x="500" y="200" class="v-edge-label" text-anchor="middle">Measured outcomes guide the next experiments</text>
-      </svg></figure>
-      <div class="card tint"><h3>Output: segment candidates and tested connections</h3><p>Sample entry and exit frames in valid contact windows. Store the full segments and transition motions; measure tracking, time, and failures.</p></div>
-      <p class="footnote">Test the agent’s value against random search and uncertainty-based sampling, which selects trials where the learned model is least certain. Use equal simulation budgets.</p>
+      <p class="eyebrow">08 / Stage 2: closed-loop distillation</p>
+      <h2 id="title-8">Query the teacher at the student’s state.</h2>
+
+      <figure class="diagram" tabindex="0" aria-label="Closed-loop distillation: the student acts and the teacher provides corrective targets"><svg viewBox="0 0 1000 365" role="img" aria-labelledby="closedloop-title"><title id="closedloop-title">Closed-loop distillation: the student acts and the teacher provides corrective targets</title><defs><marker id="closedloop-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="20" width="260" height="85" rx="12" class="v-box "/><text x="150.0" y="54" text-anchor="middle" class="v-label v-bold">Selected reference</text><text x="150.0" y="81" text-anchor="middle" class="v-sub">Current phase + future frames</text><rect x="365" y="20" width="270" height="85" rx="12" class="v-box "/><text x="500.0" y="54" text-anchor="middle" class="v-label v-bold">Tracking teacher</text><text x="500.0" y="81" text-anchor="middle" class="v-sub">Action target at student state</text><rect x="710" y="20" width="270" height="85" rx="12" class="v-box tint-box"/><text x="845.0" y="54" text-anchor="middle" class="v-label v-bold">Imitation loss</text><text x="845.0" y="81" text-anchor="middle" class="v-sub">Update student parameters</text><rect x="20" y="195" width="260" height="85" rx="12" class="v-box "/><text x="150.0" y="229" text-anchor="middle" class="v-label v-bold">Student inputs</text><text x="150.0" y="256" text-anchor="middle" class="v-sub">Perception + state + goal + β</text><rect x="365" y="195" width="270" height="85" rx="12" class="v-box tint-box"/><text x="500.0" y="229" text-anchor="middle" class="v-label v-bold">Student policy</text><text x="500.0" y="256" text-anchor="middle" class="v-sub">Produces the executed action</text><rect x="710" y="195" width="270" height="85" rx="12" class="v-box "/><text x="845.0" y="229" text-anchor="middle" class="v-label v-bold">Simulation</text><text x="845.0" y="256" text-anchor="middle" class="v-sub">Advance with student action</text><path d="M280 62H355" class="v-edge " marker-end="url(#closedloop-arrow)"/><path d="M635 62H700" class="v-edge " marker-end="url(#closedloop-arrow)"/><path d="M280 237H355" class="v-edge " marker-end="url(#closedloop-arrow)"/><path d="M635 237H700" class="v-edge " marker-end="url(#closedloop-arrow)"/><path d="M845 195V145H500V110" class="v-edge " marker-end="url(#closedloop-arrow)"/><text x="710" y="137" text-anchor="middle" class="v-sub">Actual student state</text><path d="M930 105V168H390V190" class="v-edge training-edge" marker-end="url(#closedloop-arrow)"/><path d="M845 285V322H150V285" class="v-edge " marker-end="url(#closedloop-arrow)"/><text x="500" y="346" text-anchor="middle" class="v-sub">New observations return to the student</text></svg></figure><div class="visual-summary"><p><strong>Teacher:</strong> current student state + selected reference → corrective action target.</p><p><strong>Student:</strong> observation history + goal + β → action executed in simulation.</p></div><p class="callout">Compare student and teacher actions at the same state. Update the student while it controls its own rollout.</p><p class="footnote">DAgger means dataset aggregation: collect teacher labels on states visited by the student. The teacher is a feedback tracker, not an autonomous route planner.</p>
     </section>
 
     <section class="slide" id="slide-9" aria-labelledby="title-9" hidden>
-      <p class="eyebrow">09 / What the GNN outputs</p>
-      <h2 id="title-9">The GNN scores candidate segments.</h2>
-      <figure class="diagram" tabindex="0" aria-label="Ordered reference segments become graph edge scores and selection probabilities">
-        <svg viewBox="0 0 1100 150" role="img" aria-labelledby="score-title score-desc">
-          <title id="score-title">Temporal encoding, graph message passing, edge scoring, and selection</title>
-          <desc id="score-desc">One shared temporal encoder reads each candidate's ordered reference frames. The GNN exchanges features between connected frame states. A shared scoring network produces one number per candidate edge. Mask invalid entries and normalize scores into selection probabilities using softmax.</desc>
-          <defs><marker id="score-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
-          <rect x="10" y="25" width="230" height="87" rx="13" class="v-box"/>
-          <text x="125" y="58" class="v-label v-bold" text-anchor="middle">Temporal encoder</text>
-          <text x="125" y="86" class="v-sub" text-anchor="middle">Ordered frames i…j</text>
-          <rect x="295" y="25" width="230" height="87" rx="13" class="v-box tint-box"/>
-          <text x="410" y="58" class="v-label v-bold" text-anchor="middle">GNN messages</text>
-          <text x="410" y="86" class="v-sub" text-anchor="middle">Connected entry / exit states</text>
-          <rect x="580" y="25" width="230" height="87" rx="13" class="v-box"/>
-          <text x="695" y="58" class="v-label v-bold" text-anchor="middle">Shared edge scorer</text>
-          <text x="695" y="86" class="v-sub" text-anchor="middle">One number per segment</text>
-          <rect x="865" y="25" width="225" height="87" rx="13" class="v-box tint-box"/>
-          <text x="977" y="58" class="v-label v-bold" text-anchor="middle">Mask + softmax</text>
-          <text x="977" y="86" class="v-sub" text-anchor="middle">Selection probabilities</text>
-          <path d="M240 68H288" class="v-edge" marker-end="url(#score-arrow)"/>
-          <path d="M525 68H573" class="v-edge" marker-end="url(#score-arrow)"/>
-          <path d="M810 68H858" class="v-edge" marker-end="url(#score-arrow)"/>
-          <text x="550" y="144" class="v-sub" text-anchor="middle">Context: observations, current reference frame, scene, goal g, and risk budget δ</text>
-        </svg>
-      </figure>
-      <div class="visual-pair"><div class="table-wrap"><table>
-        <thead><tr><th>Candidate action</th><th>Current entry condition</th><th>GNN score</th><th>Probability</th></tr></thead>
-        <tbody>
-          <tr><td>A: Jump[10:100]</td><td>Valid approach</td><td>0.00</td><td>25%</td></tr>
-          <tr><td>B: Jump[20:100]</td><td>Valid approach</td><td>1.10</td><td>75%</td></tr>
-          <tr><td>C: Jump[60:100]</td><td>Mid-flight: invalid</td><td>Excluded</td><td>0%</td></tr>
-        </tbody>
-      </table></div>
-      <div class="visual-notes">
-        <p><strong>Softmax:</strong> converts scores to probabilities: p(e) = exp(score(e)) / sum over valid candidates. These are selection probabilities, not success estimates.</p>
-        <p><strong>Action B:</strong> retrieve clip Jump, frames 20–100, at its stored scene placement. Send the original frame sequence to the frozen tracker.</p>
-      </div>
-      </div>
-      <p class="callout">Sample an edge during training. Action B selects the clip and frames 20–100 together.</p>
-      <p class="footnote">Illustrative scores, not results. Both approach entries assume validated connecting motions. Candidates may differ in clip, entry, exit, and placement. The GNN ranks supplied candidates; it does not generate frame boundaries.</p>
+      <p class="eyebrow">09 / Timing and supervision validity</p>
+      <h2 id="title-9">Preserve timing and gate supervision.</h2>
+
+      <figure class="diagram" tabindex="0" aria-label="Reference timing and supervision gate"><svg viewBox="0 0 1000 210" role="img" aria-labelledby="phase-title"><title id="phase-title">Reference timing and supervision gate</title><defs><marker id="phase-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="30" width="280" height="85" rx="12" class="v-box tint-box"/><text x="160.0" y="64" text-anchor="middle" class="v-label v-bold">Within recovery range</text><text x="160.0" y="91" text-anchor="middle" class="v-sub">Query the tracker for corrections</text><rect x="360" y="30" width="280" height="85" rx="12" class="v-box "/><text x="500.0" y="64" text-anchor="middle" class="v-label v-bold">Check tracking error</text><text x="500.0" y="91" text-anchor="middle" class="v-sub">Pose, velocity, and contacts</text><rect x="700" y="30" width="280" height="85" rx="12" class="v-box "/><text x="840.0" y="64" text-anchor="middle" class="v-label v-bold">Outside recovery range</text><text x="840.0" y="91" text-anchor="middle" class="v-sub">Mask unreliable imitation</text><path d="M360 72H310" class="v-edge " marker-end="url(#phase-arrow)"/><path d="M640 72H690" class="v-edge " marker-end="url(#phase-arrow)"/><path d="M840 120V160H150V120" class="v-edge training-edge" marker-end="url(#phase-arrow)"/><text x="500" y="190" text-anchor="middle" class="v-sub">Failures request new approach or recovery references from the agent</text></svg></figure><div class="grid two"><div class="card"><h3>Track a continuous phase</h3><p>Initially advance with the validated reference timing. Different approach speeds use different references; do not rematch to an arbitrary frame every step.</p></div><div class="card"><h3>Gate teacher supervision</h3><p>Use imitation only where the tracker can provide useful corrections. Outside that range, use navigation RL and collect failure cases for synthesis.</p></div></div><p class="callout">Changing references requires a reachable, contact-compatible transition. Recovery is a capability to train and validate.</p><p class="footnote">PHP masks imitation outside its original tracking-validity threshold while retaining RL: <a href="https://arxiv.org/html/2602.15827v1#A2.SS3">Appendix B.3</a>. The phase and recovery rules above are our proposed starting design.</p>
     </section>
 
     <section class="slide" id="slide-10" aria-labelledby="title-10" hidden>
-      <p class="eyebrow">10 / How the GNN learns — proposed RL baseline</p>
-      <h2 id="title-10">Execution outcomes train the GNN.</h2>
-      <figure class="diagram" tabindex="0" aria-label="Policy-gradient training loop with a frozen tracker">
-        <svg viewBox="0 0 1100 260" role="img" aria-labelledby="learn-title learn-desc">
-          <title id="learn-title">Sample a segment, execute it, evaluate the navigation return, and update its selection probability</title>
-          <desc id="learn-desc">The GNN samples a candidate segment. A frozen tracker executes the segment in simulation. Collect time, failures, and later goal completion. Compare the observed future return to a learned value baseline. PPO updates the temporal encoder, GNN, and edge scorer using the sampled action's probability; it does not differentiate through the tracker or physics.</desc>
-          <defs><marker id="learn-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
-          <rect x="10" y="30" width="240" height="100" rx="13" class="v-box tint-box"/>
-          <text x="130" y="66" class="v-label v-bold" text-anchor="middle">1. Sample segment B</text>
-          <text x="130" y="96" class="v-sub" text-anchor="middle">Record p(B) and graph context</text>
-          <rect x="295" y="30" width="240" height="100" rx="13" class="v-box"/>
-          <text x="415" y="66" class="v-label v-bold" text-anchor="middle">2. Execute reference</text>
-          <text x="415" y="96" class="v-sub" text-anchor="middle">Frozen tracker + simulation</text>
-          <rect x="580" y="30" width="240" height="100" rx="13" class="v-box"/>
-          <text x="700" y="66" class="v-label v-bold" text-anchor="middle">3. Evaluate the attempt</text>
-          <text x="700" y="96" class="v-sub" text-anchor="middle">Goal, elapsed time, failures</text>
-          <rect x="865" y="30" width="225" height="100" rx="13" class="v-box tint-box"/>
-          <text x="977" y="66" class="v-label v-bold" text-anchor="middle">4. PPO update</text>
-          <text x="977" y="96" class="v-sub" text-anchor="middle">Change the scoring weights</text>
-          <path d="M250 80H288" class="v-edge" marker-end="url(#learn-arrow)"/>
-          <path d="M535 80H573" class="v-edge" marker-end="url(#learn-arrow)"/>
-          <path d="M820 80H858" class="v-edge" marker-end="url(#learn-arrow)"/>
-          <path d="M977 130V220H130V137" class="v-edge training-edge" marker-end="url(#learn-arrow)"/>
-          <text x="550" y="178" class="v-label v-bold" text-anchor="middle">Advantage = observed future return − predicted future return</text>
-          <text x="550" y="207" class="v-sub" text-anchor="middle">Positive: increase B’s probability. Negative: decrease it. Repeat across many navigation attempts.</text>
-          <text x="550" y="252" class="v-sub" text-anchor="middle">Train: temporal encoder + GNN + edge scorer + value predictor. Keep the motion tracker frozen.</text>
-        </svg>
-        <figcaption>PPO = proximal policy optimization, a reinforcement-learning update. “Return” is accumulated reward; a value predictor estimates it from the current context.</figcaption>
-      </figure>
-      <div class="visual-summary">
-        <p><strong>Credit across skills:</strong> include later crouching and goal completion when evaluating the earlier jump. Account for each segment’s actual duration.</p>
-        <p><strong>Risk conditioning:</strong> reward completion and penalize elapsed time and failures. Increase the failure penalty for a budget δ when measured episode risk exceeds it.</p>
-      </div>
-      <p class="callout">The update uses the sampled edge’s log-probability and advantage. No “best segment” label or gradient through physics is required.</p>
-      <p class="footnote">A proposed budget-dependent penalty scheme; validate failure rates separately for each δ. A single successful rollout is not a risk estimate. Methods: <a href="https://arxiv.org/abs/1707.06347">PPO</a> and <a href="https://arxiv.org/abs/1705.10528">constrained reinforcement learning</a>.</p>
+      <p class="eyebrow">10 / Distributional PPO</p>
+      <h2 id="title-10">Risk conditioning changes policy updates.</h2>
+
+      <figure class="diagram" tabindex="0" aria-label="Distributional PPO and teacher guidance update the student actor"><svg viewBox="0 0 1000 285" role="img" aria-labelledby="dppo-title"><title id="dppo-title">Distributional PPO and teacher guidance update the student actor</title><defs><marker id="dppo-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="30" width="270" height="85" rx="12" class="v-box "/><text x="155.0" y="64" text-anchor="middle" class="v-label v-bold">Student rollout</text><text x="155.0" y="91" text-anchor="middle" class="v-sub">Navigation rewards + outcomes</text><rect x="365" y="30" width="270" height="85" rx="12" class="v-box "/><text x="500.0" y="64" text-anchor="middle" class="v-label v-bold">Distributional critic</text><text x="500.0" y="91" text-anchor="middle" class="v-sub">Predict future return distribution</text><rect x="710" y="30" width="270" height="85" rx="12" class="v-box tint-box"/><text x="845.0" y="64" text-anchor="middle" class="v-label v-bold">Risk metric + β</text><text x="845.0" y="91" text-anchor="middle" class="v-sub">Weight unfavorable outcomes</text><path d="M290 72H355" class="v-edge " marker-end="url(#dppo-arrow)"/><path d="M635 72H700" class="v-edge " marker-end="url(#dppo-arrow)"/><rect x="365" y="180" width="270" height="85" rx="12" class="v-box tint-box"/><text x="500.0" y="214" text-anchor="middle" class="v-label v-bold">PPO actor update</text><text x="500.0" y="241" text-anchor="middle" class="v-sub">Use risk-sensitive advantages</text><rect x="710" y="180" width="270" height="85" rx="12" class="v-box "/><text x="845.0" y="214" text-anchor="middle" class="v-label v-bold">Imitation guidance</text><text x="845.0" y="241" text-anchor="middle" class="v-sub">Teacher targets at visited states</text><path d="M845 120V150H500V175" class="v-edge " marker-end="url(#dppo-arrow)"/><path d="M710 222H640" class="v-edge training-edge" marker-end="url(#dppo-arrow)"/><path d="M365 222H150V120" class="v-edge " marker-end="url(#dppo-arrow)"/></svg></figure><div class="visual-summary"><p><strong>Critic:</strong> predicts future navigation returns under the current student and β. Failures must affect those returns.</p><p><strong>Actor:</strong> receives β. An advantage estimates whether an action improves on the policy’s usual outcome.</p></div><p class="callout">A return distribution alone does not change behavior. The risk metric must influence the policy update.</p><p class="footnote">Distributional proximal policy optimization (DPPO): <a href="https://arxiv.org/html/2309.14246v2">Schneider et al., Learning Risk-Aware Quadrupedal Locomotion</a>. They use risk-adjusted value estimates in PPO and condition the actor on risk. Our extension adds goal navigation and agent-generated teacher references.</p>
     </section>
 
     <section class="slide" id="slide-11" aria-labelledby="title-11" hidden>
-      <p class="eyebrow">11 / Related work</p>
-      <h2 id="title-11">Combine established methods; test the integration.</h2>
-<figure class="diagram " tabindex="0" aria-label="method foundations diagram">
-      <svg viewBox="0 0 1000 282" role="img" aria-labelledby="method-foundations-title"><title id="method-foundations-title">Method foundations</title>
-      <defs><marker id="method-foundations-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
-      <a href="https://php-parkour.github.io/"><rect x="15" y="24" width="300" height="92" rx="13" class="v-box"/><text x="165.0" y="67.0" class="v-label v-bold" text-anchor="middle">Perceptive Humanoid Parkour</text><text x="165.0" y="93.0" class="v-sub" text-anchor="middle">Diverse motion transitions</text></a><a href="https://sequential-dexterity.github.io/"><rect x="15" y="166" width="300" height="92" rx="13" class="v-box"/><text x="165.0" y="209.0" class="v-label v-bold" text-anchor="middle">Sequential Dexterity</text><text x="165.0" y="235.0" class="v-sub" text-anchor="middle">Transition feasibility</text></a><a href="https://atarilab.github.io/motiondisco.io/"><rect x="685" y="24" width="300" height="92" rx="13" class="v-box"/><text x="835.0" y="67.0" class="v-label v-bold" text-anchor="middle">MotionDisco</text><text x="835.0" y="93.0" class="v-sub" text-anchor="middle">Offline motion discovery</text></a><a href="https://arxiv.org/abs/2103.02828"><rect x="685" y="166" width="300" height="92" rx="13" class="v-box"/><text x="835.0" y="209.0" class="v-label v-bold" text-anchor="middle">STEP</text><text x="835.0" y="235.0" class="v-sub" text-anchor="middle">Risk-aware planning</text></a><rect x="367" y="83" width="266" height="115" rx="13" class="v-box tint-box"/><text x="500.0" y="137.5" class="v-label v-bold" text-anchor="middle">Proposed integration</text><text x="500.0" y="163.5" class="v-sub" text-anchor="middle">Risk-conditioned skill graph</text><path d="M315 70L360 116" class="v-edge" marker-end="url(#method-foundations-arrow)"/><path d="M315 212L360 168" class="v-edge" marker-end="url(#method-foundations-arrow)"/><path d="M685 70L640 116" class="v-edge" marker-end="url(#method-foundations-arrow)"/><path d="M685 212L640 168" class="v-edge" marker-end="url(#method-foundations-arrow)"/>
-      </svg><figcaption>Links open the source projects. Arrows indicate ideas used in this proposal, not a claim that prior methods use our graph.</figcaption></figure>
-      <p class="callout">Our proposal: a GNN selects and connects temporal motion segments; a shared tracker executes their reference frames.</p>
-      <p class="footnote"><a href="https://arxiv.org/html/2602.15827v1">PHP</a> combines motion synthesis and teacher–student training. We borrow the idea of diverse transitions; our proposed GNN planner uses the graph directly at inference. Novelty requires further review and experiments.</p>
+      <p class="eyebrow">11 / One command, three training roles</p>
+      <h2 id="title-11">Make risk conditioning consistent.</h2>
+
+      <figure class="diagram" tabindex="0" aria-label="The same risk preference controls reference selection, actor input, and policy updates"><svg viewBox="0 0 1000 240" role="img" aria-labelledby="conditioning-title"><title id="conditioning-title">The same risk preference controls reference selection, actor input, and policy updates</title><defs><marker id="conditioning-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="365" y="10" width="270" height="70" rx="12" class="v-box tint-box"/><text x="500.0" y="44" text-anchor="middle" class="v-label v-bold">Risk command β</text><rect x="20" y="135" width="270" height="85" rx="12" class="v-box "/><text x="155.0" y="169" text-anchor="middle" class="v-label v-bold">Reference selection</text><text x="155.0" y="196" text-anchor="middle" class="v-sub">Choose teacher behavior</text><rect x="365" y="135" width="270" height="85" rx="12" class="v-box tint-box"/><text x="500.0" y="169" text-anchor="middle" class="v-label v-bold">Student actor</text><text x="500.0" y="196" text-anchor="middle" class="v-sub">Condition the action on β</text><rect x="710" y="135" width="270" height="85" rx="12" class="v-box "/><text x="845.0" y="169" text-anchor="middle" class="v-label v-bold">Risk-sensitive learning</text><text x="845.0" y="196" text-anchor="middle" class="v-sub">Change the policy objective</text><path d="M500 85V125" class="v-edge " marker-end="url(#conditioning-arrow)"/><path d="M365 45H150V125" class="v-edge " marker-end="url(#conditioning-arrow)"/><path d="M635 45H845V125" class="v-edge " marker-end="url(#conditioning-arrow)"/></svg></figure><div class="grid two"><div class="card"><h3>Simple architecture first</h3><p>Concatenate β with perception and robot-state features. A special visual encoder is optional; meaningful supervision is essential.</p></div><div class="card"><h3>Allow useful deviations</h3><p>Train for goal completion, time, and failures. Reduce imitation as needed so a successful alternative or recovery is not penalized merely for differing from the reference.</p></div></div><p class="footnote">Use the same risk metric for reference ranking and RL. Evaluate the student’s own outcomes. A first experiment holds β fixed per attempt; mid-maneuver command changes need separate training and validation.</p>
     </section>
 
     <section class="slide" id="slide-12" aria-labelledby="title-12" hidden>
       <p class="eyebrow">12 / Evaluation</p>
       <h2 id="title-12">Risk conditioning produces different motion.</h2>
-      <div class="grid two">
-        <div class="card"><h3>Fixed-route courses</h3><figure class="diagram mini-diagram" tabindex="0" aria-label="fixed route course diagram">
-      <svg viewBox="0 0 455 158" role="img" aria-labelledby="fixed-route-course-title"><title id="fixed-route-course-title">Fixed route course</title>
-      <defs><marker id="fixed-route-course-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
-      <rect x="165" y="37" width="70" height="65" rx="5" class="v-platform"/><path d="M40 70H410" class="v-edge" marker-end="url(#fixed-route-course-arrow)"/><path d="M25 22H430M25 123H430" class="v-guide"/><circle cx="40" cy="70" r="17" class="v-state chosen-state"/><circle cx="410" cy="70" r="17" class="v-state chosen-state"/><text x="40" y="76" class="v-node-text" text-anchor="middle">A</text><text x="410" y="76" class="v-node-text" text-anchor="middle">B</text><text x="200" y="76" class="v-sub" text-anchor="middle">Obstacle</text>
-      </svg></figure><p>Require the same crossings. Measure skill and contact choices.</p></div>
-        <div class="card tint"><h3>Multiple-route courses</h3><figure class="diagram mini-diagram" tabindex="0" aria-label="multiple route course diagram">
-      <svg viewBox="0 0 455 158" role="img" aria-labelledby="multiple-route-course-title"><title id="multiple-route-course-title">Multiple route course</title>
-      <defs><marker id="multiple-route-course-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
-      <rect x="165" y="37" width="70" height="65" rx="5" class="v-platform"/><path d="M40 70H410" class="v-edge" marker-end="url(#multiple-route-course-arrow)"/><path d="M40 70Q80 150 200 140Q340 150 410 70" class="v-edge alternative-edge" marker-end="url(#multiple-route-course-arrow)"/><circle cx="40" cy="70" r="17" class="v-state chosen-state"/><circle cx="410" cy="70" r="17" class="v-state chosen-state"/><text x="40" y="76" class="v-node-text" text-anchor="middle">A</text><text x="410" y="76" class="v-node-text" text-anchor="middle">B</text><text x="200" y="76" class="v-sub" text-anchor="middle">Obstacle</text>
-      </svg></figure><p>Allow detours. Hold goal pose g fixed and vary risk budget δ.</p></div>
-      </div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Measure</th><th>Report on unseen obstacle arrangements</th></tr></thead>
-        <tbody>
-          <tr><td>Risk and completion</td><td>Observed failure rate versus budget, uncertainty intervals, goal completion, and timeouts</td></tr>
-          <tr><td>Behavior and efficiency</td><td>Clip / entry / exit choices, transition failures, contacts, route length, and completion time</td></tr>
-          <tr><td>Contribution of each part</td><td>Frozen / fine-tuned tracker; fixed / variable risk input; fixed / selectable entry frames; with / without graph message passing</td></tr>
-        </tbody>
-      </table></div>
-      <p class="footnote">Compare with reactive skill selection and graph search using fixed transition estimates. Match skill libraries and training budgets; evaluate across training seeds. A conservative policy must still make progress toward B.</p>
+
+      <figure class="diagram" tabindex="0" aria-label="Compare behavior at different risk preferences for an identical navigation task"><svg viewBox="0 0 1000 125" role="img" aria-labelledby="evaluate-title"><title id="evaluate-title">Compare behavior at different risk preferences for an identical navigation task</title><defs><marker id="evaluate-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="20" width="280" height="85" rx="12" class="v-box tint-box"/><text x="160.0" y="54" text-anchor="middle" class="v-label v-bold">More conservative</text><text x="160.0" y="81" text-anchor="middle" class="v-sub">Detour or more stable contacts</text><rect x="360" y="20" width="280" height="85" rx="12" class="v-box "/><text x="500.0" y="54" text-anchor="middle" class="v-label v-bold">Same scene + A → B</text><text x="500.0" y="81" text-anchor="middle" class="v-sub">Sweep the risk command β</text><rect x="700" y="20" width="280" height="85" rx="12" class="v-box "/><text x="840.0" y="54" text-anchor="middle" class="v-label v-bold">Less conservative</text><text x="840.0" y="81" text-anchor="middle" class="v-sub">Potentially faster direct route</text><path d="M360 62H310" class="v-edge " marker-end="url(#evaluate-arrow)"/><path d="M640 62H690" class="v-edge " marker-end="url(#evaluate-arrow)"/></svg></figure><div class="table-wrap"><table><thead><tr><th>Measure</th><th>Evaluate on unseen obstacle arrangements</th></tr></thead><tbody><tr><td>Navigation</td><td>Goal completion, timeouts, route length, and completion time.</td></tr><tr><td>Risk response</td><td>Falls, unintended collisions, and lower-tail returns across β; report uncertainty intervals.</td></tr><tr><td>Behavior change</td><td>Routes, approach speeds, contact choices, and recovery after disturbances.</td></tr></tbody></table></div><p class="callout">A conservative policy should use an available safer route. Stopping is not goal completion.</p><p class="footnote">Hypothesis to test, not a demonstrated result. Evaluate full attempts, repeated trials, and multiple training seeds. Check both risk response and navigation competence.</p>
     </section>
 
     <section class="slide" id="slide-13" aria-labelledby="title-13" hidden>
-      <p class="eyebrow">13 / First implementation</p>
-      <h2 id="title-13">Train the tracker, then the graph planner.</h2>
-      <div class="grid three">
-        <div class="card"><span class="number">01 / TRAIN TRACKER</span><figure class="diagram milestone-diagram" tabindex="0" aria-label="validate skills diagram">
-      <svg viewBox="0 0 220 145" role="img" aria-labelledby="validate-skills-title"><title id="validate-skills-title">Validate skills</title>
-      <defs><marker id="validate-skills-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
-      <g transform="translate(100 111) scale(1)" class="v-robot green-robot"><circle cx="0" cy="-75" r="9"/><path d="M0 -60L0 -27L-14 0M0 -27L14 0M0 -50L-22 -32M0 -50L22 -32"/></g><path d="M45 112H155" class="v-ground"/><path d="M138 45L154 62L185 24" class="v-edge" marker-end="url(#validate-skills-arrow)"/>
-      </svg></figure><h3>Multi-motion tracking</h3><p>Train a shared tracker with reinforcement learning from valid entry frames, including transition motions. Validate tracking, then freeze its parameters.</p></div>
-        <div class="card"><span class="number">02 / TRAIN PLANNER</span><figure class="diagram milestone-diagram" tabindex="0" aria-label="synthesize alternative routes diagram">
-      <svg viewBox="0 0 220 160" role="img" aria-labelledby="build-planner-title"><title id="build-planner-title">Synthesize alternative routes</title>
-      <defs><marker id="build-planner-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
-      <path d="M40 85L100 35L170 85" class="v-edge" marker-end="url(#build-planner-arrow)"/><path d="M40 85L100 135L170 85" class="v-edge" marker-end="url(#build-planner-arrow)"/><circle cx="40" cy="85" r="12" class="v-state chosen-state"/><circle cx="100" cy="35" r="12" class="v-state chosen-state"/><circle cx="100" cy="135" r="12" class="v-state chosen-state"/><circle cx="170" cy="85" r="12" class="v-state chosen-state"/>
-      </svg></figure><h3>GNN segment selection</h3><p>Freeze the tracker. Train the temporal encoder, GNN, edge scorer, and value predictor with sampled segment rollouts and navigation rewards.</p></div>
-        <div class="card tint"><span class="number">OPTIONAL / FINE-TUNE</span><figure class="diagram milestone-diagram" tabindex="0" aria-label="fine-tune tracker with frozen planner diagram">
-      <svg viewBox="0 0 260 145" role="img" aria-labelledby="fine-tune-tracker-title"><title id="fine-tune-tracker-title">Fine-tune tracker</title>
-      <defs><marker id="fine-tune-tracker-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
-      <rect x="10" y="35" width="105" height="80" rx="13" class="v-box"/><text x="62.5" y="69" class="v-label v-bold" text-anchor="middle">Planner</text><text x="62.5" y="96" class="v-sub" text-anchor="middle">Frozen</text><rect x="150" y="35" width="105" height="80" rx="13" class="v-box tint-box"/><text x="202.5" y="69" class="v-label v-bold" text-anchor="middle">Tracker</text><text x="202.5" y="96" class="v-sub" text-anchor="middle">Train</text><path d="M116 75H144" class="v-edge" marker-end="url(#fine-tune-tracker-arrow)"/>
-      </svg></figure><h3>Adapt the tracker</h3><p>Freeze GNN parameters and improve tracking under its selected sequences. The GNN still reacts to observations. Retest navigation risk.</p></div>
-      </div>
-      <p class="callout">Perception requirement: represent both the floor and the underside of the beam. A single elevation map cannot describe both at the same horizontal position.</p>
-      <p class="footnote">Current starting points: motion tracking and perceptive locomotion. Validate the chaining method on rigid obstacles before adding deformable terrain.</p>
+      <p class="eyebrow">13 / Related work and scope</p>
+      <h2 id="title-13">Test the value of agent-generated data.</h2>
+
+      <figure class="diagram" tabindex="0" aria-label="PHP and risk-aware DPPO inform the proposed agent-aided navigation method"><svg viewBox="0 0 1000 125" role="img" aria-labelledby="related-title"><title id="related-title">PHP and risk-aware DPPO inform the proposed agent-aided navigation method</title><defs><marker id="related-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="20" width="280" height="85" rx="12" class="v-box "/><text x="160.0" y="54" text-anchor="middle" class="v-label v-bold">PHP</text><text x="160.0" y="81" text-anchor="middle" class="v-sub">Motion matching + distillation</text><rect x="360" y="20" width="280" height="85" rx="12" class="v-box "/><text x="500.0" y="54" text-anchor="middle" class="v-label v-bold">Risk-aware DPPO</text><text x="500.0" y="81" text-anchor="middle" class="v-sub">Risk-conditioned locomotion</text><rect x="700" y="20" width="280" height="85" rx="12" class="v-box tint-box"/><text x="840.0" y="54" text-anchor="middle" class="v-label v-bold">Our proposed combination</text><text x="840.0" y="81" text-anchor="middle" class="v-sub">Agent-aided navigation training</text></svg></figure><div class="grid three"><div class="card"><h3><a href="https://arxiv.org/html/2602.15827v1">PHP</a></h3><p>Borrow motion matching, transition smoothing, and teacher supervision during student rollouts.</p></div><div class="card"><h3><a href="https://arxiv.org/html/2309.14246v2">Risk-aware DPPO</a></h3><p>Borrow a distributional critic and risk-conditioned actor. Adapt the objective from velocity commands to goal navigation.</p></div><div class="card tint"><h3>Agent-aided synthesis</h3><p>Propose routes, entry frames, and transitions; evaluate them in simulation; expand training coverage using student failures.</p></div></div><p class="callout">Research question: does the agent improve coverage and risk-controllable navigation at the same simulation budget?</p><p class="footnote">Broader scene coverage is a hypothesis. Generalization remains limited by the motion repertoire, teacher recovery ability, and what the student can observe.</p>
+    </section>
+
+    <section class="slide" id="slide-14" aria-labelledby="title-14" hidden>
+      <p class="eyebrow">14 / First experiments</p>
+      <h2 id="title-14">Separate data quality from risk learning.</h2>
+
+      <figure class="diagram" tabindex="0" aria-label="Two training stages followed by student-only deployment"><svg viewBox="0 0 1000 125" role="img" aria-labelledby="stages-title"><title id="stages-title">Two training stages followed by student-only deployment</title><defs><marker id="stages-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="20" width="280" height="85" rx="12" class="v-box "/><text x="160.0" y="54" text-anchor="middle" class="v-label v-bold">1 · Train the tracker</text><text x="160.0" y="81" text-anchor="middle" class="v-sub">Validate clips and transitions</text><rect x="360" y="20" width="280" height="85" rx="12" class="v-box tint-box"/><text x="500.0" y="54" text-anchor="middle" class="v-label v-bold">2 · Train the student</text><text x="500.0" y="81" text-anchor="middle" class="v-sub">Reference-guided navigation RL</text><rect x="700" y="20" width="280" height="85" rx="12" class="v-box "/><text x="840.0" y="54" text-anchor="middle" class="v-label v-bold">Deploy the student</text><text x="840.0" y="81" text-anchor="middle" class="v-sub">Perception + state + goal + β</text><path d="M300 62H350" class="v-edge " marker-end="url(#stages-arrow)"/><path d="M640 62H690" class="v-edge " marker-end="url(#stages-arrow)"/></svg></figure><div class="grid two"><div class="card"><h3>Test the agent’s contribution</h3><p>Compare fixed synthesis, random search, and agent-guided synthesis. Match motion libraries and simulation budgets.</p></div><div class="card"><h3>Test the learning objective</h3><p>Compare risk-conditioned imitation, imitation + PPO, and imitation + DPPO. Keep reference coverage and observations comparable.</p></div></div><p class="callout">Start with rigid obstacles and tasks with alternative routes. Expand to compound scenes using failures from the trained student.</p><p class="footnote">Local starting points: motion tracking and perceptive locomotion. At deployment, no reference library, teacher, or graph planner is required. Longer routes may require map or memory inputs.</p>
     </section>
   </main>
   <footer>
@@ -565,7 +368,7 @@
     <nav class="dots" aria-label="Choose slide"></nav>
     <div class="controls">
       <button class="nav-button" id="previous" type="button" aria-label="Previous slide">←</button>
-      <span id="counter" aria-live="polite" aria-atomic="true">01 / 13</span>
+      <span id="counter" aria-live="polite" aria-atomic="true">01 / 14</span>
       <button class="nav-button" id="next" type="button" aria-label="Next slide">→</button>
       <button class="nav-button" id="print" type="button" aria-label="Print all slides">Print</button>
     </div>
@@ -618,26 +421,30 @@
         else if (event.key === 'Home') { event.preventDefault(); show(0); }
         else if (event.key === 'End') { event.preventDefault(); show(slides.length - 1); }
       });
-      const riskBudget = document.getElementById('risk-budget');
+      const riskPreference = document.getElementById('risk-preference');
       const routes = [
-        { id: 'walk', name: 'Walk around', risk: 1, time: 14 },
-        { id: 'support', name: 'Hand support', risk: 3, time: 9 },
-        { id: 'jump', name: 'Jump', risk: 8, time: 5 },
+        { id: 'walk', name: 'Walk around', failure: 0.01, successReturn: 70 },
+        { id: 'support', name: 'Hand support', failure: 0.04, successReturn: 80 },
+        { id: 'jump', name: 'Jump', failure: 0.10, successReturn: 100 },
       ];
       function updateRisk() {
-        const budget = Number(riskBudget.value);
-        const feasible = routes.filter(route => route.risk <= budget);
-        const selected = feasible.reduce((best, route) => !best || route.time < best.time ? route : best, null);
-        document.getElementById('risk-value').textContent = `${budget}%`;
-        riskBudget.setAttribute('aria-valuetext', `${budget} percent permitted failure probability`);
-        document.querySelectorAll('[data-route]').forEach(route => {
-          route.classList.toggle('selected', route.dataset.route === selected?.id);
+        const percent = Number(riskPreference.value);
+        const beta = percent / 100;
+        // Exact lower-tail CVaR for the illustrative two-outcome distribution.
+        const scored = routes.map(route => {
+          const failedMass = Math.min(beta, route.failure);
+          const score = (-100 * failedMass + route.successReturn * (beta - failedMass)) / beta;
+          return { ...route, score };
         });
-        document.getElementById('risk-choice').textContent = selected
-          ? `${selected.name}: ${selected.time} s, estimated failure probability ${selected.risk}%.`
-          : 'No candidate meets this budget. Replan or report infeasibility; stopping is not goal completion.';
+        const selected = scored.reduce((best, route) => route.score > best.score ? route : best);
+        document.getElementById('risk-value').textContent = `${percent}%`;
+        riskPreference.setAttribute('aria-valuetext', `Average of the worst ${percent} percent of returns`);
+        document.querySelectorAll('[data-route]').forEach(route => {
+          route.classList.toggle('selected', route.dataset.route === selected.id);
+        });
+        document.getElementById('risk-choice').textContent = `${selected.name} selected. Scores: ${scored.map(route => `${route.name} ${route.score.toFixed(1)}`).join(' · ')}.`;
       }
-      riskBudget.addEventListener('input', updateRisk);
+      riskPreference.addEventListener('input', updateRisk);
       updateRisk();
       readHash();
     })();
