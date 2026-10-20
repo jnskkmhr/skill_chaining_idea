@@ -265,41 +265,53 @@
     @media print {
       #slide-6 .stitch-search svg { max-height:310px; }
     }
+
+    .scenario-cards svg { height:150px; margin:6px 0 12px; }
+    .scenario-cards p { font-size:16px; }
+    #slide-13 .card p { font-size:17px; }
+    @media screen and (min-width:761px) and (max-height:800px) {
+      .scenario-cards svg { height:115px; }
+      .scenario-cards p,#slide-13 .card p { font-size:15px; }
+    }
+    @media screen and (min-width:761px) and (max-height:650px) {
+      .scenario-cards svg { height:80px; margin:2px 0 7px; }
+      .scenario-cards p,#slide-13 .card p { font-size:14px; }
+      #slide-13 .card { padding:12px; }
+      #slide-13 .callout { font-size:15px; }
+    }
+    @media print { .scenario-cards svg { height:125px; } .scenario-cards p,#slide-13 .card p { font-size:15px; } }
   </style>
 </head>
 <body>
   <header>
     <div class="brand">Whole-body humanoid navigation</div>
-    <div class="status">Updated Oct 19 · Three-stage method</div>
+    <div class="status">Updated Oct 20 · Contact-rich navigation</div>
   </header>
   <main id="deck">
     <section class="slide" id="slide-1" aria-labelledby="title-1">
       <p class="eyebrow">01 / Research Proposal</p>
       <div class="grid hero cover-grid"><div><h1 id="title-1">Risk-conditioned <span style="white-space:nowrap">whole-body</span> navigation</h1>
-      <p class="lead">Navigate from A to B using perception, a target pose, and a risk preference.</p></div><figure class="diagram cover-skills" aria-label="Continuous humanoid skill trajectory from A to B">
+      <p class="lead">Navigate from A to B through crawling, hand-supported climbing, and transitions between them.</p></div><figure class="diagram cover-skills" aria-label="Continuous humanoid skill trajectory from A to B">
         <svg viewBox="0 0 600 280" role="img" aria-labelledby="cover-skills-title cover-skills-desc">
-          <title id="cover-skills-title">A continuous sequence of whole-body navigation skills</title>
-          <desc id="cover-skills-desc">Successive poses of one humanoid walking from A, taking off across a gap, landing, crouching under a beam, and using hand support to step up toward B. All poses share one scene and a single forward trajectory.</desc>
+          <title id="cover-skills-title">Walk, crawl, climb with hand support, then stand</title>
+          <desc id="cover-skills-desc">Successive poses in one continuous scene: the humanoid walks from A, lowers onto hands and knees under a low ceiling, reaches a ledge, transfers weight onto its hands to climb, and stands at B. Orange dots mark support contacts. This is a proposed task, not a measured result.</desc>
           <defs><marker id="cover-motion-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M1 1L6 3.5L1 6" fill="none" stroke="var(--green)" stroke-width="1.5"/></marker></defs>
-          <path d="M10 190H135V207H10Z M230 190H485V150H590V207H230Z" fill="#e3e7e0"/>
-          <path d="M10 190H135 M230 190H485V150H590" class="v-ground"/>
-          <rect x="300" y="120" width="92" height="12" fill="var(--ink)"/>
-          <path d="M30 170C76 170 96 171 116 162S153 106 183 105S230 154 260 164S318 173 350 173S413 173 445 165S508 130 566 130" fill="none" stroke="var(--green)" stroke-width="2" stroke-dasharray="5 5" opacity=".45" marker-end="url(#cover-motion-arrow)"/>
-          <g transform="translate(45 190) scale(.75)" class="v-robot green-robot"><circle cx="0" cy="-72" r="9"/><path d="M0 -57L0 -25L-22 0M0 -25L24 -1M0 -48L-22 -30M0 -48L22 -60"/></g>
-          <g transform="translate(115 190) scale(.75)" class="v-robot green-robot" opacity=".65"><circle cx="8" cy="-64" r="9"/><path d="M5 -50L-7 -29L12 -15L-4 0M-7 -29L-29 -12L-38 0M3 -43L-24 -49M3 -43L26 -52"/></g>
-          <g transform="translate(183 135) scale(.75)" class="v-robot green-robot"><circle cx="0" cy="-80" r="9"/><path d="M0 -65L10 -37L-12 -25L-26 -9M10 -37L34 -25L19 -10M2 -56L-22 -73M2 -56L24 -80"/></g>
-          <g transform="translate(260 190) scale(.75)" class="v-robot green-robot" opacity=".65"><circle cx="8" cy="-63" r="9"/><path d="M5 -49L-6 -29L15 -14L2 0M-6 -29L-25 -15L-28 0M4 -42L28 -32M4 -42L-20 -38"/></g>
-          <g transform="translate(345 190) scale(.75)" class="v-robot green-robot"><circle cx="20" cy="-49" r="9"/><path d="M9 -36L-13 -23L18 -13L-2 0M-13 -23L-30 -10L-38 0M9 -36L35 -22"/></g>
-          <g transform="translate(445 190) scale(.75)" class="v-robot green-robot"><circle cx="5" cy="-72" r="9"/><path d="M5 -57L-3 -30L-22 0M-3 -30L24 -24L37 -24M3 -48L33 -53L53 -53M3 -48L-19 -34"/></g>
-          <g transform="translate(550 150) scale(.75)" class="v-robot green-robot" opacity=".65"><circle cx="0" cy="-72" r="9"/><path d="M0 -57L0 -25L-22 0M0 -25L24 -1M0 -48L-22 -30M0 -48L22 -60"/></g>
-          <text x="45" y="234" class="v-sub" text-anchor="middle">Walk</text>
-          <text x="183" y="234" class="v-sub" text-anchor="middle">Jump</text>
-          <text x="345" y="234" class="v-sub" text-anchor="middle">Crouch</text>
-          <text x="470" y="234" class="v-sub" text-anchor="middle">Hand support</text>
-          <text x="15" y="175" class="v-label v-bold" text-anchor="middle">A</text>
-          <text x="587" y="135" class="v-label v-bold" text-anchor="middle">B</text>
+          <path d="M10 208H402V145H590V225H10Z" fill="#e3e7e0"/>
+          <path d="M10 208H402V145H590" class="v-ground"/>
+          <rect x="119" y="147" width="179" height="13" fill="var(--ink)"/>
+          <path d="M35 175C84 174 99 186 133 188S237 193 277 191S338 185 371 178S418 120 452 119S529 117 572 116" fill="none" stroke="var(--green)" stroke-width="2" stroke-dasharray="5 5" opacity=".45" marker-end="url(#cover-motion-arrow)"/>
+          <g transform="translate(45 208) scale(.78)" class="v-robot green-robot"><circle cx="0" cy="-72" r="9"/><path d="M0 -57V-25L-22 0M0 -25L24 -1M0 -48L-22 -30M0 -48L22 -60"/></g>
+          <g class="v-robot green-robot" opacity=".6"><circle cx="126" cy="175" r="6"/><path d="M119 183L102 193L119 200L109 208M102 193L89 206L81 208M119 185L138 208"/></g>
+          <g class="v-robot green-robot"><circle cx="219" cy="175" r="6"/><path d="M209 182L178 185L191 208L169 208M205 183L221 208M178 185L161 198L151 208"/></g>
+          <g class="v-robot green-robot" opacity=".6"><circle cx="300" cy="174" r="6"/><path d="M290 181L260 185L272 208L251 208M288 182L306 208M260 185L243 197L236 208"/></g>
+          <g class="v-robot green-robot"><circle cx="372" cy="143" r="7"/><path d="M366 155L348 180L367 193L359 208M348 180L332 199L322 208M365 157L387 153L406 145M364 157L380 145L398 145"/></g>
+          <g class="v-robot green-robot" opacity=".65"><circle cx="452" cy="110" r="7"/><path d="M443 121L420 132L444 145L430 145M420 132L409 163L401 176M440 123L462 145"/></g>
+          <g transform="translate(550 145) scale(.78)" class="v-robot green-robot"><circle cx="0" cy="-72" r="9"/><path d="M0 -57V-25L-22 0M0 -25L24 -1M0 -48L-22 -30M0 -48L22 -60"/></g>
+          <g fill="var(--orange)"><circle cx="191" cy="208" r="4"/><circle cx="221" cy="208" r="4"/><circle cx="398" cy="145" r="4"/><circle cx="406" cy="145" r="4"/><circle cx="462" cy="145" r="4"/></g>
+          <text x="45" y="253" class="v-sub" text-anchor="middle">Walk</text><text x="213" y="253" class="v-sub" text-anchor="middle">Crawl</text><text x="410" y="253" class="v-sub" text-anchor="middle">Hand-supported climb</text><text x="550" y="253" class="v-sub" text-anchor="middle">Stand</text>
+          <text x="12" y="185" class="v-label v-bold">A</text><text x="575" y="130" class="v-label v-bold">B</text>
         </svg></figure></div>
-      <figure class="diagram" tabindex="0" aria-label="Three proposed training stages"><svg viewBox="0 0 1000 145" role="img" aria-labelledby="stages-overview-title"><title id="stages-overview-title">Three proposed training stages</title><defs><marker id="stages-overview-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="30" width="280" height="82" rx="12" class="v-box "/><text x="160.0" y="63" text-anchor="middle" class="v-label v-bold">Stage1 · Motion tracking</text><text x="160.0" y="89" text-anchor="middle" class="v-sub">Train a shared motion tracker</text><rect x="360" y="30" width="280" height="82" rx="12" class="v-box "/><text x="500.0" y="63" text-anchor="middle" class="v-label v-bold">Stage2 · Trajectory synthesis</text><text x="500.0" y="89" text-anchor="middle" class="v-sub">Agent generates and tests references</text><rect x="700" y="30" width="280" height="82" rx="12" class="v-box tint-box"/><text x="840.0" y="63" text-anchor="middle" class="v-label v-bold">Stage3 · Distillation</text><text x="840.0" y="89" text-anchor="middle" class="v-sub">Train the navigation student</text><path d="M300 71H350" class="v-edge" marker-end="url(#stages-overview-arrow)"/><path d="M640 71H690" class="v-edge" marker-end="url(#stages-overview-arrow)"/></svg></figure><p class="callout">Research question: can agent-generated trajectories train one navigation policy to choose different routes and motions according to a risk command?</p><p class="footnote">Proposed method. Reinforcement learning (RL) trains policies through simulation. Distillation trains the student using actions from a teacher policy. Project research plan.</p>
+      <figure class="diagram" tabindex="0" aria-label="Three proposed training stages"><svg viewBox="0 0 1000 145" role="img" aria-labelledby="stages-overview-title"><title id="stages-overview-title">Three proposed training stages</title><defs><marker id="stages-overview-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="30" width="280" height="82" rx="12" class="v-box "/><text x="160.0" y="63" text-anchor="middle" class="v-label v-bold">Stage1 · Motion tracking</text><text x="160.0" y="89" text-anchor="middle" class="v-sub">Train a shared motion tracker</text><rect x="360" y="30" width="280" height="82" rx="12" class="v-box "/><text x="500.0" y="63" text-anchor="middle" class="v-label v-bold">Stage2 · Trajectory synthesis</text><text x="500.0" y="89" text-anchor="middle" class="v-sub">Agent generates and tests references</text><rect x="700" y="30" width="280" height="82" rx="12" class="v-box tint-box"/><text x="840.0" y="63" text-anchor="middle" class="v-label v-bold">Stage3 · Distillation</text><text x="840.0" y="89" text-anchor="middle" class="v-sub">Train the navigation student</text><path d="M300 71H350" class="v-edge" marker-end="url(#stages-overview-arrow)"/><path d="M640 71H690" class="v-edge" marker-end="url(#stages-overview-arrow)"/></svg></figure><p class="callout">Research question: do synthesized references improve learning of contact transitions and risk-dependent motion choices? <a href="#slide-15">Target scenarios →</a></p><p class="footnote">Proposed method. Reinforcement learning (RL) trains policies through simulation. Distillation trains the student using actions from a teacher policy. Project research plan.</p>
     </section>
 
     <section class="slide" id="slide-2" aria-labelledby="title-2" hidden>
@@ -339,7 +351,7 @@
       <svg viewBox="0 0 1000 180" role="img" aria-labelledby="available-skills-title"><title id="available-skills-title">Available skills</title>
       <defs><marker id="available-skills-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
       <rect x="14" y="10" width="222" height="160" rx="12" class="v-box"/><path d="M53 125H197" class="v-ground"/><g transform="translate(125 122) scale(1)" class="v-robot green-robot"><circle cx="0" cy="-72" r="9"/><path d="M0 -57L0 -25L-22 0M0 -25L24 -1M0 -48L-22 -30M0 -48L22 -60"/></g><text x="125" y="154" class="v-label v-bold" text-anchor="middle">Walk</text><rect x="264" y="10" width="222" height="160" rx="12" class="v-box"/><path d="M303 125H447" class="v-ground"/><g transform="translate(375 122) scale(1)" class="v-robot green-robot"><circle cx="0" cy="-80" r="9"/><path d="M0 -65L10 -37L-12 -25L-26 -9M10 -37L34 -25L19 -10M2 -56L-22 -73M2 -56L24 -80"/></g><text x="375" y="154" class="v-label v-bold" text-anchor="middle">Jump</text><rect x="514" y="10" width="222" height="160" rx="12" class="v-box"/><path d="M553 125H697" class="v-ground"/><rect x="565" y="41" width="130" height="12" fill="var(--ink)"/><g transform="translate(625 122) scale(1)" class="v-robot green-robot"><circle cx="20" cy="-49" r="9"/><path d="M9 -36L-13 -23L18 -13L-2 0M-13 -23L-30 -10L-38 0M9 -36L35 -22"/></g><text x="625" y="154" class="v-label v-bold" text-anchor="middle">Crouch</text><rect x="764" y="10" width="222" height="160" rx="12" class="v-box"/><path d="M803 125H947" class="v-ground"/><path d="M918 72H957V125H918Z" class="v-platform"/><g transform="translate(875 122) scale(1)" class="v-robot green-robot"><circle cx="5" cy="-72" r="9"/><path d="M5 -57L-3 -30L-22 0M-3 -30L24 -24L37 -24M3 -48L33 -53L53 -53M3 -48L-19 -34"/></g><text x="875" y="154" class="v-label v-bold" text-anchor="middle">Hand-supported step</text>
-      </svg></figure><div class="grid two"><div class="card"><h3>Tracker inputs</h3><p>Current robot state and upcoming reference frames. Each reference contains body poses, velocities, and contact states.</p></div><div class="card"><h3>Tracker output and training</h3><p>Output target joint positions. Train with RL to follow motion clips and transition motions from valid starting frames.</p></div></div><p class="callout">The trained tracker becomes the teacher for Stage3. Freeze its parameters during initial student training.</p><p class="footnote">Starting assumption: a predefined motion library covers the required skills. New skills require additional motion data and tracker training.</p>
+      </svg></figure><div class="grid two"><div class="card"><h3>Tracker inputs</h3><p>Current robot state and upcoming reference frames. Pair each motion with aligned terrain geometry and contact annotations; provide body poses and velocities.</p></div><div class="card"><h3>Tracker output and training</h3><p>Output target joint positions. Train with RL to follow motion clips and transition motions from valid starting frames.</p></div></div><p class="callout">The trained tracker becomes the teacher for Stage3. Freeze its parameters during initial student training.</p><p class="footnote">Starting assumption: seed motion–terrain pairs cover the required skills. New skills require additional references and tracker training. Geometry must agree with hand, knee, and foot contacts.</p>
     </section>
 
     <section class="slide" id="slide-5" aria-labelledby="title-5" hidden>
@@ -405,19 +417,66 @@
     <section class="slide" id="slide-12" aria-labelledby="title-12" hidden>
       <p class="eyebrow">12 / Evaluation</p>
       <h2 id="title-12">Evaluation Metrics</h2>
-      <figure class="diagram" tabindex="0" aria-label="Evaluate risk conditioning by varying risk preference on fixed navigation tasks"><svg viewBox="0 0 1000 125" role="img" aria-labelledby="evaluation-protocol-title"><title id="evaluation-protocol-title">Evaluate risk conditioning by varying risk preference on fixed navigation tasks</title><defs><marker id="evaluation-protocol-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="20" width="280" height="82" rx="12" class="v-box "/><text x="160.0" y="53" text-anchor="middle" class="v-label v-bold">Fix scene, start, and goal</text><text x="160.0" y="79" text-anchor="middle" class="v-sub">Use held-out obstacle layouts</text><rect x="360" y="20" width="280" height="82" rx="12" class="v-box "/><text x="500.0" y="53" text-anchor="middle" class="v-label v-bold">Vary risk preference β</text><text x="500.0" y="79" text-anchor="middle" class="v-sub">Repeat trials with disturbances</text><rect x="700" y="20" width="280" height="82" rx="12" class="v-box tint-box"/><text x="840.0" y="53" text-anchor="middle" class="v-label v-bold">Measure student behavior</text><text x="840.0" y="79" text-anchor="middle" class="v-sub">Report uncertainty intervals</text><path d="M300 61H350" class="v-edge" marker-end="url(#evaluation-protocol-arrow)"/><path d="M640 61H690" class="v-edge" marker-end="url(#evaluation-protocol-arrow)"/></svg></figure><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Definition</th></tr></thead><tbody><tr><td>Goal success rate</td><td>Fraction of attempts that reach and stabilize at the target pose before timeout.</td></tr><tr><td>Failure rate</td><td>Fraction of attempts with a fall or unintended collision. Planned hand support is allowed.</td></tr><tr><td>Navigation efficiency</td><td>Completion time and path length for successful attempts; report timeouts separately.</td></tr><tr><td>Risk response</td><td>Changes in failure rate, lower-tail return, route, and contact choice as β varies.</td></tr></tbody></table></div><p class="footnote">Evaluate the deployed student over full navigation attempts and multiple training seeds. Report success alongside failure rate so that stopping cannot appear to be successful navigation.</p>
+      <figure class="diagram" tabindex="0" aria-label="Evaluate risk conditioning by varying risk preference on fixed navigation tasks"><svg viewBox="0 0 1000 125" role="img" aria-labelledby="evaluation-protocol-title"><title id="evaluation-protocol-title">Evaluate risk conditioning by varying risk preference on fixed navigation tasks</title><defs><marker id="evaluation-protocol-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="20" width="280" height="82" rx="12" class="v-box "/><text x="160.0" y="53" text-anchor="middle" class="v-label v-bold">Fix scene, start, and goal</text><text x="160.0" y="79" text-anchor="middle" class="v-sub">Use held-out obstacle layouts</text><rect x="360" y="20" width="280" height="82" rx="12" class="v-box "/><text x="500.0" y="53" text-anchor="middle" class="v-label v-bold">Vary risk preference β</text><text x="500.0" y="79" text-anchor="middle" class="v-sub">Repeat trials with disturbances</text><rect x="700" y="20" width="280" height="82" rx="12" class="v-box tint-box"/><text x="840.0" y="53" text-anchor="middle" class="v-label v-bold">Measure student behavior</text><text x="840.0" y="79" text-anchor="middle" class="v-sub">Report uncertainty intervals</text><path d="M300 61H350" class="v-edge" marker-end="url(#evaluation-protocol-arrow)"/><path d="M640 61H690" class="v-edge" marker-end="url(#evaluation-protocol-arrow)"/></svg></figure><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Definition</th></tr></thead><tbody><tr><td>Goal success rate</td><td>Fraction of attempts that reach and stabilize at the target pose before timeout.</td></tr><tr><td>Failure rate</td><td>Fraction of attempts with a fall or unintended collision. Planned hand and knee support is allowed.</td></tr><tr><td>Navigation efficiency</td><td>Completion time and path length for successful attempts; report timeouts separately.</td></tr><tr><td>Risk response</td><td>Changes in failure rate, lower-tail return, route, and contact choice as β varies.</td></tr><tr><td>Transition success / learning cost</td><td>Success after crawl-to-climb transitions; environment steps to a fixed success rate. Include all training stages.</td></tr></tbody></table></div><p class="footnote">Evaluate the deployed student over full navigation attempts and multiple training seeds. Report success alongside failure rate so that stopping cannot appear to be successful navigation.</p>
     </section>
 
     <section class="slide" id="slide-13" aria-labelledby="title-13" hidden>
       <p class="eyebrow">13 / Related Work</p>
-      <h2 id="title-13">Relation to PHP and risk-aware locomotion</h2>
-      <div class="grid two"><div class="card"><h3><a href="https://arxiv.org/html/2602.15827v1">Perceptive Humanoid Parkour</a></h3><p>Provides motion matching, transition smoothing, and teacher supervision during student rollouts.</p></div><div class="card"><h3><a href="https://arxiv.org/html/2309.14246v2">Risk-Aware Quadrupedal Locomotion</a></h3><p>Provides distributional PPO and a policy conditioned on risk preference.</p></div></div><div class="card tint"><h3>Proposed extension: agent-generated training trajectories</h3><p>The agent generates and tests alternative trajectories for navigation tasks. Student failures guide additional trajectory generation. Stage3 trains one perceptive policy across tasks and risk preferences.</p></div><p class="footnote">The contribution to test is whether agent-guided synthesis improves task coverage and navigation performance at a fixed simulation budget. Generalization remains limited by available skills and observations.</p>
+      <h2 id="title-13">What remains beyond existing locomotion?</h2>
+      <div class="grid two">
+        <div class="card"><h3><a href="https://arxiv.org/html/2601.08485v1#S8.SS3">AME-2</a></h3><p>Strong goal-reaching RL baseline. The paper leaves diverse humanoid contact strategies and difficult skill transitions as open questions.</p></div>
+        <div class="card"><h3><a href="https://arxiv.org/html/2602.15827v1">Perceptive Humanoid Parkour</a></h3><p>Already chains dynamic parkour motions. We build on motion matching and closed-loop teacher supervision.</p></div>
+        <div class="card"><h3><a href="https://arxiv.org/abs/2601.03607">Locomotion Beyond Feet</a></h3><p>Already uses hands, knees, and elbows with keyframe references. Crawling or climbing alone is not our contribution.</p></div>
+        <div class="card"><h3><a href="https://arxiv.org/abs/2604.17335">Motion generation + tracking</a></h3><p>Already adapts whole-body references to terrain online. Our proposal tests offline agent synthesis and risk-conditioned distillation.</p></div>
+      </div>
+      <p class="callout">Test whether agent synthesis improves learning efficiency and unseen contact transitions, while β changes route and support choices.</p>
+      <p class="footnote">Risk objective: <a href="https://arxiv.org/html/2309.14246v2">Risk-Aware Quadrupedal Locomotion</a>. <a href="https://github.com/leggedrobotics/ame2_minimal">AME-2 minimal</a> releases G1 teacher training; the neural mapping model and student training are not included in the current release.</p>
     </section>
 
     <section class="slide" id="slide-14" aria-labelledby="title-14" hidden>
       <p class="eyebrow">14 / Experimental Comparisons</p>
-      <h2 id="title-14">Ablation Studies</h2>
-      <figure class="diagram" tabindex="0" aria-label="Compare synthesis methods and training objectives under matched resources"><svg viewBox="0 0 1000 125" role="img" aria-labelledby="ablations-title"><title id="ablations-title">Compare synthesis methods and training objectives under matched resources</title><defs><marker id="ablations-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="20" width="280" height="82" rx="12" class="v-box "/><text x="160.0" y="53" text-anchor="middle" class="v-label v-bold">Hold training resources fixed</text><text x="160.0" y="79" text-anchor="middle" class="v-sub">Motion data + simulation budget</text><rect x="360" y="20" width="280" height="82" rx="12" class="v-box "/><text x="500.0" y="53" text-anchor="middle" class="v-label v-bold">Change one component</text><text x="500.0" y="79" text-anchor="middle" class="v-sub">Synthesis method or RL objective</text><rect x="700" y="20" width="280" height="82" rx="12" class="v-box tint-box"/><text x="840.0" y="53" text-anchor="middle" class="v-label v-bold">Compare on held-out tasks</text><text x="840.0" y="79" text-anchor="middle" class="v-sub">Use the metrics on p12</text><path d="M300 61H350" class="v-edge" marker-end="url(#ablations-arrow)"/><path d="M640 61H690" class="v-edge" marker-end="url(#ablations-arrow)"/></svg></figure><div class="grid two"><div class="card"><h3>Trajectory generation</h3><p>Compare fixed synthesis, random search, and agent-guided synthesis using the same motion library and simulation budget.</p></div><div class="card"><h3>Student training</h3><p>Compare risk-conditioned imitation, imitation + PPO, and imitation + DPPO using the same reference library and observations.</p></div></div><p class="footnote">Begin with rigid obstacles and tasks that offer alternative routes. Local implementations: motion tracking and perceptive locomotion.</p>
+      <h2 id="title-14">Baselines and Ablation Studies</h2>
+      <figure class="diagram" tabindex="0" aria-label="Compare synthesis methods and training objectives under matched resources"><svg viewBox="0 0 1000 125" role="img" aria-labelledby="ablations-title"><title id="ablations-title">Compare synthesis methods and training objectives under matched resources</title><defs><marker id="ablations-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><rect x="20" y="20" width="280" height="82" rx="12" class="v-box "/><text x="160.0" y="53" text-anchor="middle" class="v-label v-bold">Match training resources</text><text x="160.0" y="79" text-anchor="middle" class="v-sub">Robot, sensing, compute</text><rect x="360" y="20" width="280" height="82" rx="12" class="v-box "/><text x="500.0" y="53" text-anchor="middle" class="v-label v-bold">Change one component</text><text x="500.0" y="79" text-anchor="middle" class="v-sub">Synthesis method or RL objective</text><rect x="700" y="20" width="280" height="82" rx="12" class="v-box tint-box"/><text x="840.0" y="53" text-anchor="middle" class="v-label v-bold">Compare on held-out tasks</text><text x="840.0" y="79" text-anchor="middle" class="v-sub">Use the metrics on p12</text><path d="M300 61H350" class="v-edge" marker-end="url(#ablations-arrow)"/><path d="M640 61H690" class="v-edge" marker-end="url(#ablations-arrow)"/></svg></figure><div class="grid three"><div class="card"><h3>Reference-free RL</h3><p>AME-2-style goal-reaching RL with the same robot, sensing, goal, and β. Allow intended support contacts and tune rewards and curricula.</p></div><div class="card"><h3>Trajectory generation</h3><p>Compare fixed synthesis, random search, and agent synthesis with the same motion library and simulation budget.</p></div><div class="card"><h3>Student training</h3><p>Compare risk-conditioned imitation, imitation + PPO, and imitation + DPPO with the same references and observations.</p></div></div><p class="footnote">Count tracker training, synthesis trials, and distillation in total compute; report motion collection and annotation effort separately. Give every method ceiling observations for crawling. Keep stairs and jumps as control tasks. Local implementations: motion tracking and perceptive locomotion.</p>
+    </section>
+
+    <section class="slide" id="slide-15" aria-labelledby="title-15" hidden>
+      <p class="eyebrow">15 / Target Scenarios</p>
+      <h2 id="title-15">Learning difficult contact transitions</h2>
+      <div class="grid three scenario-cards">
+        <div class="card"><h3>01 · Hand-supported climb</h3>
+          <svg viewBox="0 0 300 180" role="img" aria-labelledby="climb-scenario-title"><title id="climb-scenario-title">Reach a ledge, support body weight on hands, and bring feet onto the platform</title>
+            <path d="M5 155H165V85H295V170H5Z" class="v-platform"/>
+            <g class="v-robot green-robot"><circle cx="113" cy="81" r="8"/><path d="M107 94L86 124L112 140L102 155M86 124L68 146L57 155M105 99L139 96L172 85M105 99L134 85L162 85"/></g>
+            <g class="v-robot green-robot" opacity=".5"><circle cx="225" cy="42" r="7"/><path d="M216 53L191 70L217 85L204 85M191 70L180 106L169 120M214 56L238 85"/></g>
+            <g fill="var(--orange)"><circle cx="162" cy="85" r="4"/><circle cx="172" cy="85" r="4"/><circle cx="238" cy="85" r="4"/></g>
+          </svg>
+          <p><strong>Task:</strong> reach, load the hands, lift the body, then place the feet on top.</p>
+          <p><strong>Hypothesis:</strong> references help discover the ordered support changes before forward progress is possible.</p>
+        </div>
+        <div class="card"><h3>02 · Crawl, then stand</h3>
+          <svg viewBox="0 0 300 180" role="img" aria-labelledby="crawl-scenario-title"><title id="crawl-scenario-title">Crawl on hands and knees beneath a low ceiling, then stand after clearing it</title>
+            <path d="M5 155H295" class="v-ground"/><rect x="10" y="85" width="171" height="15" fill="var(--ink)"/>
+            <g class="v-robot green-robot"><circle cx="117" cy="119" r="7"/><path d="M105 127L64 130L79 155L55 155M102 129L122 155M64 130L44 145L29 155"/></g>
+            <g class="v-robot green-robot" opacity=".6"><circle cx="246" cy="64" r="9"/><path d="M246 79V119L224 155M246 119L271 155M246 91L224 109M246 91L267 106"/></g>
+            <g fill="var(--orange)"><circle cx="79" cy="155" r="4"/><circle cx="122" cy="155" r="4"/></g>
+          </svg>
+          <p><strong>Task:</strong> lower onto hands and knees, cross a low passage, and stand after the exit.</p>
+          <p><strong>Hypothesis:</strong> references help learn entry and exit transitions while keeping the head clear of the ceiling.</p>
+        </div>
+        <div class="card"><h3>03 · Crawl into a climb</h3>
+          <svg viewBox="0 0 300 180" role="img" aria-labelledby="chain-scenario-title"><title id="chain-scenario-title">A crawl passage ends close to a ledge, requiring a direct transition to hand-supported climbing</title>
+            <path d="M5 155H180V90H295V170H5Z" class="v-platform"/><rect x="8" y="85" width="100" height="13" fill="var(--ink)"/>
+            <g class="v-robot green-robot" opacity=".6"><circle cx="82" cy="120" r="6"/><path d="M72 128L39 130L54 155L32 155M70 129L89 155"/></g>
+            <g class="v-robot green-robot"><circle cx="146" cy="91" r="7"/><path d="M140 104L119 129L139 143L129 155M119 129L103 148L96 155M140 108L163 102L186 90"/></g>
+            <g class="v-robot green-robot" opacity=".5"><circle cx="239" cy="49" r="7"/><path d="M230 60L208 75L230 90L218 90M208 75L195 107L182 119M229 63L254 90"/></g>
+            <g fill="var(--orange)"><circle cx="89" cy="155" r="4"/><circle cx="186" cy="90" r="4"/><circle cx="254" cy="90" r="4"/></g>
+          </svg>
+          <p><strong>Task:</strong> leave the passage and climb without resetting to a standard standing pose.</p>
+          <p><strong>Hypothesis:</strong> synthesized transitions improve success on unseen ceiling heights and obstacle spacing.</p>
+        </div>
+      </div>
+      <p class="callout">For each scene, add a longer walking route to the same goal. Vary β and measure route choice, support contacts, time, and failures.</p>
+      <p class="footnote">Proposed benchmarks, not claims that RL cannot learn these motions. Compare matched training budgets (p14). Orange dots mark support contacts. Validate hand/knee collision models and load limits; measure risk through repeated trials rather than labeling hand support “safe”.</p>
     </section>
   </main>
   <footer>
@@ -425,7 +484,7 @@
     <nav class="dots" aria-label="Choose slide"></nav>
     <div class="controls">
       <button class="nav-button" id="previous" type="button" aria-label="Previous slide">←</button>
-      <span id="counter" aria-live="polite" aria-atomic="true">01 / 14</span>
+      <span id="counter" aria-live="polite" aria-atomic="true">01 / 15</span>
       <button class="nav-button" id="next" type="button" aria-label="Next slide">→</button>
       <button class="nav-button" id="print" type="button" aria-label="Print all slides">Print</button>
     </div>
