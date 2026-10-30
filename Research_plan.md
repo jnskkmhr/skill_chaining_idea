@@ -10,7 +10,7 @@ The deployed system is hierarchical. A learned contact planner chooses upcoming 
 
 The two research hypotheses are:
 
-1. **Tactile contact control:** spatial and temporal foot-pressure observations improve contact execution and recovery beyond proprioception, terrain perception, binary contact flags, and total foot force.
+1. **Tactile contact control:** spatial and temporal six-axis tactile observations improve contact execution and recovery beyond proprioception, terrain perception, normal-pressure maps, and a single total six-axis force/torque measurement.
 2. **Risk-conditioned contact planning:** a planner trained with a risk-dependent objective changes its contact strategy on the same navigation problem. Conservative settings should reduce poor outcomes when safer alternatives are available, potentially at a cost in time or energy.
 
 The combined hypothesis is that measured support conditions improve subsequent risk-conditioned decisions, not only immediate stabilization. Each component must first demonstrate value separately.
@@ -19,7 +19,7 @@ The combined hypothesis is that measured support conditions improve subsequent r
 
 [ACP](https://arxiv.org/html/2610.31608v1) supplies the architectural starting point. Its planner uses supervised learning on hindsight contact labels from successful controller executions. Its controller uses RL. Motion sources and AME-policy data contribute to its initial reference collection; they are distinct from the controller-rollout supervision used by its planner.
 
-[TactileStep](https://arxiv.org/abs/2609.28959) and [Tac4Loco](https://arxiv.org/abs/2608.15766) establish strong prior work on sole sensing for humanoid locomotion. Adding foot pressure to an actor is therefore not a sufficient contribution. Our experiments must establish improved contact recovery and, separately, useful changes to future contact decisions.
+[TactileStep](https://arxiv.org/abs/2609.28959) and [Tac4Loco](https://arxiv.org/abs/2608.15766) establish strong prior work on sole sensing for humanoid locomotion. The available sensor reports three force and three torque components at every sensing element. Our question is whether this spatial six-axis information improves recovery beyond pressure sensing or a total foot force/torque measurement; the richer sensor alone does not establish a control contribution. The primary experiment tests contact recovery. A separate extension tests whether tactile feedback also improves future contact decisions.
 
 [Risk-aware quadrupedal locomotion](https://arxiv.org/abs/2309.14246) already demonstrates adjustable risk through distributional RL. Our proposed extension is risk-conditioned whole-body contact selection on a humanoid under uncertain support, with tactile observations informing execution and planning. CVaR itself is not a novel algorithmic contribution.
 
@@ -51,22 +51,23 @@ Use an attention-based terrain encoder as the initial architecture. Each body qu
 
 Start with a 50 Hz interface for both policies and measure inference cost, target changes, and action smoothness. Adjust the planner rate or command persistence only if needed. Terrain observations must contain intended contact surfaces. A single ground height map is insufficient for some overhangs and vertical hand supports; begin with visible top surfaces, then validate a representation that includes additional surfaces before expanding the task set.
 
-## 5. Tactile observations and their limits
+## 5. Dense six-axis tactile observations
 
-Start with foot pressure arrays. Candidate actor features are the pressure map, total normal load, loaded area, and center of pressure. Center of pressure is the pressure-weighted location on the foot sole and is undefined when the foot is unloaded; mask it in that case. A short history combines these measurements with base and joint motion.
+The available tactile hardware reports **six components at each sensing element: three forces and three torques**. Treat this as a spatial array of local force/torque measurements, not a normal-pressure map or a single force/torque sensor at the ankle. A force vector and a torque vector together form a **wrench**.
 
-Normal pressure does not directly measure shear force, friction coefficient, or foot slip velocity. The policy may infer useful support changes from pressure and motion together. Test that inference rather than describing it as a direct sensor measurement. A slipping hand cannot be directly sensed with foot arrays; claims about hand tactile recovery require instrumented hands and their own evaluation.
+For each element, define its calibrated location, axes, and the reference point about which torque is reported. Store the force components in newtons and torque components in newton-metres. State whether the sign denotes the environment acting on the robot or the opposite; use the same convention in simulation and hardware. Preserve the spatial arrangement and a short signal history. The observation is a time sequence of element locations and six-component measurements, with masks for unavailable or invalid elements.
 
-Calibrate simulation observations against the intended sensor: spatial resolution, saturation, offsets, noise, filtering, latency, and missing samples. Do not train on high-resolution simulator forces and then deploy on an incompatible scalar sensor. Match observation processing between training and hardware.
+Three-axis forces provide tangential force as well as normal loading when resolved against a known surface normal. Torques provide moments about the element reference point. These are directly measured channels. Slip velocity, the available friction limit, terrain material, and sinking depth are not direct outputs of this sensor. Estimate useful contact conditions from tactile history and robot motion, and validate those estimates against independent measurements. Tangential force divided by normal force is a loading ratio, not the friction coefficient or a known margin to slip.
 
-Introduce support conditions progressively:
+The controller should learn how local loading patterns relate to sliding, foot rotation, partial support, and recovery. Candidate corrections include redistributing load, adjusting ankle action, and repositioning the foot. A local torque can arise from force acting away from its reference point; do not automatically interpret every torque channel as pure contact twisting. Test whether local torque information adds value beyond dense three-axis force measurements.
 
-1. Rigid terrain with varied friction and partial footholds.
-2. Contact disturbances and changes in support quality.
-3. Calibrated compliant supports.
-4. Deformable or granular terrain, once the simulator and sensor model reproduce relevant yielding behavior.
+When constructing a total foot wrench, rotate element measurements into one frame and shift moments to one chosen origin before summing. Include the moment produced by each force's offset from that origin. Check the sensor's torque definition to avoid counting this contribution twice. See [Modern Robotics: Wrenches](https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-4-wrenches/) for frame and reference-point conventions. If a pressure or center-of-pressure baseline is used, derive it with an explicit contact-surface model and mask unloaded contacts.
 
-Foot-pressure changes do not uniquely identify terrain material. The desired behavior is useful adaptation to observed support, without requiring an explicit material label.
+Calibrate spatial resolution, six-axis gains and offsets, force–torque cross-axis coupling, saturation, filtering, sampling rate, latency, and failed elements. The simulator must reproduce the signals available at each physical element. A total rigid-body contact wrench alone is not a dense tactile array. Contact forces and their application points may support element-level force and moment calculations, but the sensor's internal deformation and measurement response must be calibrated. Do not invent independent per-element torque channels from an aggregate contact signal.
+
+Introduce conditions progressively: rigid terrain with varied friction and partial footholds; disturbances that cause sliding or foot rotation; calibrated compliant supports; then deformable or granular terrain with validated yielding behavior. Add measured translation and rotation of the foot relative to its support surface to the recovery evaluation.
+
+The sensor specification confirms channel content, not placement on every robot body. Start with the planned foot instrumentation. Direct hand-tactile recovery claims require instrumented hands. Keep the initial planner output as contact positions and active flags: measured wrenches enrich feedback without requiring planned force or torque targets.
 
 ## 6. Stage1: train the contact-conditioned controller
 
@@ -122,7 +123,7 @@ Report both aggregate performance and results per terrain class. Otherwise the w
 
 ## 10. Closed-loop behavior to test
 
-An unexpected partial foothold changes the pressure map. The controller should stabilize or replace the foot. At the next planner update, tactile and robot-state history can inform a revised contact target or additional support. This is the proposed interaction between local execution and planning.
+An unexpected partial foothold changes the spatial force/torque distribution. The controller should stabilize or replace the foot. At the next planner update, tactile and robot-state history can inform a revised contact target or additional support. This is a separate hypothesis about the interaction between execution and planning; the primary tactile contribution is controller recovery.
 
 The experiment must distinguish a fast corrective action from a changed future strategy. Measure both. Apply the same perturbations to policies with and without tactile observations. For planning, compare tactile input in the controller only against tactile input in both policies.
 
@@ -132,8 +133,8 @@ The risk setting should change the response when alternatives exist. For example
 
 | Experiment | Controlled comparison | Main measurements |
 | --- | --- | --- |
-| Contact recovery | Same commands and perturbations, tactile input on/off | Contact error, slip, recovery time, fall rate |
-| Tactile representation | Binary contact, total load, spatial map, temporal map | Recovery and hardware transfer |
+| Contact recovery | Same commands and perturbations, tactile input on/off | Contact error, translational slip, foot rotation, recovery time, fall rate |
+| Tactile representation | Normal-pressure map; total six-axis wrench; dense three-axis forces; dense six-axis signals; with/without history | Separate spatial, shear-force, torque, and temporal benefits |
 | Planner feedback | Tactile controller only versus tactile controller plus planner | Future target changes, support use, success |
 | Risk control | Same start, goal, geometry, and disturbance distribution; sweep α | Route/contact choice, time, effort, success, lower-tail return |
 | Planner learning | Supervised-only, mean-return RL, risk-conditioned RL | Held-out success and poor outcomes |
@@ -141,14 +142,14 @@ The risk setting should change the response when alternatives exist. For example
 
 Contact-position error compares the realized body contact location to its commanded terrain point at contact onset. Track target revisions explicitly. Slip is body contact-point motion relative to the contacted support surface during support; for deformable terrain, account for local surface motion. Define recovery time from perturbation onset to a specified stable-support criterion. Set thresholds before comparing methods.
 
-Report peak contact force, repeated-trial confidence intervals, and multiple training seeds alongside task success. Evaluate empirical lower-tail returns using enough trials for the selected tail fraction. Also report failure rate at matched completion time or effort where possible, since a slower policy can appear safer without better contact reasoning.
+Report peak contact force and torque about the defined sensor reference point, repeated-trial confidence intervals, and multiple training seeds alongside task success. Evaluate empirical lower-tail returns using enough trials for the selected tail fraction. Also report failure rate at matched completion time or effort where possible, since a slower policy can appear safer without better contact reasoning.
 
 Match observation access, robot limits, source data, procedural terrain exposure, reward terms, and training budget across baselines. Include fixed-risk policies and one policy conditioned on α. Include a reference-free goal-reaching RL baseline. For sensor tests, add delay, dropout, and calibration error deliberately rather than only testing ideal measurements.
 
 ## 12. Implementation milestones
 
 1. **Dataset and interface validation.** Replay the existing paired motions and terrains with the selected G1 contact geometry. Validate labels and a contact-command adapter to the mimic controller infrastructure.
-2. **Controller and sensing baseline.** Train contact execution on rigid terrain and calibrate the pressure observation model. Demonstrate recovery improvement against matched non-tactile and force-only baselines.
+2. **Controller and sensing baseline.** Train contact execution on rigid terrain and calibrate the dense six-axis observation model. Demonstrate recovery improvement against matched non-tactile, pressure-map, total-wrench, and dense-force baselines.
 3. **Planner initialization.** Record successful controller rollouts, produce hindsight contact targets, and train terrain-point and active-flag prediction. Verify closed-loop navigation before introducing risk learning.
 4. **Risk-learning validation.** Validate empirical CVaR on a small route-choice problem, then train the humanoid planner with a frozen controller. Compare against mean-return planning.
 5. **Integrated adaptation.** Evaluate tactile history in the planner, alternate controller updates if needed, and test unseen compositions and physical conditions.
@@ -158,6 +159,6 @@ Compliant and granular contact experiments follow rigid-terrain validation. Dire
 
 ## 13. Success criteria
 
-The first contribution requires statistically supported recovery gains beyond a binary contact or total-force baseline, with a matched sensing and control setup on hardware. The second requires repeatable contact or route changes under the risk command, together with measured improvement of poor outcomes and an explicit time or energy tradeoff. The integrated result must show that tactile evidence changes later planning decisions usefully.
+The first contribution requires statistically supported recovery gains beyond normal-pressure-map and total-six-axis-wrench baselines, plus an ablation against dense three-axis force sensing, with a matched sensing and control setup on hardware. The second requires repeatable contact or route changes under the risk command, together with measured improvement of poor outcomes and an explicit time or energy tradeoff. A separate integrated extension can test whether tactile evidence improves later planning decisions; do not make that claim without the corresponding ablation.
 
 If tactile input only reduces touchdown force, narrow the claim to that outcome. If risk only changes speed, do not claim contact-strategy control. If improvements only occur on demonstrated terrain, do not claim generalization to novel combinations. These criteria determine whether the proposed story is supported by experiments.

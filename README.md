@@ -1,6 +1,6 @@
 # Risk-Conditioned Whole-Body Navigation
 
-Research proposal for tactile-informed whole-body contact control and a risk-conditioned contact planner on a humanoid robot.
+Research proposal for whole-body contact control using dense six-axis tactile feedback and a risk-conditioned contact planner on a humanoid robot.
 
 [Open the slides](https://jnskkmhr.github.io/skill_chaining_idea/) · [Detailed research plan](Research_plan.md)
 
