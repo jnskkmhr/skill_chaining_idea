@@ -103,23 +103,137 @@ Navigation return rewards progress and goal completion and penalizes time, falls
 
 Use a curriculum that offers multiple feasible strategies. If every scene has only one viable route, changing risk cannot produce meaningful route selection. Vary support reliability repeatedly for matched geometry so the training distribution contains uncertainty relevant to the decision.
 
-## 9. Risk objective and implementation
+## 9. Mathematical formulation of the contact planner
 
-Let **R** be the total reward of one navigation episode, with larger values preferred. Let **α** be a fraction between zero and one supplied to the planner. Lower-tail **CVaR at α** is the average return among the worst α fraction of episodes under that conditioned policy and task distribution.
+### 9.1 Physical state, planner action, and partial observations
 
-The training objective is to maximize that lower-tail average. At α = 1 it becomes mean return; smaller values emphasize poor outcomes. This parameterization covers risk-averse through risk-neutral behavior. It does not provide explicit risk-seeking optimization, and α is not a probability-of-safety guarantee.
+Let **t** index planner updates. Let **xₜ** be the full physical state: robot configuration and velocity, terrain and contact state, friction and compliance parameters, controller memory, and the remaining episode time. Including hidden physical parameters and controller memory is necessary for a Markov model; a terrain scan and joint state alone need not be Markov.
 
-An equivalent scalar objective is:
+Let **aₜ** be the planner action: a terrain contact position and an active flag for each of the nine contact-enabled bodies. Let **g** be the fixed goal pose. Let **α ∈ (0, 1]** be the risk setting, held fixed within an episode. Let **θ** denote planner parameters and **φ** the parameters of the fixed whole-body controller. The controller executes contact commands through joint actions; it is part of the planner's environment.
 
-`maximize over policy and η: η − E[max(η − R, 0)] / α`
+Let **Pφ** be the physical transition model induced by that controller and the simulator. At a fixed planner update interval:
 
-Here **η** is an estimated lower-tail return threshold, and **E** denotes the expectation over episodes from the conditioned policy. For implementation, start with complete-episode returns and an episodic CVaR policy-gradient objective. Validate the estimator on a small stochastic route-choice task before integrating the humanoid. Use enough episodes per risk setting to estimate the tail; very small tails have high sampling variance.
+\[
+x_{t+1}\sim P_\phi(\cdot\mid x_t,a_t).
+\]
 
-Keep α fixed within a training episode. Sample a set of α values across episodes and provide the same value to the actor and any learned value estimator. An ordinary mean-return PPO update with α appended to the observation does not optimize this objective.
+The task state can be written as **sₜ = (xₜ, g, α)**. Goal and risk are constant context during an episode. Risk changes the planner's action distribution and learning objective; it does not change the physical transition for a fixed state and contact action. Goal-dependent termination stops the episode on success; failures and timeout also terminate it.
 
-A distributional critic predicts a return distribution rather than only its mean. Evaluate it as a way to improve estimates and support risk-sensitive actor updates. Do not equate averaging per-step lower-tail values with exact episode-return CVaR: a dynamic risk objective can differ from the static episode objective above. State the implemented objective and compare it against measured complete-episode outcomes.
+The deployed planner does not observe all of xₜ. Let **oₜ** contain the terrain map, robot proprioception, and dense six-axis tactile signals. Let **hₜ = (o₀, a₀, …, aₜ₋₁, oₜ)** be the observation/action history. The planner is:
 
-Report both aggregate performance and results per terrain class. Otherwise the worst episodes may all come from one difficult terrain type, concealing what risk conditioning does elsewhere. At deployment, evaluate risk-command changes during stable support before changes in demanding transitions. Episode-level training does not automatically guarantee coherent or safe behavior under arbitrary mid-episode risk changes.
+\[
+a_t\sim\pi_\theta(\cdot\mid h_t,g,\alpha).
+\]
+
+The full-state simulator admits an MDP formulation; deployment is a **partially observable MDP (POMDP)** because friction, compliance, and unobserved terrain state are hidden. A finite history or recurrent encoder is an approximation to the information in hₜ, not proof that its features form a sufficient Markov state. If the controller changes during training, Pφ changes; freeze it initially and collect fresh planner data after controller updates.
+
+### 9.2 Discounted episode return and the risk-neutral objective
+
+Let **rₜ = r_g(xₜ, aₜ, xₜ₊₁)** be the task reward, **γ ∈ (0, 1]** the discount factor, and **T** the number of planner steps until termination. Define the random discounted episode return under θ and α as **Gθ,α**:
+
+\[
+G_{\theta,\alpha}=\sum_{t=0}^{T-1}\gamma^t r_t.
+\]
+
+Reward goal progress and completion; penalize time, falls, unintended collisions, and excessive effort. Specify how controller-step rewards are accumulated into each planner-step reward if the two policies run at different rates. Keep the reward weights, time discretization, and discount factor fixed when comparing risk settings.
+
+Standard risk-neutral RL optimizes:
+
+\[
+\max_\theta\;\mathbb{E}[G_{\theta,\alpha}].
+\]
+
+The expectation averages over the declared start/terrain distribution, physical randomization, disturbances, and stochastic actions. **The return is the discounted sum. Expected return and CVaR are different ways of evaluating the distribution of that same sum.** CVaR is not an additional physical reward at every timestep. γ weights future rewards; it is not the risk-preference parameter.
+
+### 9.3 Lower-tail CVaR of return
+
+Use **α** as the fraction of lowest-return outcomes to average. Smaller α emphasizes poor episodes; α = 1 includes all episodes. Let **η** be a scalar return threshold, and define the positive part **(z)⁺ = max(z, 0)** for any scalar z. Lower-tail CVaR is:
+
+\[
+\operatorname{CVaR}^{\downarrow}_{\alpha}(G_{\theta,\alpha})
+=\max_{\eta\in\mathbb{R}}\left\{
+\eta-\frac{1}{\alpha}\mathbb{E}\left[(\eta-G_{\theta,\alpha})^+\right]
+\right\}.
+\]
+
+This definition also handles discrete returns and ties by taking the required fraction of probability mass at the tail boundary. Writing only a conditional expectation below a quantile can mishandle such ties. At α = 1 the expression equals the expected return. At α = 0.1 it averages the worst 10% of return probability mass. Larger lower-tail CVaR is preferred.
+
+The main formulation is a risk-sensitive return objective:
+
+\[
+\max_\theta\;\operatorname{CVaR}^{\downarrow}_{\alpha}(G_{\theta,\alpha}).
+\]
+
+It replaces the mean-return criterion; it does not add a separate CVaR reward. Low return can reflect delay, energy use, or failure, depending on reward design. Consequently, return CVaR is not itself a bound on fall probability. This lower-tail family covers risk aversion through risk neutrality, not explicit risk seeking. See [Chow et al., Risk-Sensitive and Robust Decision-Making](https://papers.neurips.cc/paper_files/paper/2015/file/64223ccf70bbb65a3a4aceac37e21016-Paper.pdf).
+
+### 9.4 Optional mean–CVaR objective and training across risk settings
+
+A combined objective is also valid. Define **λ ∈ [0, 1]** as a fixed weight between the mean and the lower-tail criterion:
+
+\[
+\max_\theta\;(1-\lambda)\mathbb{E}[G_{\theta,\alpha}]
++\lambda\operatorname{CVaR}^{\downarrow}_{\alpha}(G_{\theta,\alpha}).
+\]
+
+λ = 0 gives mean-return training; λ = 1 gives the chosen CVaR-only method. A fixed intermediate λ provides an ablation for the mean/tail tradeoff. Both terms favor larger returns, so the CVaR term has a plus sign. Equivalently, subtracting the shortfall between mean and CVaR from the mean produces this convex combination. Keep λ fixed in the initial study and use α as the single user command. See [Chow and Ghavamzadeh, Algorithms for CVaR Optimization in MDPs](https://proceedings.neurips.cc/paper_files/paper/2014/file/35f1050a4381d2d216bf56ad46b0277d-Paper.pdf).
+
+For one policy trained across risk settings, let **q** be the training distribution over α. The chosen objective is:
+
+\[
+\max_\theta J(\theta),\qquad
+J(\theta)=\mathbb{E}_{\alpha\sim q}
+\left[\operatorname{CVaR}^{\downarrow}_{\alpha}(G_{\theta,\alpha})\right].
+\]
+
+Compute each tail conditional on its risk setting, rather than pooling returns from different α values into one tail. With discrete training settings, use enough rollouts per setting to estimate its threshold η. The same initial-task distribution should be used across α values. Report terrain-specific results as well as the aggregate objective: a tail over all tasks may otherwise consist mostly of one difficult terrain class. Shared policy parameters can also create tradeoffs between risk settings; conditioning does not guarantee that one network matches every separately trained optimum.
+
+### 9.5 Actor updates, distributional critics, and temporal consistency
+
+Start by validating an episodic CVaR estimator on a small stochastic route-choice task. Retain successes and failures. Estimate the return threshold for each α from complete episodes, and update the actor using a CVaR policy-gradient estimator. A distributional critic can estimate a return distribution and its tail; using that critic with an unchanged mean-return actor objective does not implement CVaR optimization.
+
+For clarity, let **τ** denote a complete trajectory, **pθ(τ | α)** its probability under the planner and fixed environment, and **η** the current threshold. At fixed η, the planner gradient of the threshold objective is:
+
+\[
+-\frac{1}{\alpha}\mathbb{E}\left[
+(\eta-G_{\theta,\alpha})^+
+\nabla_\theta\log p_\theta(\tau\mid\alpha)
+\right].
+\]
+
+For parameter-independent environment dynamics, the log-probability gradient is the sum of the planner's action log-probability gradients along the trajectory. The threshold must also be estimated or optimized; an arbitrary mean-return advantage is not a substitute. This expression describes the objective, not a completed PPO implementation. Any clipped surrogate, baseline, or bootstrapped estimator must be checked against the intended episodic criterion.
+
+A **static episode CVaR objective** evaluates the full return from the start. It is generally not equivalent to applying lower-tail CVaR independently to every state's future return in an ordinary Bellman update. Exact dynamic-programming treatments may augment the state with a risk variable. Our history-conditioned policy with sampled episodes is a policy-search formulation, without a claim of globally optimal Markov control. [Chow et al.](https://papers.neurips.cc/paper_files/paper/2015/file/64223ccf70bbb65a3a4aceac37e21016-Paper.pdf) treat the state-augmentation issue.
+
+[Distributional PPO for quadrupedal locomotion](https://arxiv.org/html/2309.14246v2) uses risk-distorted value estimates in policy updates. It is a useful comparison, but its statewise value distortion must not be presented as an exact optimizer of our static episode-CVaR objective without justification.
+
+Keep α fixed during each initial training episode. Mid-episode changes alter the preference under which future actions are chosen; episode-start CVaR training alone does not guarantee dynamically consistent behavior after such switches. Test switches during stable support first and report the resulting outcomes separately.
+
+### 9.6 When the problem becomes a constrained MDP
+
+A constrained MDP requires an explicit cost and budget. Define **cₜ ≥ 0** as a safety cost and **Cθ,α = Σₜ₌₀ᵀ⁻¹ cₜ** as its undiscounted finite-episode sum. Let **b** be an allowed expected cost. An expected-cost formulation is:
+
+\[
+\max_\theta\;\mathbb{E}[G_{\theta,\alpha}]
+\quad\text{subject to}\quad
+\mathbb{E}[C_{\theta,\alpha}]\le b.
+\]
+
+For example, assign cost one at the first fall and zero otherwise. Then C is an episode fall indicator and E[C] is the probability of a fall under the specified task distribution. An undiscounted cost avoids making a late fall count less than an early fall. A different nonnegative cost could measure cumulative excess force or actuator-limit violations, but its units and budget must be specified separately. See [Achiam et al., Constrained Policy Optimization](https://proceedings.mlr.press/v70/achiam17a/achiam17a.pdf).
+
+A tail-cost constraint is another option. Let **β ∈ (0, 1]** denote the fraction of highest-cost episodes and **ζ** a cost threshold. Define upper-tail CVaR by:
+
+\[
+\operatorname{CVaR}^{\uparrow}_{\beta}(C)
+=\min_{\zeta\in\mathbb{R}}\left\{
+\zeta+\frac{1}{\beta}\mathbb{E}[(C-\zeta)^+]
+\right\}.
+\]
+
+Then replace the expected-cost constraint with **CVaR↑β(Cθ,α) ≤ b**. This is a risk-constrained formulation; a cost-tail constraint is not the same as maximizing lower-tail return. Return-risk preference α, cost-tail fraction β, and budget b have distinct meanings. A risk-sensitive return objective may also be combined with a cost constraint when the task requires both.
+
+A fixed reward penalty for cost is not a constraint. Constrained optimization requires a method that enforces or approximates the stated bound, plus empirical checks of constraint violations. An expected or tail-cost bound under the training distribution does not guarantee safety on every trial or on unseen hardware conditions.
+
+**Chosen scope:** begin with risk-sensitive POMDP policy search using lower-tail episode-return CVaR, without a separate cost constraint. Add a constrained formulation only when the application supplies an explicit cost definition and acceptable budget. Do not describe α as an allowed failure probability.
 
 ## 10. Closed-loop behavior to test
 

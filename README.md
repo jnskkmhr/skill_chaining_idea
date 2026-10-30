@@ -4,7 +4,7 @@ Research proposal for whole-body contact control using dense six-axis tactile fe
 
 [Open the slides](https://jnskkmhr.github.io/skill_chaining_idea/) · [Detailed research plan](Research_plan.md)
 
-Use arrow keys or navigation buttons to move through 17 slides. The risk slider illustrates lower-tail CVaR using explicitly stated synthetic outcomes. Print exports every slide to PDF.
+Use arrow keys or navigation buttons to move through 22 slides. The risk slider illustrates lower-tail CVaR using explicitly stated synthetic outcomes. Print exports every slide to PDF.
 
 Both the planner and controller run during deployment. Training starts with motion–terrain pairs, initializes planning from successful controller rollouts, and then uses navigation reinforcement learning with successful and failed episodes.
 
