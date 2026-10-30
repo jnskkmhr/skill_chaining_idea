@@ -1,11 +1,13 @@
 # Risk-Conditioned Whole-Body Navigation
 
-An interactive research slide deck about agent-aided trajectory synthesis, closed-loop distillation, and risk-conditioned humanoid navigation.
+Research proposal for tactile-informed whole-body contact control and a risk-conditioned contact planner on a humanoid robot.
 
-[Open the slides](https://jnskkmhr.github.io/skill_chaining_idea/)
+[Open the slides](https://jnskkmhr.github.io/skill_chaining_idea/) · [Detailed research plan](Research_plan.md)
 
-Use the arrow keys or navigation buttons to move between slides. Use Print to export all 15 slides to PDF.
+Use arrow keys or navigation buttons to move through 16 slides. The risk slider illustrates lower-tail CVaR using explicitly stated synthetic outcomes. Print exports every slide to PDF.
 
-The site is a self-contained `index.html` with inline styles, scripts, and vector illustrations. Open it directly in a browser to preview changes. GitHub Pages serves the root of the `gh-pages` branch.
+Both the planner and controller run during deployment. Training starts with motion–terrain pairs, initializes planning from successful controller rollouts, and then uses navigation reinforcement learning with successful and failed episodes.
 
-This is a research proposal; illustrated outcome distributions are not experimental results.
+The self-contained `index.html` uses inline styles, scripts, and vector illustrations. Open it directly to preview. GitHub Pages serves the root of the `gh-pages` branch.
+
+This is a research proposal. Diagrams and illustrative outcome distributions are not experimental results.
