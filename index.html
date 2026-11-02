@@ -1,423 +1,435 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light"><title>Risk-Conditioned Whole-Body Navigation — Research Proposal</title><style>
-    :root { --paper:#f5f3ec; --ink:#192e38; --muted:#536770; --line:#d6ddd6; --green:#096c60; --mint:#deeee5; --orange:#b44925; --white:#fffef9; }
-    * { box-sizing:border-box; }
-    body { margin:0; background:var(--paper); color:var(--ink); font-family:Inter,"Segoe UI",Arial,sans-serif; }
-    button,input,a { -webkit-tap-highlight-color:transparent; }
-    button { font:inherit; cursor:pointer; }
-    a { color:var(--green); text-underline-offset:4px; }
-    a:hover { color:var(--orange); }
-    :focus-visible { outline:3px solid var(--orange); outline-offset:5px; }
-    header { height:76px; padding:0 5vw; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); gap:20px; }
-    .brand { font-size:13px; font-weight:750; letter-spacing:.08em; text-transform:uppercase; }
-    .status { font-size:12px; color:var(--muted); }
-    main { max-width:1440px; margin:auto; }
-    .slide { min-height:calc(100svh - 150px); padding:42px 5vw 28px; display:flex; flex-direction:column; justify-content:center; }
-    .slide[hidden] { display:none; }
-    .eyebrow { margin:0 0 16px; color:var(--green); font-size:12px; font-weight:750; text-transform:none; letter-spacing:.035em; line-height:1.45; }
-    h1,h2,h3,p { margin-top:0; }
-    h1 { font-size:clamp(42px,5.6vw,80px); line-height:1.04; letter-spacing:-.055em; margin-bottom:25px; font-weight:650; }
-    h2 { font-size:clamp(30px,3.65vw,51px); line-height:1.1; letter-spacing:-.04em; margin-bottom:20px; font-weight:650; max-width:1000px; }
-    h3 { font-size:21px; line-height:1.25; letter-spacing:-.025em; margin-bottom:12px; }
-    p,li,td { font-size:clamp(16px,1.5vw,20px); line-height:1.5; }
-    p { margin-bottom:18px; }
-    .lead { color:var(--muted); max-width:870px; font-size:clamp(19px,1.8vw,25px); }
-    .small { font-size:14px; color:var(--muted); line-height:1.55; }
-    .grid { display:grid; gap:22px; margin:15px 0 24px; }
-    .two { grid-template-columns:repeat(2,minmax(0,1fr)); }
-    .three { grid-template-columns:repeat(3,minmax(0,1fr)); }
-    .hero { grid-template-columns:1.2fr 1fr; align-items:center; gap:45px; }
-    .card { padding:26px; background:var(--white); border:1px solid var(--line); border-radius:15px; }
-    .card p:last-child { margin-bottom:0; }
-    .card .number { display:block; color:var(--green); font-size:13px; font-weight:750; margin-bottom:20px; }
-    .tint { background:var(--mint); border-color:#bdd7ca; }
-    .callout { padding:18px 23px; border-left:4px solid var(--green); background:var(--mint); margin:10px 0 0; font-size:clamp(17px,1.6vw,22px); line-height:1.45; }
-    .footnote { font-size:13px; color:var(--muted); margin:20px 0 0; line-height:1.5; }
-    .tag { display:inline-block; font-size:12px; font-weight:700; border:1px solid var(--line); border-radius:30px; padding:7px 12px; margin:0 5px 6px 0; }
-    .flow { display:flex; align-items:stretch; gap:12px; margin:23px 0; }
-    .flow .node { flex:1; padding:24px 18px; border:1px solid var(--line); border-radius:12px; background:var(--white); }
-    .flow .node strong { display:block; font-size:20px; margin-bottom:8px; }
-    .flow .node p { font-size:16px; margin:0; }
-    .arrow { align-self:center; color:var(--green); font-size:25px; }
-    .formula { font-size:clamp(20px,2.3vw,31px); line-height:1.5; padding:24px; background:var(--ink); color:var(--white); border-radius:12px; margin:20px 0; }
-    table { border-collapse:collapse; width:100%; margin:16px 0; }
-    th { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.08em; text-align:left; }
-    td,th { padding:14px 15px; border-bottom:1px solid var(--line); vertical-align:top; }
-    td { font-size:17px; }
-    td:first-child { font-weight:650; width:28%; }
-    .table-wrap { overflow-x:auto; }
-    figure { margin:0; }
-    svg { width:100%; height:auto; display:block; }
-    figcaption { margin-top:14px; font-size:13px; color:var(--muted); line-height:1.5; }
-    .scene { background:var(--white); border:1px solid var(--line); border-radius:16px; padding:14px 22px 20px; }
-    .scene text { font-family:Inter,"Segoe UI",Arial,sans-serif; }
-    .risk-control { display:flex; flex-wrap:wrap; align-items:center; gap:12px 22px; margin:16px 0 0; }
-    .risk-control label { font-size:16px; font-weight:650; }
-    .risk-control input { flex:1; min-width:130px; accent-color:var(--green); }
-    .risk-control .small { margin:0; }
-    .route path { fill:none; stroke:#a2ada7; stroke-width:3; stroke-dasharray:6 5; }
-    .route text { font-size:16px; text-anchor:middle; fill:var(--muted); paint-order:stroke; stroke:var(--white); stroke-width:7px; stroke-linejoin:round; }
-    .route.selected path { stroke:var(--green); stroke-width:5; stroke-dasharray:none; }
-    .route.selected text { fill:var(--green); font-weight:750; }
-    .risk-scene svg { max-height:210px; }
-    .refs { margin:10px 0 0; padding-left:24px; }
-    .refs li { font-size:16px; margin:0 0 14px; padding-left:8px; }
-    .refs span { display:block; color:var(--muted); font-size:14px; }
-    footer { height:74px; padding:0 5vw; display:flex; align-items:center; justify-content:space-between; gap:20px; border-top:1px solid var(--line); }
-    .controls { display:flex; align-items:center; gap:12px; }
-    .nav-button { border:1px solid var(--line); border-radius:8px; background:var(--white); color:var(--ink); min-width:42px; height:38px; padding:0 13px; }
-    .nav-button:hover:enabled { background:var(--mint); border-color:var(--green); }
-    .nav-button:disabled { opacity:.35; cursor:default; }
-    #counter { font-size:13px; font-variant-numeric:tabular-nums; min-width:48px; text-align:center; }
-    .dots { display:flex; gap:6px; }
-    .dot { border:0; padding:8px 4px; background:transparent; }
-    .dot::after { content:""; display:block; height:5px; width:19px; border-radius:4px; background:#c2cec6; }
-    .dot[aria-current="step"]::after { background:var(--green); }
-    .key-hint { font-size:12px; color:var(--muted); }
-    .progress { height:3px; position:fixed; bottom:0; left:0; background:var(--green); transition:width .18s ease; }
-    @media (min-width:1600px) { .slide { padding-left:60px; padding-right:60px; } }
-    @media screen and (min-width:761px) and (max-height:950px) {
-      .slide { padding-top:28px; padding-bottom:24px; }
-      .grid { margin:10px 0 16px; gap:18px; }
-      .card { padding:22px; } .flow { margin:16px 0; }
-      .scene svg { max-height:270px; }
-      .footnote { margin-top:14px; }
-    }
-    @media screen and (min-width:761px) and (max-height:800px) {
-      header { height:56px; } footer { height:56px; }
-      .slide { min-height:calc(100svh - 112px); padding:22px 4vw 18px; }
-      h1 { font-size:56px; } h2 { font-size:34px; margin-bottom:14px; }
-      h3 { font-size:19px; margin-bottom:8px; }
-      p,li,td { font-size:16px; } p { margin-bottom:12px; }
-      .lead { font-size:19px; } .eyebrow { margin-bottom:12px; }
-      .card { padding:18px; } .card .number { margin-bottom:12px; }
-      .flow { margin:12px 0; } .flow .node { padding:18px 14px; }
-      .flow .node strong { font-size:18px; } .flow .node p { font-size:15px; }
-      .callout { padding:14px 18px; font-size:17px; }
-      td,th { padding:11px 12px; } .small { font-size:13px; }
-      .scene svg { max-height:205px; } figcaption { margin-top:8px; }
-      .footnote { font-size:12px; margin-top:12px; }
-    }
-    @media (max-width:760px) {
-      header { height:64px; padding:0 22px; } .status { display:none; }
-      .slide { padding:30px 22px; min-height:calc(100svh - 138px); justify-content:flex-start; }
-      .hero,.two,.three { grid-template-columns:1fr; gap:14px; }
-      .grid { margin:10px 0 18px; } .card { padding:20px; } .card .number { margin-bottom:12px; }
-      .flow { flex-direction:column; gap:8px; } .flow .node { padding:18px; } .arrow { transform:rotate(90deg); }
-      footer { padding:0 22px; } .key-hint,.dots { display:none; } td,th { padding:12px 8px; } td { font-size:15px; }
-      .scene { padding:10px; } .formula { padding:20px; }
-    }
-    @media screen and (min-width:761px) and (max-height:650px) {
-      header,footer { height:48px; }
-      .slide { min-height:calc(100svh - 96px); padding-top:16px; padding-bottom:16px; }
-      h2 { font-size:30px; margin-bottom:12px; } .lead { font-size:17px; }
-      .grid { margin:8px 0 12px; } .card { padding:15px; }
-      .flow { margin:10px 0; } .flow .node { padding:14px; }
-      .flow .node p,td { font-size:14px; } td,th { padding:8px 12px; }
-      .scene svg { max-height:155px; } .scene { padding:8px 16px 12px; }
-      .callout { padding:12px 16px; font-size:16px; }
-      .footnote { margin-top:10px; } .small { margin-bottom:10px; }
-    }
-    @media (prefers-reduced-motion:reduce) { .progress { transition:none; } }
-    @media print {
-      @page { size:landscape; margin:12mm; }
-      body { background:white; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
-      header,footer,.progress { display:none; }
-      .slide,.slide[hidden] { display:flex; min-height:0; height:180mm; padding:8mm 3mm; break-after:page; break-inside:avoid; justify-content:center; }
-      .slide:last-child { break-after:auto; } h1 { font-size:48px; } h2 { font-size:35px; }
-      p,li,td { font-size:16px; } .lead { font-size:19px; } .card { padding:20px; }
-      .grid { gap:16px; margin:12px 0 18px; } .hero { grid-template-columns:1.2fr 1fr; } .two { grid-template-columns:1fr 1fr; }
-      .three { grid-template-columns:repeat(3,1fr); } .flow { flex-direction:row; } .arrow { transform:none; }
-      .footnote,.small,figcaption { font-size:12px; } .refs li { font-size:15px; margin-bottom:12px; }
-    }
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Risk-Conditioned Whole-Body Navigation — Research Proposal</title><style>
+:root{--paper:#fff;--white:#fff;--ink:#253e54;--muted:#586c79;--line:#d6dfe4;--green:#096c60;--mint:#eef5f3;--orange:#a72b27;--red:#a72b27}
+*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font-family:Arial,Helvetica,sans-serif}a{color:var(--green);text-underline-offset:3px}a:hover{color:var(--red)}button,input,select{font:inherit}button,select{cursor:pointer}:focus-visible{outline:3px solid var(--green);outline-offset:4px}
+header{height:62px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 4.5vw;gap:20px}.brand{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}.chapters{display:flex;gap:22px}.chapters a{font-size:14px;text-decoration:none;color:var(--muted)}.chapters a[aria-current]{font-weight:700;color:var(--green)}
+main{max-width:1640px;margin:auto}.slide{min-height:calc(100svh - 126px);padding:32px 4.5vw 24px;display:flex;flex-direction:column}.slide[hidden]{display:none}.eyebrow{margin:0 0 12px;font-size:14px;font-weight:700;color:var(--green);letter-spacing:.02em}h2{font-size:clamp(32px,3.3vw,48px);line-height:1.12;letter-spacing:-.025em;font-weight:700;margin:0 0 25px;max-width:1300px}h3{font-size:23px;line-height:1.22;margin:0 0 12px}p{font-size:23px;line-height:1.4;margin:0 0 18px}.slide-body{display:flex;flex-direction:column;gap:20px;flex:1;justify-content:center}.slide-body>p:last-child{margin-bottom:0}.lead{font-size:29px;line-height:1.4;max-width:1100px}.compact-lead{font-size:25px}.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}.panel{padding:22px 24px;border:1px solid var(--line);border-radius:5px}.panel p{margin:0}.contribution{font-weight:800;color:var(--red)}.contribution-panel{border:none;padding:18px 0 24px}.contribution-panel h3{font-size:27px;max-width:440px}.takeaway{border-left:4px solid var(--green);padding:13px 20px;margin:0;background:var(--mint);font-size:24px}.sources{font-size:15px;line-height:1.45;color:var(--muted);margin:0}.sources a{white-space:normal}.small{font-size:18px;color:var(--muted)}.label{font-size:14px;text-transform:uppercase;letter-spacing:.07em;color:var(--green);font-weight:700;margin:0 0 10px}.notation{font-size:19px;line-height:1.4;margin:0}.notation-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:25px}.notation-grid p{margin:0;font-size:21px}.notation-grid strong{font-size:26px}
+.sequence{display:flex;gap:16px;align-items:stretch;margin:10px 0 4px}.step{flex:1;padding:22px 20px;border:1px solid var(--line);border-radius:5px}.step p{font-size:22px;margin:0}.step-number{display:block;font-size:15px;font-weight:700;color:var(--green);margin-bottom:20px}.seq-arrow{align-self:center;font-size:28px;color:var(--green)}
+figure{margin:0;min-width:0}svg{display:block;width:100%;height:auto}.diagram{width:100%;overflow-x:auto}.diagram svg{max-height:280px}.cover .diagram svg{max-height:300px}.cover .lead{margin:0}.cover h2{font-size:clamp(40px,4.5vw,65px);max-width:1200px}.cover .slide-body{gap:14px}.exhibit-pair{display:grid;grid-template-columns:1.45fr 1fr;gap:35px;align-items:center}.exhibit-pair .diagram svg{max-height:340px}.annotation{min-width:0}.annotation p{font-size:23px}.annotation h3{color:var(--green)}.diagram-title{font:700 23px Arial,Helvetica,sans-serif;text-anchor:middle;fill:var(--ink)}.diagram-copy{font:20px Arial,Helvetica,sans-serif;text-anchor:middle;fill:var(--ink)}.diagram-caption{font:18px Arial,Helvetica,sans-serif;fill:var(--muted)}.diagram-box rect{fill:#fff;stroke:var(--line);stroke-width:1.5}
+.v-label{fill:var(--ink);font-size:20px}.v-bold{font-weight:700}.v-sub{fill:var(--muted);font-size:17px}.v-box{fill:#fff;stroke:var(--line);stroke-width:1.5}.tint-box{fill:var(--mint);stroke:var(--line)}.v-ground{fill:none;stroke:#87969f;stroke-width:2}.v-platform{fill:#e7ecef;stroke:#bbc7ce;stroke-width:1.5}.v-robot{fill:#fff;stroke:var(--ink);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}.v-robot path{fill:none}.v-robot circle{stroke-width:3}.green-robot{stroke:var(--green)}.v-guide{fill:none;stroke:#9aadb1;stroke-width:1.5;stroke-dasharray:5 5}
+.table-scroll{overflow-x:auto}table{width:100%;border-collapse:collapse}th{text-align:left;font-size:14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}td,th{padding:13px 15px;border-bottom:1px solid var(--line);vertical-align:top}td{font-size:21px;line-height:1.35}td:first-child{font-weight:700}#slide-11 td:first-child{width:20%}#slide-20 td{font-size:19px}#slide-20 td:first-child{width:55%}
+.math-block{padding:20px 12px;border:1px solid var(--line);border-radius:5px;overflow-x:auto;background:#fff}.math-block math{font-size:32px;margin:0}.equation-pair{display:grid;grid-template-columns:1.5fr 1fr;gap:40px;align-items:center}.equation-caption{font-size:17px;color:var(--muted);margin:10px 0 28px}.equation-caption:last-child{margin-bottom:0}dl{margin:0}dt{font-size:24px;font-weight:700}dd{font-size:21px;margin:4px 0 18px}.objective-chosen .math-block{border-color:var(--green);border-width:2px}.objective-chosen>p:last-child,.objective-alternative>p:last-child{font-size:21px;margin:12px 0 0}.objective-alternative .math-block math{font-size:29px}
+.risk-plot svg{max-height:355px}.risk-plot figcaption{font-size:15px;color:var(--muted);margin:6px 0 0}.risk-scores td{font-size:20px;padding:12px 6px}.risk-scores th{padding:10px 6px}.risk-scores tr.selected td{font-weight:800;background:var(--mint)}.risk-scores td:last-child{text-align:right;font-variant-numeric:tabular-nums}.risk-control{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:center}.risk-control label{font-size:21px;font-weight:700}.risk-control input{flex:1;min-width:140px;accent-color:var(--green)}.risk-control span{font-size:16px;color:var(--muted)}#risk-choice{font-size:24px;font-weight:700;color:var(--green);margin:18px 0 10px}.line-key{display:inline-block;width:27px;margin-right:8px;vertical-align:middle;border-top:3px solid #253e54}.line-key.support{border-color:#096c60;border-top-style:dashed}.line-key.jump{border-color:#a72b27;border-top-style:dotted}
+.reference-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 35px}.reference-grid p{font-size:17px;line-height:1.35;margin:0}.reference-grid p span{color:var(--muted);font-size:15px}.closing-links{display:flex;gap:25px;font-size:20px;margin-top:20px}.closing .panel{padding-top:25px;padding-bottom:40px}
+footer{height:64px;border-top:1px solid var(--line);padding:0 4.5vw;display:flex;align-items:center;justify-content:space-between;gap:18px}.controls{display:flex;gap:10px;align-items:center}.nav-button,select{border:1px solid var(--line);border-radius:4px;background:#fff;padding:8px 12px;color:var(--ink);font-size:15px}.nav-button:hover:enabled{background:var(--mint)}.nav-button:disabled{opacity:.3;cursor:default}#counter{font-size:14px;min-width:52px;text-align:center}#slide-select{max-width:380px;font-size:14px}.key-hint{font-size:13px;color:var(--muted)}.progress{position:fixed;left:0;bottom:0;height:3px;background:var(--green);transition:width .15s}.notes-panel{position:fixed;z-index:4;right:4.5vw;bottom:78px;width:min(760px,91vw);max-height:60vh;overflow:auto;background:#fff;border:1px solid var(--line);box-shadow:0 6px 30px #253e5420;padding:24px 28px;border-radius:5px}.notes-panel[hidden]{display:none}.notes-panel h3{padding-right:50px}.notes-panel p,.notes-panel figcaption{font-size:18px;line-height:1.5}.notes-panel .close{float:right;border:0;background:transparent;font-size:22px}
+@media(min-width:761px) and (max-height:800px){header{height:50px}.slide{min-height:calc(100svh - 106px);padding:22px 4vw 18px}footer{height:56px}h2{font-size:35px;margin-bottom:18px}.eyebrow{margin-bottom:10px;font-size:13px}.slide-body{gap:15px}p{font-size:20px;line-height:1.35;margin-bottom:13px}h3{font-size:21px}.panel{padding:17px 20px}.contribution-panel h3{font-size:24px}.takeaway{font-size:21px;padding:12px 16px}.lead{font-size:25px}.sources{font-size:13px}.sequence{gap:12px;margin:6px 0}.step{padding:16px}.step p{font-size:19px}.step-number{margin-bottom:12px}.diagram svg{max-height:210px}.cover .diagram svg{max-height:220px}.exhibit-pair .diagram svg{max-height:270px}.annotation p{font-size:20px}.math-block{padding:16px 10px}.math-block math{font-size:27px}.objective-alternative .math-block math{font-size:25px}.notation{font-size:17px}.notation-grid p{font-size:19px}.notation-grid strong{font-size:23px}.objective-chosen>p:last-child,.objective-alternative>p:last-child{font-size:19px}.equation-caption{font-size:15px;margin:8px 0 18px}dt{font-size:22px}dd{font-size:19px;margin-bottom:12px}td{font-size:19px}td,th{padding:10px 12px}#slide-20 td{font-size:17px}.risk-plot svg{max-height:280px}.risk-scores td{font-size:18px}.risk-control label{font-size:19px}.reference-grid p{font-size:15px}.reference-grid{gap:15px 25px}.cover h2{font-size:46px}#slide-select{max-width:300px}}
+@media(max-width:760px){header{height:auto;min-height:66px;flex-wrap:wrap;padding:13px 20px;gap:12px}.brand{font-size:11px}.chapters{gap:20px}.chapters a{font-size:12px}.slide{min-height:calc(100svh - 150px);padding:26px 20px;}.slide-body{justify-content:flex-start;gap:18px}h2{font-size:31px;margin-bottom:22px}.eyebrow{font-size:12px}.cover h2{font-size:40px}.lead{font-size:23px}p{font-size:19px}.two,.exhibit-pair,.equation-pair,.reference-grid{grid-template-columns:1fr;gap:18px}.panel{padding:18px}.contribution-panel{padding:5px 0 18px}.contribution-panel h3{font-size:24px}.takeaway{font-size:20px}.sequence{flex-direction:column;gap:8px}.seq-arrow{transform:rotate(90deg);align-self:center}.step{padding:18px}.step h3{font-size:21px}.step-number{display:inline-block;margin:0 12px 10px 0}.step p{font-size:19px}.diagram{overflow-x:auto}.diagram svg{min-width:620px;max-height:none}.cover .diagram svg{min-width:0;max-height:none}.risk-plot svg{max-height:none}.annotation p{font-size:20px}.sources{font-size:13px}.math-block math{font-size:25px;min-width:max-content}.objective-alternative .math-block math{font-size:23px}.notation{font-size:18px}.notation-grid{grid-template-columns:1fr;gap:12px}.notation-grid p{font-size:19px}.risk-control{gap:14px}.risk-control input{flex-basis:100%}.table-scroll table{min-width:590px}td{font-size:18px}footer{padding:10px 18px;height:auto;min-height:64px;flex-wrap:wrap;justify-content:center}.key-hint,#slide-select{display:none}.controls{gap:7px}.nav-button{padding:8px 10px}.closing-links{flex-direction:column;gap:15px}.notes-panel{bottom:78px}.reference-grid p{font-size:16px}}
+@media print{@page{size:320mm 180mm;margin:0}body{print-color-adjust:exact;-webkit-print-color-adjust:exact}header,footer,.progress,.notes-panel{display:none!important}main{max-width:none}.slide,.slide[hidden]{display:flex!important;width:320mm;height:180mm;min-height:0;padding:9mm 12mm;break-after:page;break-inside:avoid}.slide:last-child{break-after:auto}.slide-body{gap:14px;justify-content:center}h2{font-size:32px;margin-bottom:18px}.eyebrow{font-size:12px;margin-bottom:10px}p{font-size:19px}h3{font-size:21px}.lead{font-size:24px}.panel{padding:17px}.takeaway{font-size:20px;padding:11px 16px}.sources{font-size:12px}.sequence{margin:0;gap:12px}.step{padding:15px}.step p{font-size:18px}.step-number{margin-bottom:10px}.diagram svg{max-height:205px;min-width:0!important}.cover .diagram svg{max-height:235px}.cover h2{font-size:43px}.exhibit-pair .diagram svg{max-height:270px}.annotation p{font-size:19px}.math-block{padding:12px}.math-block math{font-size:25px}.objective-alternative .math-block math{font-size:23px}.notation{font-size:16px}.notation-grid p{font-size:18px}.notation-grid strong{font-size:22px}.equation-caption{font-size:14px;margin-bottom:18px}.objective-chosen>p:last-child,.objective-alternative>p:last-child{font-size:18px}dt{font-size:21px}dd{font-size:18px;margin-bottom:12px}td{font-size:18px}td,th{padding:9px 11px}#slide-20 td{font-size:16px}.risk-plot svg{max-height:270px}.risk-scores td{font-size:17px}.risk-control label{font-size:18px}#risk-choice{font-size:21px}.reference-grid{gap:14px 28px}.reference-grid p{font-size:15px}.reference-grid p span{font-size:13px}.closing .panel{padding-bottom:25px}.contribution-panel h3{font-size:24px}}
+@media(prefers-reduced-motion:reduce){.progress{transition:none}}
+</style></head><body><header><span class="brand">Whole-body humanoid navigation</span><nav class="chapters" aria-label="Presentation sections"><a href="#slide-1" data-group="Question">Question</a><a href="#slide-5" data-group="Controller">Controller</a><a href="#slide-10" data-group="Risk">Risk</a><a href="#slide-17" data-group="Validation">Validation</a></nav></header><main><section class="slide cover" id="slide-1" aria-labelledby="title-1" data-group="Question"><p class="eyebrow">01 / Research Proposal</p><h2 id="title-1">Risk-conditioned whole-body navigation</h2><div class="slide-body"><p class="lead">Dense tactile feedback for contact recovery.<br>Adjustable risk for contact and route selection.</p><figure aria-label="Continuous humanoid contact sequence from A to B" class="diagram cover-skills">
+<svg aria-labelledby="cover-skills-title cover-skills-desc" role="img" viewbox="0 0 600 280">
+<title id="cover-skills-title">Walk, crawl, climb with hand support, then stand</title>
+<desc id="cover-skills-desc">Successive poses in one continuous scene: the humanoid walks from A, lowers onto hands and knees under a low ceiling, reaches a ledge, transfers weight onto its hands to climb, and stands at B. Orange dots mark support contacts. This is a proposed task, not a measured result.</desc>
+<defs><marker id="cover-motion-arrow" markerheight="7" markerwidth="7" orient="auto" refx="6" refy="3.5"><path d="M1 1L6 3.5L1 6" fill="none" stroke="var(--green)" stroke-width="1.5"></path></marker></defs>
+<path d="M10 208H402V145H590V225H10Z" fill="#e3e7e0"></path>
+<path class="v-ground" d="M10 208H402V145H590"></path>
+<rect fill="var(--ink)" height="13" width="179" x="119" y="147"></rect>
+<path d="M35 175C84 174 99 186 133 188S237 193 277 191S338 185 371 178S418 120 452 119S529 117 572 116" fill="none" marker-end="url(#cover-motion-arrow)" opacity=".45" stroke="var(--green)" stroke-dasharray="5 5" stroke-width="2"></path>
+<g class="v-robot green-robot" transform="translate(45 208) scale(.78)"><circle cx="0" cy="-72" r="9"></circle><path d="M0 -57V-25L-22 0M0 -25L24 -1M0 -48L-22 -30M0 -48L22 -60"></path></g>
+<g class="v-robot green-robot" opacity=".6"><circle cx="126" cy="175" r="6"></circle><path d="M119 183L102 193L119 200L109 208M102 193L89 206L81 208M119 185L138 208"></path></g>
+<g class="v-robot green-robot"><circle cx="219" cy="175" r="6"></circle><path d="M209 182L178 185L191 208L169 208M205 183L221 208M178 185L161 198L151 208"></path></g>
+<g class="v-robot green-robot" opacity=".6"><circle cx="300" cy="174" r="6"></circle><path d="M290 181L260 185L272 208L251 208M288 182L306 208M260 185L243 197L236 208"></path></g>
+<g class="v-robot green-robot"><circle cx="372" cy="143" r="7"></circle><path d="M366 155L348 180L367 193L359 208M348 180L332 199L322 208M365 157L387 153L406 145M364 157L380 145L398 145"></path></g>
+<g class="v-robot green-robot" opacity=".65"><circle cx="452" cy="110" r="7"></circle><path d="M443 121L420 132L444 145L430 145M420 132L409 163L401 176M440 123L462 145"></path></g>
+<g class="v-robot green-robot" transform="translate(550 145) scale(.78)"><circle cx="0" cy="-72" r="9"></circle><path d="M0 -57V-25L-22 0M0 -25L24 -1M0 -48L-22 -30M0 -48L22 -60"></path></g>
+<g fill="var(--orange)"><circle cx="191" cy="208" r="4"></circle><circle cx="221" cy="208" r="4"></circle><circle cx="398" cy="145" r="4"></circle><circle cx="406" cy="145" r="4"></circle><circle cx="462" cy="145" r="4"></circle></g>
+<text class="v-sub" text-anchor="middle" x="45" y="253">Walk</text><text class="v-sub" text-anchor="middle" x="213" y="253">Crawl</text><text class="v-sub" text-anchor="middle" x="410" y="253">Hand-supported climb</text><text class="v-sub" text-anchor="middle" x="550" y="253">Stand</text>
+<text class="v-label v-bold" x="12" y="185">A</text><text class="v-label v-bold" x="575" y="130">B</text>
+</svg></figure><p class="takeaway">A contact planner chooses terrain targets. A whole-body controller produces joint commands.</p><p class="sources">Research proposal · G1 humanoid · November 1, 2026 · Experiments planned</p></div><template class="slide-notes"><p class="lead">Study how dense tactile feedback affects contact recovery and how a risk command changes foothold, hand-support, and route choices.</p><p>G1 humanoid · terrain perception · dense six-axis tactile sensing</p><p class="small">Research proposal · October 30, 2026<br/>Illustrations describe the proposed method; experiments are planned.</p><p class="callout">Proposed system: a contact planner selects body–terrain contact targets; a whole-body controller produces joint commands.</p></template></section>
 
-    /* Inline vector figures remain readable offline and in PDF exports. */
-    .diagram { margin:10px 0 16px; min-width:0; overflow-x:auto; }
-    .diagram svg { width:100%; max-height:300px; }
-    .diagram text { font-family:Inter,"Segoe UI",Arial,sans-serif; }
-    .v-label { fill:var(--ink); font-size:20px; }
-    .v-bold { font-weight:700; }
-    .v-sub { fill:var(--muted); font-size:17px; }
-    .v-box { fill:var(--white); stroke:var(--line); stroke-width:1.5; }
-    .tint-box { fill:var(--mint); stroke:#bdd7ca; }
-    .v-edge { fill:none; stroke:var(--green); stroke-width:2.5; stroke-linejoin:round; }
-    .v-axis { fill:none; stroke:var(--muted); stroke-width:1.8; }
-    .v-guide { fill:none; stroke:#97a79f; stroke-width:1.5; stroke-dasharray:5 5; }
-    .v-ground { fill:none; stroke:#9baaa2; stroke-width:2; }
-    .v-platform { fill:#e3e7e0; stroke:#bcc9c1; stroke-width:1.5; }
-    .v-region { fill:#deeee5; fill-opacity:.6; stroke:var(--green); stroke-width:2; stroke-dasharray:5 4; }
-    .second-region { fill:#f3e0d5; stroke:var(--orange); }
-    .v-robot { fill:var(--paper); stroke:var(--ink); stroke-width:6; stroke-linecap:round; stroke-linejoin:round; }
-    .v-robot path { fill:none; } .v-robot circle { stroke-width:3; }
-    .green-robot { stroke:var(--green); }
-    .v-state { fill:var(--white); stroke:#a0b3a7; stroke-width:2; }
-    .chosen-state { fill:var(--mint); stroke:var(--green); }
-    .chosen-edge { stroke-width:4; }
-    .alternative-edge { stroke:#8b9c93; stroke-width:2; stroke-dasharray:6 5; }
-    .training-edge { stroke:var(--orange); stroke-dasharray:6 5; }
-    .v-node-text { fill:var(--ink); font-size:17px; font-weight:650; }
-    .v-edge-label { fill:var(--muted); font-size:18px; paint-order:stroke; stroke:var(--paper); stroke-width:7px; stroke-linejoin:round; }
-    .chosen-label { fill:var(--green); font-weight:700; }
-    .graph-diagram svg { max-height:355px; }
-    .visual-pair { display:grid; grid-template-columns:1.4fr 1fr; align-items:center; gap:28px; margin:10px 0 16px; }
-    .visual-notes { display:grid; gap:15px; } .visual-notes h3 { margin-bottom:5px; } .visual-notes p { font-size:17px; margin:0; }
-    .visual-summary { display:grid; grid-template-columns:1fr 1fr; gap:25px; margin:0 0 10px; }
-    .visual-summary p { font-size:17px; margin:0; }
-    .mini-diagram { margin:8px 0 12px; } .mini-diagram svg { max-height:150px; }
-    .milestone-diagram { margin:0 0 12px; } .milestone-diagram svg { height:100px; }
-    .skill-strip svg { max-height:155px; }
-    @media screen and (min-width:761px) and (max-height:800px) {
-      .diagram { margin:6px 0 10px; } .diagram svg { max-height:205px; }
-      .graph-diagram svg { max-height:280px; }
-      .mini-diagram svg { max-height:110px; } .skill-strip svg { max-height:115px; }
-      .milestone-diagram svg { height:80px; }
-      .visual-notes { gap:10px; } .visual-notes p,.visual-summary p { font-size:15px; }
-    }
-    @media screen and (min-width:761px) and (max-height:650px) {
-      .diagram svg { max-height:170px; } .graph-diagram svg { max-height:235px; }
-      .mini-diagram svg { max-height:90px; } .skill-strip svg { max-height:95px; }
-      .milestone-diagram svg { height:65px; } .visual-notes p { font-size:14px; }
-      .visual-pair { margin:4px 0 8px; } .visual-summary p { font-size:14px; }
-    }
-    @media (max-width:760px) {
-      .visual-pair,.visual-summary { grid-template-columns:1fr; gap:16px; }
-      .diagram:not(.mini-diagram):not(.milestone-diagram) svg { min-width:620px; max-height:none; }
-      .graph-diagram svg { min-width:820px !important; }
-      .mini-diagram svg { max-height:155px; } .milestone-diagram svg { height:90px; }
-    }
-    @media print {
-      .diagram { overflow:visible; margin:8px 0 12px; }
-      .diagram svg { max-height:240px; min-width:0 !important; }
-      .graph-diagram svg { max-height:310px; }
-      .mini-diagram svg { max-height:110px; } .skill-strip svg { max-height:120px; }
-      .milestone-diagram svg { height:80px; }
-      .visual-pair { grid-template-columns:1.4fr 1fr; } .visual-summary { grid-template-columns:1fr 1fr; }
-      .visual-notes p,.visual-summary p { font-size:15px; }
-    }
+<section class="slide " id="slide-2" aria-labelledby="title-2" data-group="Question" hidden><p class="eyebrow">02 / Background</p><h2 id="title-2">Contact targets connect terrain perception to control</h2><div class="slide-body"><div class="sequence"><div class="step"><span class="step-number">01</span><h3>Observe terrain</h3><p>Estimate contact surfaces.</p></div><span class="seq-arrow" aria-hidden="true">→</span><div class="step"><span class="step-number">02</span><h3>Choose contacts</h3><p>Select targets for feet, hands, and other bodies.</p></div><span class="seq-arrow" aria-hidden="true">→</span><div class="step"><span class="step-number">03</span><h3>Control motion</h3><p>Reach targets while maintaining balance.</p></div></div><div class="two "><div class="panel "><h3>Prior work</h3><p>The attention-based contact planner (ACP) uses terrain and a goal; its controller runs without reference motions.</p></div><div class="panel "><h3>Our questions</h3><p>Does tactile feedback reduce slip and falls? Does a risk command change contact choices?</p></div></div><p class="sources"><a href="https://arxiv.org/html/2610.31608v1">He et al., 2026 · ACP</a> · <a href="https://arxiv.org/abs/2609.28959">Wang et al., 2026 · TactileStep</a> · <a href="https://arxiv.org/abs/2608.15766">Liu et al., 2026 · Tac4Loco</a></p></div><template class="slide-notes"><p>Estimate terrain surfaces from the robot’s sensors.</p><p>Select the next terrain contact point for each body part.</p><p>Produce joint commands to reach the targets and maintain balance.</p><p>The attention-based contact planner (ACP) predicts contact targets from terrain observations and a goal. A learned controller executes them without reference motions at deployment.</p><p>Does dense tactile sensing reduce foot slip and falls? Can a risk command change the planner’s foothold, hand-support, and route choices?</p><p class="callout">Terrain perception supplies surface geometry. Tactile sensors measure forces and torques during contact.</p><p class="footnote"><a href="https://leggedrobotics.github.io/ACP/">ACP</a> · <a href="https://arxiv.org/abs/2609.28959">TactileStep</a> · <a href="https://arxiv.org/abs/2608.15766">Tac4Loco</a>. Our proposal adds dense six-axis feedback and risk-conditioned planner training.</p></template></section>
 
-    .cover-skills svg { max-height:260px; }
-    .cover-grid { align-items:center; }
-    .hero h1 { font-size:clamp(36px,4.2vw,59px); }
-    .diagram svg { min-width:0 !important; }
-    .source { font-size:13px; color:var(--muted); }
-    .compact td { font-size:16px; }
-    .diagram .v-label { font-size:20px; }
-    .diagram .v-sub { font-size:17px; }
-    .risk-scene svg { max-height:185px; }
-    .refs li { font-size:17px; margin-bottom:18px; }
-    @media (max-width:760px) {
-      .diagram { overflow-x:auto; }
-      .diagram svg { min-width:580px !important; }
-      .cover-skills svg,.risk-scene svg { min-width:0 !important; }
-      .hero h1 { font-size:40px; }
-      .brand { font-size:11px; }
-    }
-    @media print { .diagram svg { min-width:0 !important; max-height:200px; } .cover-skills svg { max-height:230px; } }
+<section class="slide " id="slide-3" aria-labelledby="title-3" data-group="Question" hidden><p class="eyebrow">03 / Proposed Contributions</p><h2 id="title-3">We test tactile recovery and risk-conditioned planning</h2><div class="slide-body"><div class="two "><div class="panel contribution-panel"><h3><span class="contribution">Dense six-axis contact feedback</span></h3><p>Compare foot slip, foot rotation, and falls against pressure maps and total force/torque sensing.</p></div><div class="panel contribution-panel"><h3><span class="contribution">Risk-conditioned contact planning</span></h3><p>On the same task, vary risk and measure hand support, route choice, failure rate, and time.</p></div></div><p class="takeaway"><strong class="contribution">Hardware validation:</strong> compare both components under matched tasks and disturbances.</p><p class="sources"><a href="https://arxiv.org/html/2610.31608v1">He et al., 2026 · ACP</a> · <a href="https://arxiv.org/abs/2609.28959">Wang et al., 2026 · TactileStep</a> · <a href="https://arxiv.org/abs/2608.15766">Liu et al., 2026 · Tac4Loco</a> · <a href="https://arxiv.org/abs/2309.14246">Schneider et al., 2023 · Risk-aware locomotion</a></p></div><template class="slide-notes"><p class="callout"><strong class="contribution">Hardware validation:</strong> compare recovery and risk-dependent contact choices on a humanoid under the same tasks and disturbances.</p><p class="footnote">The proposed contributions depend on measured gains over the stated baselines. <a href="https://arxiv.org/html/2610.31608v1">ACP paper</a> · <a href="https://arxiv.org/abs/2609.28959">TactileStep</a> · <a href="https://arxiv.org/abs/2608.15766">Tac4Loco</a> · <a href="https://arxiv.org/abs/2309.14246">Risk-aware locomotion</a></p></template></section>
 
-    #slide-20 td,#slide-20 th { padding:10px 12px; }
-    #slide-20 td:first-child { width:43%; }
-    @media screen and (min-width:761px) and (max-height:800px) {
-      #slide-20 td { font-size:14px; line-height:1.4; }
-      #slide-20 td,#slide-20 th { padding:8px 10px; }
-    }
+<section class="slide " id="slide-4" aria-labelledby="title-4" data-group="Question" hidden><p class="eyebrow">04 / Problem Formulation</p><h2 id="title-4">The goal stays fixed while contact conditions vary</h2><div class="slide-body"><div class="two "><div class="panel "><h3>Goal command</h3><p>Target base position, height, and heading.</p></div><div class="panel "><h3>Risk command</h3><p>Preference for avoiding low-return episodes.</p></div></div><div class="sequence"><div class="step"><span class="step-number">01</span><h3>Observe</h3><p>Terrain, robot state, tactile history</p></div><span class="seq-arrow" aria-hidden="true">→</span><div class="step"><span class="step-number">02</span><h3>Choose</h3><p>Upcoming body–terrain contacts</p></div><span class="seq-arrow" aria-hidden="true">→</span><div class="step"><span class="step-number">03</span><h3>Execute</h3><p>Joint position targets</p></div></div><p class="takeaway">Use the same start, goal, and terrain when comparing risk settings.</p><p class="sources">Vary friction and compliance across repeated trials. Battery charge, if used, is a separate observation.</p></div><template class="slide-notes"><p>Target base position, heading, and risk setting</p><p>Terrain map, base and joint state, tactile history</p><p>Select contact targets and command the joints</p><p>Specify the base’s horizontal position, height, and heading at the goal. Use the same command for walking, crawling, and climbing.</p><p>The risk setting specifies how much low-return episodes affect training. Test whether changing it alters contact choices, failures, and completion time.</p><p class="callout">Test different risk settings on the same start, goal, and terrain.</p><p class="footnote">Friction and terrain compliance vary across trials. The risk command expresses a preference; battery charge, if included, is a separate observation.</p></template></section>
 
-    .contribution { color:#b42318; font-weight:800; }
-    #slide-3 td:first-child { width:38%; }
+<section class="slide " id="slide-5" aria-labelledby="title-5" data-group="Controller" hidden><p class="eyebrow">05 / System Architecture</p><h2 id="title-5">The planner chooses contacts; the controller moves the robot</h2><div class="slide-body"><figure class="diagram"><svg viewBox="0 0 1100 250" role="img" aria-label="One-way data flow from observations through planner and contact commands to the whole-body controller"><title>One-way data flow from observations through planner and contact commands to the whole-body controller</title><defs><marker id="architecture-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#096c60" stroke-width="1.5"/></marker></defs>
+<g class="diagram-box"><rect x="10" y="53" width="230" height="140" rx="5"/><rect x="305" y="53" width="215" height="140" rx="5"/><rect x="585" y="53" width="215" height="140" rx="5"/><rect x="865" y="53" width="220" height="140" rx="5"/></g>
+<g class="diagram-title"><text x="125" y="90">Observations</text><text x="412" y="90">Contact planner</text><text x="692" y="90">Contact command</text><text x="975" y="90">Body controller</text></g>
+<g class="diagram-copy"><text x="125" y="124">Terrain + robot state</text><text x="125" y="153">+ tactile history</text><text x="412" y="124">Goal + risk setting</text><text x="412" y="153">choose the contacts</text><text x="692" y="124">3D target + active flag</text><text x="692" y="153">for each body</text><text x="975" y="124">Contacts + observations</text><text x="975" y="153">→ 29 joint targets</text></g>
+<g fill="none" stroke="#096c60" stroke-width="2.5" marker-end="url(#architecture-arrow)"><path d="M240 122H294"/><path d="M520 122H574"/><path d="M800 122H854"/></g>
+<text x="550" y="225" text-anchor="middle" class="diagram-caption">At the next update, both policies receive new observations.</text></svg></figure><div class="two "><div class="panel "><h3>Planner training</h3><p>Supervised initialization, then risk-sensitive reinforcement learning (RL).</p></div><div class="panel "><h3>Controller training</h3><p>RL for contact execution; joint targets drive proportional–derivative control.</p></div></div><p class="sources"><a href="https://arxiv.org/html/2610.31608v1">He et al., 2026 · ACP</a></p></div><template class="slide-notes"><p>Terrain map, robot state, tactile history, goal, risk</p><p>Next-contact position and active flag per body</p><p>Contact targets, local terrain, robot state, tactile history</p><p class="footnote">Initial design: update both policies at 50 Hz. Measure inference time and contact-target changes before choosing the hardware update rates.</p></template></section>
 
-    .math-block { background:var(--white); border:1px solid var(--line); border-radius:12px; padding:16px 20px; margin:12px 0 18px; overflow-x:auto; }
-    .math-block math { font-size:26px; margin:0; }
-    .math-slide .compact td { padding:10px 14px; }
-    .math-slide .compact td:first-child { width:25%; }
-    @media screen and (min-width:761px) and (max-height:800px) {
-      .math-block { padding:12px 15px; margin:8px 0 12px; }
-      .math-block math { font-size:23px; }
-      .math-slide .compact td { font-size:14px; padding:8px 10px; }
-    }
-    @media (max-width:760px) { .math-block math { font-size:21px; min-width:max-content; } }
-    @media print { .math-block { padding:10px 14px; margin:8px 0 12px; } .math-block math { font-size:23px; } }
-</style></head><body><header><div class="brand">Whole-body humanoid navigation</div><div class="status">Updated Oct 30, 2026 · Tactile feedback + risk-conditioned planning</div></header><main id="deck">
-<section class="slide" id="slide-1" aria-labelledby="title-1"><p class="eyebrow">01 / Research Proposal</p><h2 id="title-1">Risk-conditioned whole-body navigation</h2><div class="grid hero cover-grid"><div><p class="lead">Study how dense tactile feedback affects contact recovery and how a risk command changes foothold, hand-support, and route choices.</p><p>G1 humanoid · terrain perception · dense six-axis tactile sensing</p><p class="small">Research proposal · October 30, 2026<br>Illustrations describe the proposed method; experiments are planned.</p></div><figure class="diagram cover-skills" aria-label="Continuous humanoid contact sequence from A to B">
-        <svg viewBox="0 0 600 280" role="img" aria-labelledby="cover-skills-title cover-skills-desc">
-          <title id="cover-skills-title">Walk, crawl, climb with hand support, then stand</title>
-          <desc id="cover-skills-desc">Successive poses in one continuous scene: the humanoid walks from A, lowers onto hands and knees under a low ceiling, reaches a ledge, transfers weight onto its hands to climb, and stands at B. Orange dots mark support contacts. This is a proposed task, not a measured result.</desc>
-          <defs><marker id="cover-motion-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M1 1L6 3.5L1 6" fill="none" stroke="var(--green)" stroke-width="1.5"/></marker></defs>
-          <path d="M10 208H402V145H590V225H10Z" fill="#e3e7e0"/>
-          <path d="M10 208H402V145H590" class="v-ground"/>
-          <rect x="119" y="147" width="179" height="13" fill="var(--ink)"/>
-          <path d="M35 175C84 174 99 186 133 188S237 193 277 191S338 185 371 178S418 120 452 119S529 117 572 116" fill="none" stroke="var(--green)" stroke-width="2" stroke-dasharray="5 5" opacity=".45" marker-end="url(#cover-motion-arrow)"/>
-          <g transform="translate(45 208) scale(.78)" class="v-robot green-robot"><circle cx="0" cy="-72" r="9"/><path d="M0 -57V-25L-22 0M0 -25L24 -1M0 -48L-22 -30M0 -48L22 -60"/></g>
-          <g class="v-robot green-robot" opacity=".6"><circle cx="126" cy="175" r="6"/><path d="M119 183L102 193L119 200L109 208M102 193L89 206L81 208M119 185L138 208"/></g>
-          <g class="v-robot green-robot"><circle cx="219" cy="175" r="6"/><path d="M209 182L178 185L191 208L169 208M205 183L221 208M178 185L161 198L151 208"/></g>
-          <g class="v-robot green-robot" opacity=".6"><circle cx="300" cy="174" r="6"/><path d="M290 181L260 185L272 208L251 208M288 182L306 208M260 185L243 197L236 208"/></g>
-          <g class="v-robot green-robot"><circle cx="372" cy="143" r="7"/><path d="M366 155L348 180L367 193L359 208M348 180L332 199L322 208M365 157L387 153L406 145M364 157L380 145L398 145"/></g>
-          <g class="v-robot green-robot" opacity=".65"><circle cx="452" cy="110" r="7"/><path d="M443 121L420 132L444 145L430 145M420 132L409 163L401 176M440 123L462 145"/></g>
-          <g transform="translate(550 145) scale(.78)" class="v-robot green-robot"><circle cx="0" cy="-72" r="9"/><path d="M0 -57V-25L-22 0M0 -25L24 -1M0 -48L-22 -30M0 -48L22 -60"/></g>
-          <g fill="var(--orange)"><circle cx="191" cy="208" r="4"/><circle cx="221" cy="208" r="4"/><circle cx="398" cy="145" r="4"/><circle cx="406" cy="145" r="4"/><circle cx="462" cy="145" r="4"/></g>
-          <text x="45" y="253" class="v-sub" text-anchor="middle">Walk</text><text x="213" y="253" class="v-sub" text-anchor="middle">Crawl</text><text x="410" y="253" class="v-sub" text-anchor="middle">Hand-supported climb</text><text x="550" y="253" class="v-sub" text-anchor="middle">Stand</text>
-          <text x="12" y="185" class="v-label v-bold">A</text><text x="575" y="130" class="v-label v-bold">B</text>
-        </svg></figure></div><p class="callout">Proposed system: a contact planner selects body–terrain contact targets; a whole-body controller produces joint commands.</p></section>
+<section class="slide " id="slide-6" aria-labelledby="title-6" data-group="Controller" hidden><p class="eyebrow">06 / Contact Command</p><h2 id="title-6">Each body receives one upcoming contact target</h2><div class="slide-body"><div class="exhibit-pair"><figure class="diagram"><svg aria-label="Hand and foot targets on a ledge" role="img" viewbox="0 0 1000 230"><title>Hand and foot targets on a ledge</title><path class="v-ground" d="M40 180H510V110H950"></path><rect class="v-platform" height="90" width="440" x="510" y="110"></rect>
+<g class="v-robot"><circle cx="400" cy="53" r="15"></circle><path d="M394 73L368 120L330 150L320 180M368 120L422 151L438 180M391 80L451 104L520 110"></path></g>
+<circle cx="520" cy="110" fill="#b44925" r="8"></circle><circle cx="610" cy="110" fill="#096c60" r="8"></circle>
+<path class="v-guide" d="M520 100L600 45H745M610 120L675 165H875"></path>
+<text class="v-label" x="610" y="35">Hand target: active</text><text class="v-label" x="680" y="190">Foot target: active</text>
+<text class="v-label" x="45" y="45">Next-contact command</text><text class="v-sub" x="45" y="76">Position + active flag</text></svg></figure><div class="annotation"><h3>One command per body</h3><p>3D target + active flag.</p><p>Active means a contact is expected within <strong>1.5 seconds</strong>.</p><h3>Coordinate frame</h3><p>Origin at the base; vertical aligned with gravity; horizontal axes follow base heading.</p></div></div><p class="sources">Contact bodies: hands, feet, knees, elbows, pelvis. Inactive targets are ignored. <a href="https://arxiv.org/html/2610.31608v1">ACP contact interface</a>.</p></div><template class="slide-notes"><figcaption>Example targets on a ledge. The controller must reach the targets while maintaining balance.</figcaption><p>Each hand, foot, knee, elbow, and the pelvis receives a 3D target. The active flag indicates an expected contact within 1.5 seconds; inactive targets are ignored.</p><p>The target frame starts at the robot base. Its vertical axis follows gravity; its horizontal axes follow the base heading.</p><p class="footnote">The planner outputs contact positions. Measured forces and torques enter the controller as feedback.</p></template></section>
 
-<section class="slide" id="slide-2" aria-labelledby="title-2" hidden>
-<p class="eyebrow">02 / Background</p><h2 id="title-2">From terrain observations to contact targets</h2>
-<div class="flow"><div class="node"><strong>Observe the terrain</strong><p>Estimate terrain surfaces from the robot’s sensors.</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>Plan body contacts</strong><p>Select the next terrain contact point for each body part.</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>Control the whole body</strong><p>Produce joint commands to reach the targets and maintain balance.</p></div></div>
-<div class="grid two"><div class="card"><h3>Prior work</h3><p>The attention-based contact planner (ACP) predicts contact targets from terrain observations and a goal. A learned controller executes them without reference motions at deployment.</p></div><div class="card"><h3>Our research questions</h3><p>Does dense tactile sensing reduce foot slip and falls? Can a risk command change the planner’s foothold, hand-support, and route choices?</p></div></div>
-<p class="callout">Terrain perception supplies surface geometry. Tactile sensors measure forces and torques during contact.</p>
-<p class="footnote"><a href="https://leggedrobotics.github.io/ACP/">ACP</a> · <a href="https://arxiv.org/abs/2609.28959">TactileStep</a> · <a href="https://arxiv.org/abs/2608.15766">Tac4Loco</a>. Our proposal adds dense six-axis feedback and risk-conditioned planner training.</p></section>
+<section class="slide " id="slide-7" aria-labelledby="title-7" data-group="Controller" hidden><p class="eyebrow">07 / Dense Six-Axis Tactile Feedback</p><h2 id="title-7">Each sensing element measures six force/torque components</h2><div class="slide-body"><figure class="diagram"><svg aria-label="Each sensing element measures three forces and three torques; their spatial and temporal patterns inform contact recovery" role="img" viewbox="0 0 1000 225"><title>Dense six-axis sensing for contact recovery</title>
+<defs><marker id="tactile-force-arrow" markerheight="6" markerwidth="6" orient="auto" refx="5" refy="3"><path d="M0 0L6 3L0 6Z" fill="#b42318"></path></marker></defs>
+<rect class="v-box" height="156" rx="25" width="250" x="25" y="18"></rect>
+<rect fill="#deeee5" height="32" rx="5" stroke="#9abfb0" width="38" x="47" y="38"></rect><path d="M55 61L76 47" stroke="#096c60" stroke-width="2"></path><rect fill="#deeee5" height="32" rx="5" stroke="#9abfb0" width="38" x="101" y="38"></rect><path d="M109 61L130 47" stroke="#096c60" stroke-width="2"></path><rect fill="#deeee5" height="32" rx="5" stroke="#9abfb0" width="38" x="155" y="38"></rect><path d="M163 61L184 47" stroke="#096c60" stroke-width="2"></path><rect fill="#deeee5" height="32" rx="5" stroke="#9abfb0" width="38" x="209" y="38"></rect><path d="M217 61L238 47" stroke="#096c60" stroke-width="2"></path><rect fill="#deeee5" height="32" rx="5" stroke="#9abfb0" width="38" x="47" y="80"></rect><path d="M55 103L76 89" stroke="#096c60" stroke-width="2"></path><rect fill="#deeee5" height="32" rx="5" stroke="#9abfb0" width="38" x="101" y="80"></rect><path d="M109 103L130 89" stroke="#096c60" stroke-width="2"></path><rect fill="#deeee5" height="32" rx="5" stroke="#9abfb0" width="38" x="155" y="80"></rect><path d="M163 103L184 89" stroke="#096c60" stroke-width="2"></path><rect fill="#deeee5" height="32" rx="5" stroke="#9abfb0" width="38" x="209" y="80"></rect><path d="M217 103L238 89" stroke="#096c60" stroke-width="2"></path><rect fill="#deeee5" height="32" rx="5" stroke="#9abfb0" width="38" x="47" y="122"></rect><path d="M55 145L76 131" stroke="#096c60" stroke-width="2"></path><rect fill="#deeee5" height="32" rx="5" stroke="#9abfb0" width="38" x="101" y="122"></rect><path d="M109 145L130 131" stroke="#096c60" stroke-width="2"></path><rect fill="#deeee5" height="32" rx="5" stroke="#9abfb0" width="38" x="155" y="122"></rect><path d="M163 145L184 131" stroke="#096c60" stroke-width="2"></path><rect fill="#deeee5" height="32" rx="5" stroke="#9abfb0" width="38" x="209" y="122"></rect><path d="M217 145L238 131" stroke="#096c60" stroke-width="2"></path><rect fill="#fbe5df" height="32" rx="5" stroke="#b42318" stroke-width="2" width="38" x="155" y="80"></rect>
+<text class="v-sub" text-anchor="middle" x="150" y="207">Dense sensing elements</text>
+<path d="M193 96H324" marker-end="url(#tactile-force-arrow)" stroke="#b42318" stroke-width="2"></path>
+<rect class="v-box" height="156" rx="12" width="300" x="340" y="18"></rect>
+<text class="v-label v-bold" text-anchor="middle" x="490" y="50">Each element: 6 values</text>
+<text class="v-label" text-anchor="middle" x="490" y="86">Force: Fx, Fy, Fz</text>
+<text class="v-label" text-anchor="middle" x="490" y="120">Torque: Tx, Ty, Tz</text>
+<text class="v-sub" text-anchor="middle" x="490" y="153">Measured in the sensor frame</text>
+<text class="v-label" x="670" y="101">→</text><rect class="tint-box" height="156" rx="12" width="265" x="712" y="18"></rect>
+<text class="v-label v-bold" text-anchor="middle" x="844" y="54">Possible corrections</text>
+<text class="v-sub" text-anchor="middle" x="844" y="91">Shift weight across the foot</text>
+<text class="v-sub" text-anchor="middle" x="844" y="124">Adjust ankle commands</text>
+<text class="v-sub" text-anchor="middle" x="844" y="155">Reposition the foot</text>
+</svg></figure><div class="two "><div class="panel "><h3>Controller input</h3><p>Element positions and force/torque histories, together with robot motion.</p></div><div class="panel "><h3>Test against simpler sensing</h3><p>Pressure maps, total six-axis force/torque, and dense three-axis forces.</p></div></div><p class="sources">F: force; T: torque. x, y, z: sensor axes. Torque is about each element’s reference point. Slip velocity and friction limits require inference. <a href="https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-4-wrenches/">Frame conventions</a>.</p></div><template class="slide-notes"><figcaption>F denotes force and T denotes torque; x, y, and z are the element’s sensor axes. Torque is reported about the element’s calibrated reference point.</figcaption><p>The location and force/torque history of every sensing element, together with base and joint motion. Resolve normal and tangential forces using the contact-surface normal.</p><p>Compare foot slip, foot rotation, recovery time, and falls against pressure-map and total-force/torque baselines.</p><p class="footnote">Force and torque together form a wrench. The sensor does not directly measure slip velocity or the friction limit. Hand feedback requires hand sensors. <a href="https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-4-wrenches/">Force/torque frame conventions</a>.</p></template></section>
 
-<section class="slide" id="slide-3" aria-labelledby="title-3" hidden>
-<p class="eyebrow">03 / Proposed Contributions</p><h2 id="title-3">Tactile contact recovery and risk-conditioned planning</h2>
-<div class="table-wrap"><table class="compact"><thead><tr><th scope="col">Prior work</th><th scope="col">Our proposed contribution</th></tr></thead><tbody>
-<tr><td>ACP learns contact planning and whole-body control. TactileStep and Tac4Loco use sole pressure for locomotion.</td><td><strong class="contribution">Dense six-axis tactile feedback for contact recovery.</strong><br>Test whether per-element force and torque histories reduce foot slip, foot rotation, and falls compared with pressure maps or one total six-axis measurement.</td></tr>
-<tr><td>Risk-conditioned quadrupedal locomotion has been demonstrated with distributional reinforcement learning.</td><td><strong class="contribution">Risk-conditioned humanoid contact planning.</strong><br>Train the planner across risk settings. On the same task, measure changes in hand-support use, crossing or detour choice, failure rate, and completion time.</td></tr>
-</tbody></table></div>
-<p class="callout"><strong class="contribution">Hardware validation:</strong> compare recovery and risk-dependent contact choices on a humanoid under the same tasks and disturbances.</p>
-<p class="footnote">The proposed contributions depend on measured gains over the stated baselines. <a href="https://arxiv.org/html/2610.31608v1">ACP paper</a> · <a href="https://arxiv.org/abs/2609.28959">TactileStep</a> · <a href="https://arxiv.org/abs/2608.15766">Tac4Loco</a> · <a href="https://arxiv.org/abs/2309.14246">Risk-aware locomotion</a></p></section>
+<section class="slide " id="slide-8" aria-labelledby="title-8" data-group="Controller" hidden><p class="eyebrow">08 / Stage 1: Contact Controller Training</p><h2 id="title-8">Motion–terrain pairs initialize contact control</h2><div class="slide-body"><div class="sequence"><div class="step"><span class="step-number">01</span><h3>Prepare</h3><p>G1 motion, terrain, contact labels</p></div><span class="seq-arrow" aria-hidden="true">→</span><div class="step"><span class="step-number">02</span><h3>Train</h3><p>Contact and motion rewards; applied disturbances</p></div><span class="seq-arrow" aria-hidden="true">→</span><div class="step"><span class="step-number">03</span><h3>Evaluate</h3><p>Contact targets and onboard observations only</p></div></div><div class="two "><div class="panel "><h3>Train under disturbances</h3><p>Vary friction, foothold area, pushes, sensor delay, and noise.</p></div><div class="panel "><h3>Measure recovery</h3><p>Contact error, foot slip, rotation, recovery time, and falls.</p></div></div><p class="takeaway">Reference motion supplies training rewards and initial states; it is absent from deployment.</p><p class="sources"><a href="https://arxiv.org/html/2610.31608v1">He et al., 2026 · ACP</a></p></div><template class="slide-notes"><p>G1 motion, aligned terrain, and contact labels</p><p>Use contact and motion rewards; apply disturbances</p><p>Run with contact targets and onboard observations</p><p>Reward contact-position accuracy and intended support. Penalize falls, excessive joint effort, and impacts. Use reference-motion rewards during initial training.</p><p>Vary friction, foothold area, pushes, sensor delay, and force/torque noise. Test recovery on rigid terrain before adding compliant supports.</p><p class="callout">Reference motions provide rewards and initial states during training. The deployed controller receives contact targets and sensor observations.</p><p class="footnote">Check motion–terrain alignment and verify contact labels in dynamic simulation. Replaying joint poses alone does not test balance or contact forces.</p></template></section>
 
-<section class="slide" id="slide-4" aria-labelledby="title-4" hidden><p class="eyebrow">04 / Problem Formulation</p><h2 id="title-4">Reach a goal when contact conditions vary</h2><div class="flow"><div class="node"><strong>Command</strong><p>Target base position, heading, and risk setting</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>Robot observations</strong><p>Terrain map, base and joint state, tactile history</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>Navigation</strong><p>Select contact targets and command the joints</p></div></div><div class="grid two"><div class="card"><h3>Goal command</h3><p>Specify the base’s horizontal position, height, and heading at the goal. Use the same command for walking, crawling, and climbing.</p></div><div class="card"><h3>Risk command</h3><p>The risk setting specifies how much low-return episodes affect training. Test whether changing it alters contact choices, failures, and completion time.</p></div></div><p class="callout">Test different risk settings on the same start, goal, and terrain.</p><p class="footnote">Friction and terrain compliance vary across trials. The risk command expresses a preference; battery charge, if included, is a separate observation.</p></section>
+<section class="slide " id="slide-9" aria-labelledby="title-9" data-group="Controller" hidden><p class="eyebrow">09 / Stage 2: Planner Initialization</p><h2 id="title-9">Successful controller rollouts provide contact labels</h2><div class="slide-body"><figure class="diagram"><svg viewBox="0 0 1100 235" role="img" aria-label="Extract a future contact label from a completed successful rollout"><title>Extract a future contact label from a completed successful rollout</title><defs><marker id="time-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#253e54" stroke-width="1.5"/></marker></defs>
+<path d="M45 130H1050" fill="none" stroke="#253e54" stroke-width="2" marker-end="url(#time-arrow)"/>
+<circle cx="160" cy="130" r="8" fill="#253e54"/><circle cx="725" cy="130" r="10" fill="#096c60"/>
+<path d="M160 115V67H840V115" fill="none" stroke="#096c60" stroke-width="2"/>
+<text x="500" y="51" text-anchor="middle" class="diagram-title">Look ahead up to 1.5 seconds</text>
+<text x="160" y="174" text-anchor="middle" class="diagram-copy">Observation at time t</text><text x="725" y="174" text-anchor="middle" class="diagram-copy">Next sustained contact</text>
+<text x="725" y="208" text-anchor="middle" class="diagram-copy">Use its position as the label</text></svg></figure><div class="two "><div class="panel "><h3>Predict</h3><p>For each body: terrain-point probabilities and an active flag.</p></div><div class="panel "><h3>Introduce planner commands</h3><p>Gradually replace reference targets while training the controller.</p></div></div><p class="takeaway">Successes supply feasible examples. Stage 3 also uses failures to learn risk.</p><p class="sources"><a href="https://arxiv.org/html/2610.31608v1">He et al., 2026 · ACP</a></p></div><template class="slide-notes"><p>Use reference targets on paired terrains</p><p>Record when and where body contacts begin</p><p>Predict next contact positions and active flags</p><p>In each successful rollout, find the next sustained contact for each body within 1.5 seconds. Use that contact location and active flag as the planner’s training target.</p><p>For each body, predict probabilities over terrain points and an active flag. Gradually replace reference targets with planner targets while training the controller.</p><p class="callout">Successful rollouts supply contact labels. Risk training in Stage 3 also uses failed rollouts.</p><p class="footnote">ACP uses this procedure to label contacts from successful controller rollouts. <a href="https://arxiv.org/html/2610.31608v1">ACP paper</a>, training and hindsight contact labeling (labels extracted after execution).</p></template></section>
 
-<section class="slide" id="slide-5" aria-labelledby="title-5" hidden><p class="eyebrow">05 / System Architecture</p><h2 id="title-5">Planner and controller inputs and outputs</h2><div class="flow"><div class="node"><strong>Contact planner</strong><p>Terrain map, robot state, tactile history, goal, risk</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>Contact command</strong><p>Next-contact position and active flag per body</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>Whole-body controller</strong><p>Contact targets, local terrain, robot state, tactile history</p></div></div><div class="table-wrap"><table class="compact"><thead><tr><th scope="col">Module</th><th scope="col">Output</th><th scope="col">Learning method</th></tr></thead><tbody><tr><td>Contact planner</td><td>Upcoming body–terrain contact targets</td><td>Supervised learning, then risk-sensitive reinforcement learning (RL)</td></tr><tr><td>Whole-body controller</td><td>29 target joint positions for G1</td><td>RL</td></tr><tr><td>Joint control</td><td>Motor torques from joint target errors</td><td>Proportional–derivative control</td></tr></tbody></table></div><p class="footnote">Initial design: update both policies at 50 Hz. Measure inference time and contact-target changes before choosing the hardware update rates.</p></section>
+<section class="slide " id="slide-10" aria-labelledby="title-10" data-group="Risk" hidden><p class="eyebrow">10 / Stage 3: Risk-Conditioned Planning</p><h2 id="title-10">The planner learns from both successful and failed episodes</h2><div class="slide-body"><div class="sequence"><div class="step"><span class="step-number">01</span><h3>Sample a task</h3><p>Goal, terrain, risk, physical variation</p></div><span class="seq-arrow" aria-hidden="true">→</span><div class="step"><span class="step-number">02</span><h3>Run both policies</h3><p>Planner targets → controller actions</p></div><span class="seq-arrow" aria-hidden="true">→</span><div class="step"><span class="step-number">03</span><h3>Update the planner</h3><p>Optimize the selected risk objective</p></div></div><div class="two "><div class="panel "><h3>Reward</h3><p>Progress and completion; penalties for time, falls, collisions, and effort.</p></div><div class="panel "><h3>Training schedule</h3><p>Fix the controller first. Collect fresh rollouts after controller updates.</p></div></div><p class="takeaway">Use the same risk setting in the planner input and the objective.</p><p class="sources">The mathematical formulation follows on p11–p15.</p></div><template class="slide-notes"><p>Terrain, start, goal, risk, friction, compliance</p><p>Planner selects targets; controller commands joints</p><p>Use successful and failed navigation episodes</p><p>Sample a terrain point and active flag for each body. Reward progress and goal completion; penalize time, falls, unintended collisions, and joint effort.</p><p>Train the planner with the controller fixed first. If the controller is later updated, collect new rollouts because contact success rates may change.</p><p class="callout">Use the same risk setting as a planner input and in the conditional value at risk (CVaR) objective on p14.</p><p class="footnote">Sample targets during training so their action probabilities are available for policy updates. Test whether retaining the contact-supervision loss helps training.</p></template></section>
 
-<section class="slide" id="slide-6" aria-labelledby="title-6" hidden><p class="eyebrow">06 / Contact Command</p><h2 id="title-6">One target per body for the next 1.5 seconds</h2><figure class="diagram"><svg viewBox="0 0 1000 230" role="img" aria-label="Hand and foot targets on a ledge"><title>Hand and foot targets on a ledge</title><path d="M40 180H510V110H950" class="v-ground"/><rect x="510" y="110" width="440" height="90" class="v-platform"/>
-    <g class="v-robot"><circle cx="400" cy="53" r="15"/><path d="M394 73L368 120L330 150L320 180M368 120L422 151L438 180M391 80L451 104L520 110"/></g>
-    <circle cx="520" cy="110" r="8" fill="#b44925"/><circle cx="610" cy="110" r="8" fill="#096c60"/>
-    <path d="M520 100L600 45H745M610 120L675 165H875" class="v-guide"/>
-    <text x="610" y="35" class="v-label">Hand target: active</text><text x="680" y="190" class="v-label">Foot target: active</text>
-    <text x="45" y="45" class="v-label">Next-contact command</text><text x="45" y="76" class="v-sub">Position + active flag</text></svg><figcaption>Example targets on a ledge. The controller must reach the targets while maintaining balance.</figcaption></figure><div class="grid two"><div class="card"><h3>Contact command</h3><p>Each hand, foot, knee, elbow, and the pelvis receives a 3D target. The active flag indicates an expected contact within 1.5 seconds; inactive targets are ignored.</p></div><div class="card"><h3>Coordinate frame</h3><p>The target frame starts at the robot base. Its vertical axis follows gravity; its horizontal axes follow the base heading.</p></div></div><p class="footnote">The planner outputs contact positions. Measured forces and torques enter the controller as feedback.</p></section>
+<section class="slide " id="slide-11" aria-labelledby="title-11" data-group="Risk" hidden><p class="eyebrow">11 / Planner Formulation</p><h2 id="title-11">Risk conditions the planner’s contact choices</h2><div class="slide-body"><div class="table-scroll"><table><thead><tr><th scope="col">Symbol</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>xₜ</td><td>Physical state, including controller memory and hidden terrain properties</td></tr><tr><td>aₜ</td><td>Contact targets and active flags</td></tr><tr><td>hₜ</td><td>Observed terrain, robot, tactile, and action history</td></tr><tr><td>g, α</td><td>Goal and risk context; fixed within the episode</td></tr></tbody></table></div><p class="notation">πθ: planner policy; θ: its parameters. φ: fixed controller parameters. Pφ: controller–physics transition model.</p><div class="math-block"><math aria-label="The planner chooses contact actions from observation history, goal, and risk; the fixed controller and physics determine the next physical state." display="block" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>a</mi><mrow><mi>t</mi></mrow></msub><mo>∼</mo><msub><mi>π</mi><mrow><mi>θ</mi></mrow></msub><mo>(</mo><mo>·</mo><mo>|</mo><msub><mi>h</mi><mrow><mi>t</mi></mrow></msub><mo>,</mo><mi>g</mi><mo>,</mo><mi>α</mi><mo>)</mo><mo>；</mo><msub><mi>x</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>∼</mo><msub><mi>P</mi><mrow><mi>φ</mi></mrow></msub><mo>(</mo><mo>·</mo><mo>|</mo><msub><mi>x</mi><mrow><mi>t</mi></mrow></msub><mo>,</mo><msub><mi>a</mi><mrow><mi>t</mi></mrow></msub><mo>)</mo></mrow></math></div><p class="sources">Task state sₜ = (xₜ, g, α). The complete state defines a Markov decision process (MDP). Hidden friction and compliance make deployment a partially observable MDP (POMDP).</p></div><template class="slide-notes"><p>A <strong>Markov decision process (MDP)</strong> models transitions between states. Here, <strong>t</strong> counts planner updates.</p><p class="small">θ denotes planner parameters; φ denotes fixed controller parameters. Pφ is the transition model induced by the controller and physics.</p><p class="footnote">The augmented task state is sₜ = (xₜ, g, α). Risk changes action selection, not the physics for a fixed action. Hidden friction and compliance make deployment a partially observable Markov decision process (POMDP).</p></template></section>
 
-<section class="slide" id="slide-7" aria-labelledby="title-7" hidden>
-<p class="eyebrow">07 / Dense Six-Axis Tactile Feedback</p><h2 id="title-7">Six-axis tactile measurements</h2>
-<figure class="diagram"><svg viewBox="0 0 1000 225" role="img" aria-label="Each sensing element measures three forces and three torques; their spatial and temporal patterns inform contact recovery"><title>Dense six-axis sensing for contact recovery</title>
-<defs><marker id="tactile-force-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#b42318"/></marker></defs>
-<rect x="25" y="18" width="250" height="156" rx="25" class="v-box"/>
-<rect x="47" y="38" width="38" height="32" rx="5" fill="#deeee5" stroke="#9abfb0"/><path d="M55 61L76 47" stroke="#096c60" stroke-width="2"/><rect x="101" y="38" width="38" height="32" rx="5" fill="#deeee5" stroke="#9abfb0"/><path d="M109 61L130 47" stroke="#096c60" stroke-width="2"/><rect x="155" y="38" width="38" height="32" rx="5" fill="#deeee5" stroke="#9abfb0"/><path d="M163 61L184 47" stroke="#096c60" stroke-width="2"/><rect x="209" y="38" width="38" height="32" rx="5" fill="#deeee5" stroke="#9abfb0"/><path d="M217 61L238 47" stroke="#096c60" stroke-width="2"/><rect x="47" y="80" width="38" height="32" rx="5" fill="#deeee5" stroke="#9abfb0"/><path d="M55 103L76 89" stroke="#096c60" stroke-width="2"/><rect x="101" y="80" width="38" height="32" rx="5" fill="#deeee5" stroke="#9abfb0"/><path d="M109 103L130 89" stroke="#096c60" stroke-width="2"/><rect x="155" y="80" width="38" height="32" rx="5" fill="#deeee5" stroke="#9abfb0"/><path d="M163 103L184 89" stroke="#096c60" stroke-width="2"/><rect x="209" y="80" width="38" height="32" rx="5" fill="#deeee5" stroke="#9abfb0"/><path d="M217 103L238 89" stroke="#096c60" stroke-width="2"/><rect x="47" y="122" width="38" height="32" rx="5" fill="#deeee5" stroke="#9abfb0"/><path d="M55 145L76 131" stroke="#096c60" stroke-width="2"/><rect x="101" y="122" width="38" height="32" rx="5" fill="#deeee5" stroke="#9abfb0"/><path d="M109 145L130 131" stroke="#096c60" stroke-width="2"/><rect x="155" y="122" width="38" height="32" rx="5" fill="#deeee5" stroke="#9abfb0"/><path d="M163 145L184 131" stroke="#096c60" stroke-width="2"/><rect x="209" y="122" width="38" height="32" rx="5" fill="#deeee5" stroke="#9abfb0"/><path d="M217 145L238 131" stroke="#096c60" stroke-width="2"/><rect x="155" y="80" width="38" height="32" rx="5" fill="#fbe5df" stroke="#b42318" stroke-width="2"/>
-<text x="150" y="207" text-anchor="middle" class="v-sub">Dense sensing elements</text>
-<path d="M193 96H324" stroke="#b42318" stroke-width="2" marker-end="url(#tactile-force-arrow)"/>
-<rect x="340" y="18" width="300" height="156" rx="12" class="v-box"/>
-<text x="490" y="50" text-anchor="middle" class="v-label v-bold">Each element: 6 values</text>
-<text x="490" y="86" text-anchor="middle" class="v-label">Force: Fx, Fy, Fz</text>
-<text x="490" y="120" text-anchor="middle" class="v-label">Torque: Tx, Ty, Tz</text>
-<text x="490" y="153" text-anchor="middle" class="v-sub">Measured in the sensor frame</text>
-<text x="670" y="101" class="v-label">→</text><rect x="712" y="18" width="265" height="156" rx="12" class="tint-box"/>
-<text x="844" y="54" text-anchor="middle" class="v-label v-bold">Possible corrections</text>
-<text x="844" y="91" text-anchor="middle" class="v-sub">Shift weight across the foot</text>
-<text x="844" y="124" text-anchor="middle" class="v-sub">Adjust ankle commands</text>
-<text x="844" y="155" text-anchor="middle" class="v-sub">Reposition the foot</text>
-</svg><figcaption>F denotes force and T denotes torque; x, y, and z are the element’s sensor axes. Torque is reported about the element’s calibrated reference point.</figcaption></figure>
-<div class="grid two"><div class="card"><h3>Controller observations</h3><p>The location and force/torque history of every sensing element, together with base and joint motion. Resolve normal and tangential forces using the contact-surface normal.</p></div><div class="card"><h3>What we test</h3><p>Compare foot slip, foot rotation, recovery time, and falls against pressure-map and total-force/torque baselines.</p></div></div>
-<p class="footnote">Force and torque together form a wrench. The sensor does not directly measure slip velocity or the friction limit. Hand feedback requires hand sensors. <a href="https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-4-wrenches/">Force/torque frame conventions</a>.</p></section>
+<section class="slide " id="slide-12" aria-labelledby="title-12" data-group="Risk" hidden><p class="eyebrow">12 / Discounted Return</p><h2 id="title-12">One return summarizes one navigation episode</h2><div class="slide-body"><div class="equation-pair"><div class="equation-main"><div class="math-block"><math aria-label="Episode return G is the sum of discounted rewards until termination." display="block" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><mrow><mi>T</mi><mo>−</mo><mn>1</mn></mrow></munderover><msup><mi>γ</mi><mrow><mi>t</mi></mrow></msup><msub><mi>r</mi><mrow><mi>t</mi></mrow></msub></mrow></math></div><p class="equation-caption">Discounted episode return</p><div class="math-block"><math aria-label="Standard risk-neutral reinforcement learning maximizes expected episode return." display="block" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><munder><mo>max</mo><mrow><mi>θ</mi></mrow></munder><mi>𝔼</mi><mo>[</mo><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>]</mo></mrow></math></div><p class="equation-caption">Standard mean-return objective</p></div><div class="annotation"><dl><dt>rₜ</dt><dd>Reward at planner step t</dd><dt>γ ∈ (0, 1]</dt><dd>Discount factor</dd><dt>T</dt><dd>Episode length</dd><dt>Gθ,α</dt><dd>Random return under planner θ and risk α</dd></dl></div></div><p class="takeaway">𝔼 averages over tasks and rollout randomness. Keep rewards and γ fixed across risk settings.</p></div><template class="slide-notes"><p><strong>rₜ</strong> is the reward at planner step t; <strong>γ ∈ (0, 1]</strong> is the discount factor; <strong>T</strong> is the number of steps before success, failure, or timeout.</p><p><strong>G<sub>θ,α</sub></strong> is a random episode return under planner θ and risk setting α. Terrain variation, contact conditions, disturbances, and sampled actions produce different returns.</p><p>Reward progress and goal completion. Penalize elapsed time, falls, unintended collisions, and joint effort.</p><p>Average over the specified start/terrain distribution and rollout randomness. Use the same task distribution when comparing risk settings.</p><p class="footnote">The discount factor γ controls how later rewards are weighted. It is not the risk command. Keep reward definitions and γ fixed across the risk sweep.</p></template></section>
 
-<section class="slide" id="slide-8" aria-labelledby="title-8" hidden><p class="eyebrow">08 / Stage 1: Contact Controller Training</p><h2 id="title-8">Train the controller on motion–terrain pairs</h2><div class="flow"><div class="node"><strong>Prepare motion–terrain pairs</strong><p>G1 motion, aligned terrain, and contact labels</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>Train controller with RL</strong><p>Use contact and motion rewards; apply disturbances</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>Evaluate contact control</strong><p>Run with contact targets and onboard observations</p></div></div><div class="grid two"><div class="card"><h3>Training objectives</h3><p>Reward contact-position accuracy and intended support. Penalize falls, excessive joint effort, and impacts. Use reference-motion rewards during initial training.</p></div><div class="card"><h3>Training disturbances</h3><p>Vary friction, foothold area, pushes, sensor delay, and force/torque noise. Test recovery on rigid terrain before adding compliant supports.</p></div></div><p class="callout">Reference motions provide rewards and initial states during training. The deployed controller receives contact targets and sensor observations.</p><p class="footnote">Check motion–terrain alignment and verify contact labels in dynamic simulation. Replaying joint poses alone does not test balance or contact forces.</p></section>
+<section class="slide " id="slide-13" aria-labelledby="title-13" data-group="Risk" hidden><p class="eyebrow">13 / Lower-Tail CVaR</p><h2 id="title-13">CVaR averages the lowest-return fraction of episodes</h2><div class="slide-body"><p class="lead compact-lead">Conditional value at risk (CVaR) evaluates the return distribution.</p><div class="math-block"><math aria-label="Lower-tail CVaR is the maximum over eta of eta minus one over alpha times the expected shortfall below eta." display="block" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msubsup><mi mathvariant="normal">CVaR</mi><mi>α</mi><mo>↓</mo></msubsup><mo>(</mo><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>)</mo><mo>=</mo><munder><mo>max</mo><mrow><mi>η</mi></mrow></munder><mo>{</mo><mi>η</mi><mo>−</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>α</mi></mrow></mfrac><mi>𝔼</mi><mo>[</mo><msup><mo>(</mo><mi>η</mi><mo>−</mo><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>)</mo><mrow><mo>+</mo></mrow></msup><mo>]</mo><mo>}</mo></mrow></math></div><div class="notation-grid"><p><strong>α</strong><br>Fraction of lowest returns</p><p><strong>η</strong><br>Optimized return threshold</p><p><strong>(η − G)⁺</strong><br>max(η − G, 0)</p></div><div class="two "><div class="panel "><h3>α = 0.1</h3><p>Average the worst 10%.</p></div><div class="panel "><h3>α = 1</h3><p>Recover expected return.</p></div></div><p class="sources">G is the discounted return defined on p12. CVaR is an episode-level objective, not an extra per-step reward. <a href="https://papers.neurips.cc/paper_files/paper/2015/file/64223ccf70bbb65a3a4aceac37e21016-Paper.pdf">Chow et al., 2015</a>.</p></div><template class="slide-notes"><p><strong>α ∈ (0, 1]</strong> is the fraction of lowest-return episodes to average. This defines <strong>lower-tail CVaR</strong>.</p><p><strong>η</strong> is a return threshold optimized below. The positive part <strong>(η − G)⁺ = max(η − G, 0)</strong> measures how far a return falls below that threshold.</p><p>Average the worst 10% of returns. This emphasizes episodes with low total navigation reward.</p><p>Average all returns. The objective reduces to expected-return RL.</p><p class="callout">CVaR is computed from episode returns. It is not an extra reward added at each simulation step.</p><p class="footnote">This lower-tail convention rewards larger values. It includes risk-averse and risk-neutral objectives. <a href="https://papers.neurips.cc/paper_files/paper/2015/file/64223ccf70bbb65a3a4aceac37e21016-Paper.pdf">Chow et al., CVaR MDPs</a>.</p></template></section>
 
-<section class="slide" id="slide-9" aria-labelledby="title-9" hidden><p class="eyebrow">09 / Stage 2: Planner Initialization</p><h2 id="title-9">Label the controller’s successful rollouts</h2><div class="flow"><div class="node"><strong>Run the controller</strong><p>Use reference targets on paired terrains</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>Keep successful episodes</strong><p>Record when and where body contacts begin</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>Train the contact planner</strong><p>Predict next contact positions and active flags</p></div></div><div class="grid two"><div class="card"><h3>Where supervision comes from</h3><p>In each successful rollout, find the next sustained contact for each body within 1.5 seconds. Use that contact location and active flag as the planner’s training target.</p></div><div class="card"><h3>Introduce predicted contacts</h3><p>For each body, predict probabilities over terrain points and an active flag. Gradually replace reference targets with planner targets while training the controller.</p></div></div><p class="callout">Successful rollouts supply contact labels. Risk training in Stage 3 also uses failed rollouts.</p><p class="footnote">ACP uses this procedure to label contacts from successful controller rollouts. <a href="https://arxiv.org/html/2610.31608v1">ACP paper</a>, training and hindsight contact labeling (labels extracted after execution).</p></section>
+<section class="slide " id="slide-14" aria-labelledby="title-14" data-group="Risk" hidden><p class="eyebrow">14 / Chosen RL Objective</p><h2 id="title-14">Our main objective replaces mean return with CVaR</h2><div class="slide-body"><div class="objective-chosen"><p class="label">Main method</p><div class="math-block"><math aria-label="The chosen objective maximizes lower-tail CVaR of discounted episode return." display="block" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><munder><mo>max</mo><mrow><mi>θ</mi></mrow></munder><msubsup><mi mathvariant="normal">CVaR</mi><mi>α</mi><mo>↓</mo></msubsup><mo>(</mo><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>)</mo></mrow></math></div><p>Vary α as the single user command.</p></div><div class="objective-alternative"><p class="label">Alternative: weight mean and tail performance</p><div class="math-block"><math aria-label="An alternative maximizes one minus lambda times expected return plus lambda times lower-tail CVaR." display="block" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><munder><mo>max</mo><mrow><mi>θ</mi></mrow></munder><mo>[</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>λ</mi><mo>)</mo><mi>𝔼</mi><mo>[</mo><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>]</mo><mo>+</mo><mi>λ</mi><msubsup><mi mathvariant="normal">CVaR</mi><mi>α</mi><mo>↓</mo></msubsup><mo>(</mo><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>)</mo><mo>]</mo></mrow></math></div><p>λ ∈ [0, 1]. Use λ = 1 for the main method; test a fixed λ &lt; 1 as an ablation.</p></div><p class="sources"><a href="https://proceedings.neurips.cc/paper_files/paper/2014/file/35f1050a4381d2d216bf56ad46b0277d-Paper.pdf">Chow &amp; Ghavamzadeh, 2014</a></p><p class="sources">Train across α values. The actor update must optimize this objective; a distributional critic alone is insufficient.</p></div><template class="slide-notes"><p><strong>Chosen objective, for each risk setting α:</strong> optimize the lower tail of the discounted return defined on p12.</p><p><strong>Alternative:</strong> let <strong>λ ∈ [0, 1]</strong> weight CVaR against mean return.</p><p class="callout">Use λ = 1 for the main method. Vary α as the single user command; test a fixed λ &lt; 1 as an ablation.</p><p class="footnote">Sample α across training episodes and optimize its conditional objective. Retain failed rollouts. A distributional critic estimates returns; the actor update must optimize the chosen risk objective. Ordinary mean-return policy updates are insufficient. <a href="https://proceedings.neurips.cc/paper_files/paper/2014/file/35f1050a4381d2d216bf56ad46b0277d-Paper.pdf">Chow &amp; Ghavamzadeh, mean–CVaR optimization</a>.</p></template></section>
 
-<section class="slide" id="slide-10" aria-labelledby="title-10" hidden><p class="eyebrow">10 / Stage 3: Risk-Conditioned Planning</p><h2 id="title-10">Train the planner from successes and failures</h2><div class="flow"><div class="node"><strong>Sample a task</strong><p>Terrain, start, goal, risk, friction, compliance</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>Run planner and controller</strong><p>Planner selects targets; controller commands joints</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>Update the planner</strong><p>Use successful and failed navigation episodes</p></div></div><div class="grid two"><div class="card"><h3>Planner actions and rewards</h3><p>Sample a terrain point and active flag for each body. Reward progress and goal completion; penalize time, falls, unintended collisions, and joint effort.</p></div><div class="card"><h3>Training schedule</h3><p>Train the planner with the controller fixed first. If the controller is later updated, collect new rollouts because contact success rates may change.</p></div></div><p class="callout">Use the same risk setting as a planner input and in the conditional value at risk (CVaR) objective on p14.</p><p class="footnote">Sample targets during training so their action probabilities are available for policy updates. Test whether retaining the contact-supervision loss helps training.</p></section>
+<section class="slide " id="slide-15" aria-labelledby="title-15" data-group="Risk" hidden><p class="eyebrow">15 / Constrained MDP Alternative</p><h2 id="title-15">A constrained MDP needs an explicit cost budget</h2><div class="slide-body"><p class="notation">Constrained Markov decision process (CMDP). cₜ: nonnegative safety cost. C: episode cost. b: allowed expected cost.</p><div class="math-block"><math aria-label="Episode safety cost C is the sum of per-step safety costs." display="block" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>C</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><mrow><mi>T</mi><mo>−</mo><mn>1</mn></mrow></munderover><msub><mi>c</mi><mrow><mi>t</mi></mrow></msub></mrow></math></div><div class="math-block"><math aria-label="A constrained objective maximizes expected return subject to expected episode safety cost at most b." display="block" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><munder><mo>max</mo><mrow><mi>θ</mi></mrow></munder><mi>𝔼</mi><mo>[</mo><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>]</mo><mspace width="1em"></mspace><mtext>subject to</mtext><mspace width="1em"></mspace><mi>𝔼</mi><mo>[</mo><msub><mi>C</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>]</mo><mo>≤</mo><mi>b</mi></mrow></math></div><div class="two "><div class="panel "><h3>Example</h3><p>C = 1 for a fall, 0 otherwise.<br>𝔼[C] equals fall probability.</p></div><div class="panel "><h3>Current proposal</h3><p>CVaR of return, without a cost constraint.<br>α is not a failure-probability limit.</p></div></div><p class="sources"><a href="https://proceedings.mlr.press/v70/achiam17a/achiam17a.pdf">Achiam et al., 2017</a></p><p class="sources">A fixed penalty is not a constraint. An upper-tail CVaR cost constraint is another option; see Notes.</p></div><template class="slide-notes"><p>A <strong>constrained Markov decision process (CMDP)</strong> adds a cost and an allowed budget. Let <strong>cₜ ≥ 0</strong> be a safety cost, <strong>C<sub>θ,α</sub></strong> its episode total, and <strong>b</strong> the allowed expected cost.</p><p>Set C = 1 if the robot falls, and 0 otherwise. Then 𝔼[C] equals the fall probability.</p><p>Constrain upper-tail CVaR of C to limit the average cost of the worst episodes. This is a risk-constrained alternative.</p><p class="callout">Current proposal: risk-sensitive RL without a cost constraint. Add a CMDP only if the task specifies a cost budget b.</p><p class="footnote">The risk setting α is not an allowed failure probability. A fixed cost penalty is not a constraint; an expected-cost bound is not a per-trial safety guarantee. <a href="https://proceedings.mlr.press/v70/achiam17a/achiam17a.pdf">Achiam et al., Constrained Policy Optimization</a>.</p></template></section>
 
-<section class="slide math-slide" id="slide-11" aria-labelledby="title-11" hidden><p class="eyebrow">11 / Planner Formulation</p><h2 id="title-11">Risk changes the policy and objective</h2><p>A <strong>Markov decision process (MDP)</strong> models transitions between states. Here, <strong>t</strong> counts planner updates.</p><div class="table-wrap"><table class="compact"><tbody><tr><td>Physical state xₜ</td><td>Robot and terrain state, friction, compliance, controller memory, and remaining time.</td></tr><tr><td>Planner action aₜ</td><td>A terrain contact position and active flag for each selected body part.</td></tr><tr><td>Observation history hₜ</td><td>Terrain maps, base/joint state, dense tactile signals, and previous actions.</td></tr><tr><td>Context g and α</td><td>g is the goal pose. α is the risk setting, held fixed within an episode.</td></tr></tbody></table></div><p class="small">θ denotes planner parameters; φ denotes fixed controller parameters. Pφ is the transition model induced by the controller and physics.</p><div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="The planner chooses contact actions from observation history, goal, and risk; the fixed controller and physics determine the next physical state."><mrow><msub><mi>a</mi><mrow><mi>t</mi></mrow></msub><mo>∼</mo><msub><mi>π</mi><mrow><mi>θ</mi></mrow></msub><mo>(</mo><mo>·</mo><mo>|</mo><msub><mi>h</mi><mrow><mi>t</mi></mrow></msub><mo>,</mo><mi>g</mi><mo>,</mo><mi>α</mi><mo>)</mo><mo>；</mo><msub><mi>x</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>∼</mo><msub><mi>P</mi><mrow><mi>φ</mi></mrow></msub><mo>(</mo><mo>·</mo><mo>|</mo><msub><mi>x</mi><mrow><mi>t</mi></mrow></msub><mo>,</mo><msub><mi>a</mi><mrow><mi>t</mi></mrow></msub><mo>)</mo></mrow></math></div><p class="footnote">The augmented task state is sₜ = (xₜ, g, α). Risk changes action selection, not the physics for a fixed action. Hidden friction and compliance make deployment a partially observable Markov decision process (POMDP).</p></section>
+<section class="slide " id="slide-16" aria-labelledby="title-16" data-group="Risk" hidden><p class="eyebrow">16 / Risk Illustration</p><h2 id="title-16">Risk preference can change the preferred route</h2><div class="slide-body"><div class="exhibit-pair risk-exhibit"><figure class="risk-plot"><svg role="img" aria-label="Synthetic lower-tail CVaR by route and worst-return fraction" xmlns:xlink="http://www.w3.org/1999/xlink" width="504pt" height="273.6pt" viewBox="0 0 504 273.6" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 273.6
+L 504 273.6
+L 504 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 80.64 205.2
+L 493.92 205.2
+L 493.92 10.944
+L 80.64 10.944
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 80.64 103.2156
+L 493.92 103.2156
+" clip-path="url(#p925b449609)" style="fill: none; stroke: #d4dce1; stroke-width: 0.7; stroke-linecap: square"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_2">
+      <defs>
+       <path id="m4c0800a52f" d="M 0 0
+L 0 3.5
+" style="stroke: #66737d; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m4c0800a52f" x="80.64" y="205.2" style="fill: #66737d; stroke: #66737d; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <text style="font-size: 14px; font-family: 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #66737d" x="80.64" y="222.392383" transform="rotate(-0 80.64 222.392383)">0.1</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_3">
+      <g>
+       <use xlink:href="#m4c0800a52f" x="172.48" y="205.2" style="fill: #66737d; stroke: #66737d; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <text style="font-size: 14px; font-family: 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #66737d" x="172.48" y="222.392383" transform="rotate(-0 172.48 222.392383)">0.3</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_4">
+      <g>
+       <use xlink:href="#m4c0800a52f" x="264.32" y="205.2" style="fill: #66737d; stroke: #66737d; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <text style="font-size: 14px; font-family: 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #66737d" x="264.32" y="222.392383" transform="rotate(-0 264.32 222.392383)">0.5</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_5">
+      <g>
+       <use xlink:href="#m4c0800a52f" x="356.16" y="205.2" style="fill: #66737d; stroke: #66737d; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <text style="font-size: 14px; font-family: 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #66737d" x="356.16" y="222.392383" transform="rotate(-0 356.16 222.392383)">0.7</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_6">
+      <g>
+       <use xlink:href="#m4c0800a52f" x="493.92" y="205.2" style="fill: #66737d; stroke: #66737d; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <text style="font-size: 14px; font-family: 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #66737d" x="493.92" y="222.392383" transform="rotate(-0 493.92 222.392383)">1.0</text>
+     </g>
+    </g>
+    <g id="text_6">
+     <text style="font-size: 15px; font-family: 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #253e54" x="287.28" y="240.259082" transform="rotate(-0 287.28 240.259082)">Worst-return fraction α</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_7">
+      <defs>
+       <path id="m21578aa5d7" d="M 0 0
+L -3.5 0
+" style="stroke: #66737d; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m21578aa5d7" x="80.64" y="200.3436" style="fill: #66737d; stroke: #66737d; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_7">
+      <text style="font-size: 14px; font-family: 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #66737d" x="73.64" y="205.439791" transform="rotate(-0 73.64 205.439791)">−100</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_8">
+      <g>
+       <use xlink:href="#m21578aa5d7" x="80.64" y="103.2156" style="fill: #66737d; stroke: #66737d; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_8">
+      <text style="font-size: 14px; font-family: 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #66737d" x="73.64" y="108.311791" transform="rotate(-0 73.64 108.311791)">0</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_9">
+      <g>
+       <use xlink:href="#m21578aa5d7" x="80.64" y="54.6516" style="fill: #66737d; stroke: #66737d; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_9">
+      <text style="font-size: 14px; font-family: 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #66737d" x="73.64" y="59.747791" transform="rotate(-0 73.64 59.747791)">50</text>
+     </g>
+    </g>
+    <g id="text_10">
+     <text style="font-size: 15px; font-family: 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #253e54" x="34.950449" y="108.072" transform="rotate(-90 34.950449 108.072)">CVaR (reward units)</text>
+    </g>
+   </g>
+   <g id="curve-walk">
+    <path d="M 80.64 51.73776
+L 85.232 50.236691
+L 89.824 48.9858
+L 95.564 47.687706
+L 101.304 46.613421
+L 108.192 45.54585
+L 116.228 44.5284
+L 125.412 43.586385
+L 136.892 42.647016
+L 150.668 41.765311
+L 166.74 40.969221
+L 186.256 40.229564
+L 210.364 39.5428
+L 241.36 38.89528
+L 280.392 38.31231
+L 332.052 37.776079
+L 400.932 37.29644
+L 493.92 36.877176
+L 493.92 36.877176
+" clip-path="url(#p925b449609)" style="fill: none; stroke: #253e54; stroke-width: 2.5; stroke-linecap: square"/>
+   </g>
+   <g id="curve-support">
+    <path d="M 80.64 95.44536
+L 82.936 92.115257
+L 85.232 89.087891
+L 87.528 86.323774
+L 90.972 82.600678
+L 94.416 79.307169
+L 97.86 76.372953
+L 101.304 73.742276
+L 104.748 71.370354
+L 108.192 69.2208
+L 112.784 66.649765
+L 117.376 64.3644
+L 121.968 62.3196
+L 127.708 60.0476
+L 133.448 58.039786
+L 139.188 56.252611
+L 146.076 54.351204
+L 152.964 52.67132
+L 161 50.943076
+L 170.184 49.219017
+L 179.368 47.713886
+L 189.7 46.23384
+L 201.18 44.80483
+L 214.956 43.330311
+L 229.88 41.967826
+L 247.1 40.633667
+L 266.616 39.361152
+L 288.428 38.170605
+L 313.684 37.024667
+L 342.384 35.950836
+L 375.676 34.931673
+L 414.708 33.964216
+L 460.628 33.053056
+L 493.92 32.506416
+L 493.92 32.506416
+" clip-path="url(#p925b449609)" style="fill: none; stroke-dasharray: 9.25,4; stroke-dashoffset: 0; stroke: #096c60; stroke-width: 2.5"/>
+   </g>
+   <g id="curve-jump">
+    <path d="M 80.64 200.3436
+L 82.936 191.093314
+L 85.232 182.683964
+L 87.528 175.005861
+L 89.824 167.9676
+L 92.12 161.4924
+L 94.416 155.515292
+L 96.712 149.980933
+L 100.156 142.4076
+L 103.6 135.5916
+L 107.044 129.424743
+L 110.488 123.818509
+L 113.932 118.699774
+L 117.376 114.0076
+L 120.82 109.6908
+L 124.264 105.706062
+L 127.708 102.016489
+L 131.152 98.590457
+L 135.744 94.385782
+L 140.336 90.54673
+L 144.928 87.0276
+L 149.52 83.79
+L 154.112 80.801446
+L 159.852 77.374206
+L 165.592 74.2476
+L 171.332 71.383734
+L 177.072 68.750826
+L 183.96 65.858677
+L 190.848 63.221718
+L 197.736 60.8076
+L 205.772 58.236862
+L 213.808 55.896831
+L 222.992 53.467112
+L 232.176 51.263414
+L 242.508 49.017103
+L 253.988 46.769485
+L 265.468 44.74551
+L 278.096 42.739675
+L 291.872 40.776171
+L 306.796 38.873423
+L 322.868 37.044731
+L 341.236 35.189622
+L 360.752 33.4476
+L 382.564 31.731956
+L 406.672 30.069822
+L 433.076 28.480222
+L 461.776 26.975342
+L 493.92 25.5132
+L 493.92 25.5132
+" clip-path="url(#p925b449609)" style="fill: none; stroke-dasharray: 2.5,4.125; stroke-dashoffset: 0; stroke: #a72b27; stroke-width: 2.5"/>
+   </g>
+   <g id="alpha-cursor">
+    <path d="M 126.56 205.2
+L 126.56 10.944
+" clip-path="url(#p925b449609)" style="fill: none; stroke-dasharray: 3.6,3.6; stroke-dashoffset: 0; stroke: #8a959b; stroke-width: 1.2"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 80.64 205.2
+L 80.64 10.944
+" style="fill: none; stroke: #66737d; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 80.64 205.2
+L 493.92 205.2
+" style="fill: none; stroke: #66737d; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="legend_1">
+    <g id="line2d_10">
+     <path d="M 387.182187 157.488574
+L 398.182187 157.488574
+L 409.182187 157.488574
+" style="fill: none; stroke: #253e54; stroke-width: 2.5; stroke-linecap: square"/>
+    </g>
+    <g id="text_11">
+     <text style="font-size: 11px; font-family: 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #253e54" x="417.982188" y="161.338574" transform="rotate(-0 417.982188 161.338574)">Walk around</text>
+    </g>
+    <g id="line2d_11">
+     <path d="M 387.182187 173.311816
+L 398.182187 173.311816
+L 409.182187 173.311816
+" style="fill: none; stroke-dasharray: 9.25,4; stroke-dashoffset: 0; stroke: #096c60; stroke-width: 2.5"/>
+    </g>
+    <g id="text_12">
+     <text style="font-size: 11px; font-family: 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #253e54" x="417.982188" y="177.161816" transform="rotate(-0 417.982188 177.161816)">Hand support</text>
+    </g>
+    <g id="line2d_12">
+     <path d="M 387.182187 189.135059
+L 398.182187 189.135059
+L 409.182187 189.135059
+" style="fill: none; stroke-dasharray: 2.5,4.125; stroke-dashoffset: 0; stroke: #a72b27; stroke-width: 2.5"/>
+    </g>
+    <g id="text_13">
+     <text style="font-size: 11px; font-family: 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #253e54" x="417.982188" y="192.985059" transform="rotate(-0 417.982188 192.985059)">Jump</text>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p925b449609">
+   <rect x="80.64" y="10.944" width="413.28" height="194.256"/>
+  </clipPath>
+ </defs>
+</svg>
+<figcaption>Analytic example; no robot trials. Line styles distinguish routes.</figcaption></figure><div class="annotation"><p class="label">Synthetic example</p><table class="risk-scores"><thead><tr><th>Route</th><th>CVaR</th></tr></thead><tbody><tr data-route="walk"><td><span class="line-key walk"></span>Walk around</td><td id="score-walk"></td></tr><tr data-route="support"><td><span class="line-key support"></span>Hand support</td><td id="score-support"></td></tr><tr data-route="jump"><td><span class="line-key jump"></span>Jump</td><td id="score-jump"></td></tr></tbody></table><p id="risk-choice" aria-live="polite"></p><p class="small">Selected route has the highest lower-tail return.</p></div></div><div class="risk-control"><label for="risk-preference">Worst-return fraction α: <output id="risk-value">20%</output></label><input id="risk-preference" type="range" min="10" max="100" value="20" step="1"><span>10%: conservative · 100%: mean return</span></div><p class="sources">Failure probability / success return: walk 1% / 70; support 4% / 80; jump 10% / 100. Failure return −100 for all routes. <a href="https://github.com/jnskkmhr/skill_chaining_idea/blob/gh-pages/figures/risk_example.json">Data</a> · <a href="https://jnskkmhr.github.io/skill_chaining_idea/figures/risk_cvar.pdf">Vector PDF</a></p></div><template class="slide-notes"><p>Use the lower-tail CVaR objective from p13 to compare three synthetic route-return distributions. Move α to change the fraction of worst outcomes being averaged.</p><figcaption>Synthetic example: detour (1% failure, success return 70), hand support (4%, 80), jump (10%, 100). Every failure returns −100. These are not robot measurements.</figcaption><p aria-live="polite" class="small"></p><p class="footnote">This toy example ranks fixed route-return distributions. The learned planner must estimate outcomes from its own rollouts; actual route ordering depends on terrain and contact conditions.</p></template></section>
 
-<section class="slide math-slide" id="slide-12" aria-labelledby="title-12" hidden><p class="eyebrow">12 / Discounted Return</p><h2 id="title-12">Return describes one navigation episode</h2><p><strong>rₜ</strong> is the reward at planner step t; <strong>γ ∈ (0, 1]</strong> is the discount factor; <strong>T</strong> is the number of steps before success, failure, or timeout.</p><div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="Episode return G is the sum of discounted rewards until termination."><mrow><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><mrow><mi>T</mi><mo>−</mo><mn>1</mn></mrow></munderover><msup><mi>γ</mi><mrow><mi>t</mi></mrow></msup><msub><mi>r</mi><mrow><mi>t</mi></mrow></msub></mrow></math></div><p><strong>G<sub>θ,α</sub></strong> is a random episode return under planner θ and risk setting α. Terrain variation, contact conditions, disturbances, and sampled actions produce different returns.</p><div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="Standard risk-neutral reinforcement learning maximizes expected episode return."><mrow><munder><mo>max</mo><mrow><mi>θ</mi></mrow></munder><mi>𝔼</mi><mo>[</mo><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>]</mo></mrow></math></div><div class="grid two"><div class="card"><h3>Reward terms</h3><p>Reward progress and goal completion. Penalize elapsed time, falls, unintended collisions, and joint effort.</p></div><div class="card"><h3>Expectation 𝔼</h3><p>Average over the specified start/terrain distribution and rollout randomness. Use the same task distribution when comparing risk settings.</p></div></div><p class="footnote">The discount factor γ controls how later rewards are weighted. It is not the risk command. Keep reward definitions and γ fixed across the risk sweep.</p></section>
+<section class="slide " id="slide-17" aria-labelledby="title-17" data-group="Validation" hidden><p class="eyebrow">17 / Execution and Feedback</p><h2 id="title-17">Controller recovery and replanning are separate tests</h2><div class="slide-body"><div class="sequence"><div class="step"><span class="step-number">01</span><h3>Apply a disturbance</h3><p>Measure force/torque and foot motion</p></div><span class="seq-arrow" aria-hidden="true">→</span><div class="step"><span class="step-number">02</span><h3>Evaluate recovery</h3><p>Record load shifts, foot replacement, falls</p></div><span class="seq-arrow" aria-hidden="true">→</span><div class="step"><span class="step-number">03</span><h3>Evaluate replanning</h3><p>Record the next foot or hand target</p></div></div><div class="two "><div class="panel "><h3>Controller test</h3><p>Compare the same disturbances with and without tactile input.</p></div><div class="panel "><h3>Planner extension</h3><p>Compare tactile input to the controller only versus both policies.</p></div></div><p class="takeaway">Test risk-setting changes during stable support before stepping or climbing.</p></div><template class="slide-notes"><p>Measure force/torque signals and foot motion</p><p>Measure load shifts, foot replacement, and falls</p><p>Record changes in the next foot or hand target</p><p>First test whether tactile input improves immediate recovery. Then test whether giving tactile history to the planner improves its next contact choice.</p><p>Change the risk setting during stable support first. Record contact-target changes and falls before testing switches during stepping or climbing.</p><p class="callout">Compare identical disturbances with tactile input in the controller only and in both the controller and planner.</p><p class="footnote">Vary friction and compliance without exposing their simulator values to the deployed policies.</p></template></section>
 
-<section class="slide math-slide" id="slide-13" aria-labelledby="title-13" hidden><p class="eyebrow">13 / Lower-Tail CVaR</p><h2 id="title-13">Apply CVaR to the distribution of returns</h2><p><strong>α ∈ (0, 1]</strong> is the fraction of lowest-return episodes to average. This defines <strong>lower-tail CVaR</strong>.</p><p><strong>η</strong> is a return threshold optimized below. The positive part <strong>(η − G)⁺ = max(η − G, 0)</strong> measures how far a return falls below that threshold.</p><div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="Lower-tail CVaR is the maximum over eta of eta minus one over alpha times the expected shortfall below eta."><mrow><msubsup><mi mathvariant="normal">CVaR</mi><mi>α</mi><mo>↓</mo></msubsup><mo>(</mo><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>)</mo><mo>=</mo><munder><mo>max</mo><mrow><mi>η</mi></mrow></munder><mo>{</mo><mi>η</mi><mo>−</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>α</mi></mrow></mfrac><mi>𝔼</mi><mo>[</mo><msup><mo>(</mo><mi>η</mi><mo>−</mo><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>)</mo><mrow><mo>+</mo></mrow></msup><mo>]</mo><mo>}</mo></mrow></math></div><div class="grid two"><div class="card"><h3>α = 0.1</h3><p>Average the worst 10% of returns. This emphasizes episodes with low total navigation reward.</p></div><div class="card"><h3>α = 1</h3><p>Average all returns. The objective reduces to expected-return RL.</p></div></div><p class="callout">CVaR is computed from episode returns. It is not an extra reward added at each simulation step.</p><p class="footnote">This lower-tail convention rewards larger values. It includes risk-averse and risk-neutral objectives. <a href="https://papers.neurips.cc/paper_files/paper/2015/file/64223ccf70bbb65a3a4aceac37e21016-Paper.pdf">Chow et al., CVaR MDPs</a>.</p></section>
+<section class="slide " id="slide-18" aria-labelledby="title-18" data-group="Validation" hidden><p class="eyebrow">18 / Generalization Experiments</p><h2 id="title-18">Test conditions must be excluded from training</h2><div class="slide-body"><div class="table-scroll"><table><thead><tr><th scope="col">Scene</th><th scope="col">Held-out change</th><th scope="col">Measure</th></tr></thead><tbody><tr><td>Ledge + ramp</td><td>Height; hand-contact friction</td><td>Climb or detour</td></tr><tr><td>Gap + alternate route</td><td>Width; landing friction</td><td>Route choice; landing falls</td></tr><tr><td>Partial footholds</td><td>Area; edge location</td><td>Foot replacement; support use</td></tr><tr><td>Low passage + ledge</td><td>Order; spacing</td><td>Crawl-to-climb success</td></tr><tr><td>Compliant support</td><td>Stiffness; deformation</td><td>Load shifts; sinking; success</td></tr></tbody></table></div><p class="sources">Begin with route alternatives visible in the local map. Granular terrain follows validated rigid/compliant contact experiments.</p></div><template class="slide-notes"><p class="callout">After initialization, train on generated navigation tasks without a matching motion clip for each terrain.</p><p class="footnote">Exclude test dimensions, contact parameters, and obstacle combinations from training. Start with alternate routes visible in the local map; long-range maze navigation is outside this study.</p></template></section>
 
-<section class="slide math-slide" id="slide-14" aria-labelledby="title-14" hidden><p class="eyebrow">14 / Chosen RL Objective</p><h2 id="title-14">Start with CVaR; compare a mean–CVaR objective</h2><p><strong>Chosen objective, for each risk setting α:</strong> optimize the lower tail of the discounted return defined on p12.</p><div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="The chosen objective maximizes lower-tail CVaR of discounted episode return."><mrow><munder><mo>max</mo><mrow><mi>θ</mi></mrow></munder><msubsup><mi mathvariant="normal">CVaR</mi><mi>α</mi><mo>↓</mo></msubsup><mo>(</mo><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>)</mo></mrow></math></div><p><strong>Alternative:</strong> let <strong>λ ∈ [0, 1]</strong> weight CVaR against mean return.</p><div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="An alternative maximizes one minus lambda times expected return plus lambda times lower-tail CVaR."><mrow><munder><mo>max</mo><mrow><mi>θ</mi></mrow></munder><mo>[</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>λ</mi><mo>)</mo><mi>𝔼</mi><mo>[</mo><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>]</mo><mo>+</mo><mi>λ</mi><msubsup><mi mathvariant="normal">CVaR</mi><mi>α</mi><mo>↓</mo></msubsup><mo>(</mo><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>)</mo><mo>]</mo></mrow></math></div><p class="callout">Use λ = 1 for the main method. Vary α as the single user command; test a fixed λ &lt; 1 as an ablation.</p><p class="footnote">Sample α across training episodes and optimize its conditional objective. Retain failed rollouts. A distributional critic estimates returns; the actor update must optimize the chosen risk objective. Ordinary mean-return policy updates are insufficient. <a href="https://proceedings.neurips.cc/paper_files/paper/2014/file/35f1050a4381d2d216bf56ad46b0277d-Paper.pdf">Chow &amp; Ghavamzadeh, mean–CVaR optimization</a>.</p></section>
+<section class="slide " id="slide-19" aria-labelledby="title-19" data-group="Validation" hidden><p class="eyebrow">19 / Evaluation Metrics</p><h2 id="title-19">Measure motion choices together with failure rates</h2><div class="slide-body"><div class="two "><div class="panel "><h3>Contact recovery</h3><p>Contact error at touchdown<br>Foot slip and rotation relative to terrain<br>Recovery time and fall rate</p></div><div class="panel "><h3>Risk response</h3><p>Route and hand-support choices<br>Completion time and success<br>Measured CVaR across repeated trials</p></div></div><p class="takeaway">Report confidence intervals and repeat training seeds.</p><p class="sources">Also test sensor calibration, latency, failed elements, and simulation-to-hardware changes. Measure slip relative to the contacted surface, including its motion.</p></div><template class="slide-notes"><p class="footnote">Measure contact error at touchdown relative to the commanded terrain point. Measure slip relative to the contacted surface, including its motion on deformable terrain. Also report peak force and torque.</p></template></section>
 
-<section class="slide math-slide" id="slide-15" aria-labelledby="title-15" hidden><p class="eyebrow">15 / Constrained MDP Alternative</p><h2 id="title-15">A constraint requires an explicit cost limit</h2><p>A <strong>constrained Markov decision process (CMDP)</strong> adds a cost and an allowed budget. Let <strong>cₜ ≥ 0</strong> be a safety cost, <strong>C<sub>θ,α</sub></strong> its episode total, and <strong>b</strong> the allowed expected cost.</p><div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="Episode safety cost C is the sum of per-step safety costs."><mrow><msub><mi>C</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><mrow><mi>T</mi><mo>−</mo><mn>1</mn></mrow></munderover><msub><mi>c</mi><mrow><mi>t</mi></mrow></msub></mrow></math></div><div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="A constrained objective maximizes expected return subject to expected episode safety cost at most b."><mrow><munder><mo>max</mo><mrow><mi>θ</mi></mrow></munder><mi>𝔼</mi><mo>[</mo><msub><mi>G</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>]</mo><mspace width="1em"/><mtext>subject to</mtext><mspace width="1em"/><mi>𝔼</mi><mo>[</mo><msub><mi>C</mi><mrow><mi>θ</mi><mo>,</mo><mi>α</mi></mrow></msub><mo>]</mo><mo>≤</mo><mi>b</mi></mrow></math></div><div class="grid two"><div class="card"><h3>Example: failure budget</h3><p>Set C = 1 if the robot falls, and 0 otherwise. Then 𝔼[C] equals the fall probability.</p></div><div class="card"><h3>Alternative: tail-cost limit</h3><p>Constrain upper-tail CVaR of C to limit the average cost of the worst episodes. This is a risk-constrained alternative.</p></div></div><p class="callout">Current proposal: risk-sensitive RL without a cost constraint. Add a CMDP only if the task specifies a cost budget b.</p><p class="footnote">The risk setting α is not an allowed failure probability. A fixed cost penalty is not a constraint; an expected-cost bound is not a per-trial safety guarantee. <a href="https://proceedings.mlr.press/v70/achiam17a/achiam17a.pdf">Achiam et al., Constrained Policy Optimization</a>.</p></section>
+<section class="slide " id="slide-20" aria-labelledby="title-20" data-group="Validation" hidden><p class="eyebrow">20 / Baselines and Ablations</p><h2 id="title-20">Matched comparisons separate sensing and planning effects</h2><div class="slide-body"><div class="table-scroll"><table><thead><tr><th scope="col">Change one component</th><th scope="col">Question</th></tr></thead><tbody><tr><td>Tactile input off / on</td><td>Does sensing reduce slip and falls?</td></tr><tr><td>Pressure / total wrench / dense 3-axis / dense 6-axis</td><td>Which information helps?</td></tr><tr><td>Tactile input to controller / both policies</td><td>Does feedback improve future contacts?</td></tr><tr><td>Mean return / CVaR objective</td><td>Does risk training change choices and failures?</td></tr><tr><td>Separate fixed-risk policies / one conditioned policy</td><td>What does adjustable risk cost?</td></tr><tr><td>Supervised planner / navigation-RL planner</td><td>Does RL improve unseen-terrain success?</td></tr></tbody></table></div><p class="sources">Match data, terrain exposure, robot limits, compute, and rewards. Include navigation RL trained without motion references.</p></div><template class="slide-notes"><p class="footnote">Match data, terrain exposure, robot limits, compute, and rewards. Vary sensor input only in sensing comparisons. Include navigation RL trained without reference motions; repeat training and evaluation with different random seeds.</p></template></section>
 
-<section class="slide" id="slide-16" aria-labelledby="title-16" hidden><p class="eyebrow">16 / Risk Illustration</p><h2 id="title-16">Illustration: the same routes, different risk settings</h2><p>Use the lower-tail CVaR objective from p13 to compare three synthetic route-return distributions. Move α to change the fraction of worst outcomes being averaged.</p><figure class="scene risk-scene"><svg viewBox="0 0 800 170" role="img" aria-label="Three alternative routes around or across an obstacle"><rect x="350" y="60" width="100" height="65" rx="8" fill="#e3e7e0"/><text x="400" y="99" text-anchor="middle" fill="#536770">Obstacle</text><g class="route" data-route="walk"><path d="M50 125C120 10 650 10 750 125"/><text x="400" y="25">Walk around</text></g><g class="route" data-route="support"><path d="M50 125L275 125L320 60H480L525 125H750"/><text x="590" y="76">Hand support</text></g><g class="route" data-route="jump"><path d="M50 125H270Q400 5 530 125H750"/><text x="400" y="155">Jump</text></g><circle cx="50" cy="125" r="7" fill="#192e38"/><circle cx="750" cy="125" r="7" fill="#192e38"/></svg><figcaption>Synthetic example: detour (1% failure, success return 70), hand support (4%, 80), jump (10%, 100). Every failure returns −100. These are not robot measurements.</figcaption></figure><div class="risk-control"><label for="risk-preference">Tail fraction α: <output id="risk-value">20%</output></label><input id="risk-preference" type="range" min="10" max="100" value="20" step="1"><span class="small">10%: conservative · 100%: mean return</span></div><p id="risk-choice" class="small" aria-live="polite"></p><p class="footnote">This toy example ranks fixed route-return distributions. The learned planner must estimate outcomes from its own rollouts; actual route ordering depends on terrain and contact conditions.</p></section>
+<section class="slide " id="slide-21" aria-labelledby="title-21" data-group="Validation" hidden><p class="eyebrow">21 / Implementation and Hardware</p><h2 id="title-21">Hardware tests start with contact recovery</h2><div class="slide-body"><div class="sequence"><div class="step"><span class="step-number">01</span><h3>Controller</h3><p>Calibrate tactile sensing; test recovery</p></div><span class="seq-arrow" aria-hidden="true">→</span><div class="step"><span class="step-number">02</span><h3>Planner</h3><p>Initialize contacts; train navigation</p></div><span class="seq-arrow" aria-hidden="true">→</span><div class="step"><span class="step-number">03</span><h3>Combined system</h3><p>Vary risk on the same hardware course</p></div></div><div class="two "><div class="panel "><h3>First hardware test</h3><p>Partial footholds, low friction, and twisting disturbances. Measure slip, rotation, recovery, and falls.</p></div><div class="panel "><h3>Navigation test</h3><p>Keep robot, goal, and course fixed. Vary risk; record choices, success, and time.</p></div></div><p class="sources">Start on G1. A full-size humanoid test depends on platform and sensor access. Extend to compliant/granular terrain after rigid-terrain validation.</p></div><template class="slide-notes"><p>Calibrate tactile sensing and train the controller</p><p>Initialize the planner, then train navigation</p><p>Train risk conditioning and evaluate on hardware</p><p>Repeat partial footholds, low-friction contacts, and foot-twisting disturbances. Compare slip, foot rotation, recovery time, and falls with and without tactile input.</p><p>Keep the robot, goal, and course fixed. Vary the risk setting and repeat contact disturbances. Record contact choices, success, falls, and completion time.</p><p class="callout">Test rigid-terrain recovery on hardware before extending the study to compliant or granular terrain.</p><p class="footnote">Start on G1. A later full-size humanoid experiment depends on access to the platform and tactile instrumentation.</p></template></section>
 
-<section class="slide" id="slide-17" aria-labelledby="title-17" hidden><p class="eyebrow">17 / Execution and Feedback</p><h2 id="title-17">Test the response to a slipping foot</h2><div class="flow"><div class="node"><strong>1 · Record the disturbance</strong><p>Measure force/torque signals and foot motion</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>2 · Evaluate the controller</strong><p>Measure load shifts, foot replacement, and falls</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>3 · Evaluate the planner</strong><p>Record changes in the next foot or hand target</p></div></div><div class="grid two"><div class="card"><h3>Separate the two questions</h3><p>First test whether tactile input improves immediate recovery. Then test whether giving tactile history to the planner improves its next contact choice.</p></div><div class="card"><h3>Risk changes during execution</h3><p>Change the risk setting during stable support first. Record contact-target changes and falls before testing switches during stepping or climbing.</p></div></div><p class="callout">Compare identical disturbances with tactile input in the controller only and in both the controller and planner.</p><p class="footnote">Vary friction and compliance without exposing their simulator values to the deployed policies.</p></section>
+<section class="slide reference-slide" id="slide-22" aria-labelledby="title-22" data-group="Validation" hidden><p class="eyebrow">22 / References</p><h2 id="title-22">Prior work supports the architecture and risk formulations</h2><div class="slide-body"><div class="reference-grid"><p><strong>He et al. (2026)</strong><br><a href="https://arxiv.org/html/2610.31608v1">Humanoid Mobility via Attention-based Contacts</a><br><span>arXiv:2610.31608</span></p><p><strong>Schneider et al. (2023)</strong><br><a href="https://arxiv.org/abs/2309.14246">Learning Risk-Aware Quadrupedal Locomotion using Distributional Reinforcement Learning</a><br><span>arXiv:2309.14246</span></p><p><strong>Wang et al. (2026)</strong><br><a href="https://arxiv.org/abs/2609.28959">TactileStep: Sole Tactile Learning for Regulating Foot-Terrain Interaction in Humanoid Locomotion</a><br><span>arXiv:2609.28959</span></p><p><strong>Liu et al. (2026)</strong><br><a href="https://arxiv.org/abs/2608.15766">Tac4Loco: Learning Spatiotemporal Plantar Pressure Representations for Humanoid Locomotion</a><br><span>arXiv:2608.15766</span></p><p><strong>Chow et al. (2015)</strong><br><a href="https://papers.neurips.cc/paper_files/paper/2015/file/64223ccf70bbb65a3a4aceac37e21016-Paper.pdf">Risk-Sensitive and Robust Decision-Making: a CVaR Optimization Approach</a><br><span>NeurIPS</span></p><p><strong>Chow &amp; Ghavamzadeh (2014)</strong><br><a href="https://proceedings.neurips.cc/paper_files/paper/2014/file/35f1050a4381d2d216bf56ad46b0277d-Paper.pdf">Algorithms for CVaR Optimization in MDPs</a><br><span>NeurIPS</span></p><p><strong>Achiam et al. (2017)</strong><br><a href="https://proceedings.mlr.press/v70/achiam17a/achiam17a.pdf">Constrained Policy Optimization</a><br><span>ICML</span></p><p><strong>Lynch &amp; Park (2017)</strong><br><a href="https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-4-wrenches/">Modern Robotics: Mechanics, Planning, and Control</a><br><span>Chapter 3.4: Wrenches</span></p></div></div><template class="slide-notes"><p class="callout"><a href="Research_plan.md">Read the detailed research plan</a>: policy inputs and outputs, training objectives, experiments, and implementation steps.</p><p class="footnote">Mathematical references: <a href="https://papers.neurips.cc/paper_files/paper/2015/file/64223ccf70bbb65a3a4aceac37e21016-Paper.pdf">CVaR MDPs</a> · <a href="https://proceedings.neurips.cc/paper_files/paper/2014/file/35f1050a4381d2d216bf56ad46b0277d-Paper.pdf">Mean–CVaR optimization</a> · <a href="https://proceedings.mlr.press/v70/achiam17a/achiam17a.pdf">Constrained Policy Optimization</a>.</p><p class="footnote">The linked papers report prior results. The tactile and risk-conditioned extensions in this deck remain proposed experiments.</p></template></section>
 
-<section class="slide" id="slide-18" aria-labelledby="title-18" hidden><p class="eyebrow">18 / Generalization Experiments</p><h2 id="title-18">Test terrain conditions excluded from training</h2><div class="table-wrap"><table class="compact"><thead><tr><th scope="col">Test scene</th><th scope="col">Test variations</th><th scope="col">Measured behavior</th></tr></thead><tbody><tr><td>Ledge with an alternate ramp</td><td>Ledge height, friction at hand contacts</td><td>Hand-supported climb or detour</td></tr><tr><td>Gap with an alternate route</td><td>Gap width, landing friction</td><td>Crossing or detour choice; landing falls</td></tr><tr><td>Narrow or partial footholds</td><td>Support area, edge position</td><td>Foot replacement and additional support</td></tr><tr><td>Low passage followed by a ledge</td><td>Obstacle order and spacing</td><td>Crawl-to-climb transition</td></tr><tr><td>Compliant support; later granular terrain</td><td>Support stiffness and surface deformation</td><td>Load shifts, foot sinking, and task success</td></tr></tbody></table></div><p class="callout">After initialization, train on generated navigation tasks without a matching motion clip for each terrain.</p><p class="footnote">Exclude test dimensions, contact parameters, and obstacle combinations from training. Start with alternate routes visible in the local map; long-range maze navigation is outside this study.</p></section>
-
-<section class="slide" id="slide-19" aria-labelledby="title-19" hidden><p class="eyebrow">19 / Evaluation Metrics</p><h2 id="title-19">Measure contact errors, failures, and motion choices</h2><div class="table-wrap"><table class="compact"><thead><tr><th scope="col">Question</th><th scope="col">Measurement</th></tr></thead><tbody><tr><td>Contact recovery</td><td>Contact-position error; foot slip and rotation relative to the support surface; recovery time; fall rate</td></tr><tr><td>Response to risk setting</td><td>On the same task, vary α and record route choice, hand-support use, completion time, and success</td></tr><tr><td>Low-return outcomes</td><td>Measured CVaR and failure rate across repeated randomized trials, with confidence intervals</td></tr><tr><td>Simulation-to-hardware transfer</td><td>Compare success and falls in simulation and hardware; test calibration error, sensor delay, and failed elements</td></tr><tr><td>Unseen terrain</td><td>Success and falls on test geometry, contact conditions, and obstacle combinations excluded from training</td></tr></tbody></table></div><p class="footnote">Measure contact error at touchdown relative to the commanded terrain point. Measure slip relative to the contacted surface, including its motion on deformable terrain. Also report peak force and torque.</p></section>
-
-<section class="slide" id="slide-20" aria-labelledby="title-20" hidden><p class="eyebrow">20 / Baselines and Ablation Studies</p><h2 id="title-20">Compare sensing and planning components separately</h2><div class="table-wrap"><table class="compact"><thead><tr><th scope="col">Comparison</th><th scope="col">Question tested</th></tr></thead><tbody><tr><td>Same policies, with and without tactile input</td><td>Does tactile input reduce slip and falls?</td></tr><tr><td>Pressure map / total six-axis wrench / dense 3-axis forces / dense 6-axis measurements</td><td>Which spatial, shear-force, and torque information helps?</td></tr><tr><td>Tactile input to controller only / to both policies</td><td>Does tactile input improve the planner’s next contact choice?</td></tr><tr><td>Mean-return planner / risk-conditioned CVaR planner</td><td>Does CVaR training change motion choices and failure rates?</td></tr><tr><td>Separate fixed-risk policies / one policy conditioned on α</td><td>How does one adjustable policy compare with separate policies?</td></tr><tr><td>Supervised planner / planner further trained with RL</td><td>Does navigation RL improve success on unseen terrain?</td></tr></tbody></table></div><p class="footnote">Match data, terrain exposure, robot limits, compute, and rewards. Vary sensor input only in sensing comparisons. Include navigation RL trained without reference motions; repeat training and evaluation with different random seeds.</p></section>
-
-<section class="slide" id="slide-21" aria-labelledby="title-21" hidden><p class="eyebrow">21 / Implementation and Hardware</p><h2 id="title-21">Test contact recovery before combined navigation</h2><div class="flow"><div class="node"><strong>Milestone 1</strong><p>Calibrate tactile sensing and train the controller</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>Milestone 2</strong><p>Initialize the planner, then train navigation</p></div><span class="arrow" aria-hidden="true">→</span><div class="node"><strong>Milestone 3</strong><p>Train risk conditioning and evaluate on hardware</p></div></div><div class="grid two"><div class="card"><h3>First hardware experiment</h3><p>Repeat partial footholds, low-friction contacts, and foot-twisting disturbances. Compare slip, foot rotation, recovery time, and falls with and without tactile input.</p></div><div class="card"><h3>Navigation experiment</h3><p>Keep the robot, goal, and course fixed. Vary the risk setting and repeat contact disturbances. Record contact choices, success, falls, and completion time.</p></div></div><p class="callout">Test rigid-terrain recovery on hardware before extending the study to compliant or granular terrain.</p><p class="footnote">Start on G1. A later full-size humanoid experiment depends on access to the platform and tactile instrumentation.</p></section>
-
-<section class="slide" id="slide-22" aria-labelledby="title-22" hidden><p class="eyebrow">22 / References and Detailed Plan</p><h2 id="title-22">References and detailed method</h2><ol class="refs"><li><a href="https://leggedrobotics.github.io/ACP/">Humanoid Mobility via Attention-based Contacts</a><span>Contact planning, whole-body control, and contact labels from successful rollouts. <a href="https://arxiv.org/html/2610.31608v1">Paper</a></span></li><li><a href="https://arxiv.org/abs/2309.14246">Learning Risk-Aware Quadrupedal Locomotion using Distributional Reinforcement Learning</a><span>Risk-conditioned locomotion using distributional proximal policy optimization.</span></li><li><a href="https://arxiv.org/abs/2609.28959">TactileStep</a><span>Sole pressure sensing for foot–terrain interaction.</span></li><li><a href="https://arxiv.org/abs/2608.15766">Tac4Loco</a><span>Spatial and temporal representations of foot-sole pressure.</span></li></ol><p class="callout"><a href="Research_plan.md">Read the detailed research plan</a>: policy inputs and outputs, training objectives, experiments, and implementation steps.</p><p class="footnote">Mathematical references: <a href="https://papers.neurips.cc/paper_files/paper/2015/file/64223ccf70bbb65a3a4aceac37e21016-Paper.pdf">CVaR MDPs</a> · <a href="https://proceedings.neurips.cc/paper_files/paper/2014/file/35f1050a4381d2d216bf56ad46b0277d-Paper.pdf">Mean–CVaR optimization</a> · <a href="https://proceedings.mlr.press/v70/achiam17a/achiam17a.pdf">Constrained Policy Optimization</a>.</p><p class="footnote">The linked papers report prior results. The tactile and risk-conditioned extensions in this deck remain proposed experiments.</p></section>
-</main>  <footer>
-    <span class="key-hint">← → Navigate · Home / End · Print for PDF</span>
-    <nav class="dots" aria-label="Choose slide"></nav>
-    <div class="controls">
-      <button class="nav-button" id="previous" type="button" aria-label="Previous slide">←</button>
-      <span id="counter" aria-live="polite" aria-atomic="true">01 / 22</span>
-      <button class="nav-button" id="next" type="button" aria-label="Next slide">→</button>
-      <button class="nav-button" id="print" type="button" aria-label="Print all slides">Print</button>
-    </div>
-  </footer>
-  <div class="progress" aria-hidden="true"></div>
-<script>
-    (() => {
-      const slides = Array.from(document.querySelectorAll('.slide'));
-      const dots = document.querySelector('.dots');
-      const previous = document.getElementById('previous');
-      const next = document.getElementById('next');
-      let current = 0;
-      const buttons = slides.map((slide, index) => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'dot';
-        button.setAttribute('aria-label', `${index + 1}: ${slide.querySelector('h1,h2').textContent}`);
-        button.addEventListener('click', () => show(index));
-        dots.append(button);
-        return button;
-      });
-      function show(index, updateHash = true) {
-        current = Math.max(0, Math.min(slides.length - 1, index));
-        slides.forEach((slide, i) => { slide.hidden = i !== current; });
-        buttons.forEach((button, i) => {
-          if (i === current) button.setAttribute('aria-current', 'step');
-          else button.removeAttribute('aria-current');
-        });
-        previous.disabled = current === 0;
-        next.disabled = current === slides.length - 1;
-        document.getElementById('counter').textContent = `${String(current + 1).padStart(2, '0')} / ${slides.length}`;
-        document.querySelector('.progress').style.width = `${(current + 1) / slides.length * 100}%`;
-        if (updateHash) history.replaceState(null, '', `#slide-${current + 1}`);
-        window.scrollTo(0, 0);
-      }
-      function readHash() {
-        const match = location.hash.match(/^#slide-(\d+)$/);
-        show(match ? Number(match[1]) - 1 : 0, false);
-      }
-      previous.addEventListener('click', () => show(current - 1));
-      next.addEventListener('click', () => show(current + 1));
-      document.getElementById('print').addEventListener('click', () => window.print());
-      window.addEventListener('hashchange', readHash);
-      document.addEventListener('keydown', (event) => {
-        const target = event.target instanceof Element ? event.target : null;
-        if (event.altKey || event.ctrlKey || event.metaKey || target?.closest('input,textarea,select,[contenteditable="true"]')) return;
-        if (event.key === ' ' && target?.closest('button,a')) return;
-        if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); show(current + 1); }
-        else if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); show(current - 1); }
-        else if (event.key === 'Home') { event.preventDefault(); show(0); }
-        else if (event.key === 'End') { event.preventDefault(); show(slides.length - 1); }
-      });
-      const riskPreference = document.getElementById('risk-preference');
-      const routes = [
-        { id: 'walk', name: 'Walk around', failure: 0.01, successReturn: 70 },
-        { id: 'support', name: 'Hand support', failure: 0.04, successReturn: 80 },
-        { id: 'jump', name: 'Jump', failure: 0.10, successReturn: 100 },
-      ];
-      function updateRisk() {
-        const percent = Number(riskPreference.value);
-        const alpha = percent / 100;
-        // Exact lower-tail CVaR for the illustrative two-outcome distribution.
-        const scored = routes.map(route => {
-          const failedMass = Math.min(alpha, route.failure);
-          const score = (-100 * failedMass + route.successReturn * (alpha - failedMass)) / alpha;
-          return { ...route, score };
-        });
-        const selected = scored.reduce((best, route) => route.score > best.score ? route : best);
-        document.getElementById('risk-value').textContent = `${percent}%`;
-        riskPreference.setAttribute('aria-valuetext', `Average of the worst ${percent} percent of returns`);
-        document.querySelectorAll('[data-route]').forEach(route => {
-          route.classList.toggle('selected', route.dataset.route === selected.id);
-        });
-        document.getElementById('risk-choice').textContent = `${selected.name} selected. Scores: ${scored.map(route => `${route.name} ${route.score.toFixed(1)}`).join(' · ')}.`;
-      }
-      riskPreference.addEventListener('input', updateRisk);
-      updateRisk();
-      readHash();
-    })();
-  </script></body></html>
+<section class="slide closing" id="slide-23" aria-labelledby="title-23" data-group="Validation" hidden><p class="eyebrow">23 / Study Summary</p><h2 id="title-23">The study tests two measurable claims</h2><div class="slide-body"><div class="two "><div class="panel contribution-panel"><h3><span class="contribution">Tactile contact recovery</span></h3><p>Does dense six-axis sensing reduce slip, foot rotation, and falls beyond simpler sensors?</p></div><div class="panel contribution-panel"><h3><span class="contribution">Risk-conditioned planning</span></h3><p>Does one planner change contact strategy and improve lower-tail return when α changes?</p></div></div><p class="takeaway">Evidence required: matched baselines, repeated trials, and hardware measurements.</p><p class="closing-links"><a href="#slide-3">Proposed contributions</a><a href="Research_plan.md">Detailed research plan</a><a href="https://jnskkmhr.github.io/skill_chaining_idea/">Project website</a></p><p class="sources">Research proposal · No experimental results claimed</p></div><template class="slide-notes"><p>This closing slide restates the proposed tests. It does not report completed experiments.</p></template></section></main><aside class="notes-panel" id="notes-panel" hidden aria-label="Slide notes"><button type="button" class="close" id="close-notes" aria-label="Close notes">×</button><h3 id="notes-title"></h3><div id="notes-content"></div></aside><footer><span class="key-hint">← → Navigate · N Notes</span><select id="slide-select" aria-label="Choose slide"></select><div class="controls"><button id="previous" class="nav-button" aria-label="Previous slide">←</button><span id="counter" aria-live="polite"></span><button id="next" class="nav-button" aria-label="Next slide">→</button><button id="notes-button" class="nav-button" aria-expanded="false" aria-controls="notes-panel">Notes</button><button id="print" class="nav-button">Print</button></div></footer><div class="progress" aria-hidden="true"></div><script type="application/json" id="risk-data">{"kind": "synthetic_two_outcome_example", "description": "Illustrative navigation returns, not measured robot data. Each route has one success return and one failure return.", "failure_return": -100, "alpha_min": 0.1, "alpha_max": 1.0, "routes": [{"id": "walk", "name": "Walk around", "failure": 0.01, "success_return": 70, "color": "#253e54", "linestyle": "-"}, {"id": "support", "name": "Hand support", "failure": 0.04, "success_return": 80, "color": "#096c60", "linestyle": "--"}, {"id": "jump", "name": "Jump", "failure": 0.1, "success_return": 100, "color": "#a72b27", "linestyle": ":"}]}</script><script type="application/json" id="risk-geometry">{"left": 80.64, "right": 493.92, "top": 10.944000000000011, "bottom": 205.20000000000002, "alpha_min": 0.1, "alpha_max": 1, "y_min": -105, "y_max": 95}</script><script>
+(() => {
+ const slides=[...document.querySelectorAll('.slide')], select=document.getElementById('slide-select');
+ const prev=document.getElementById('previous'),next=document.getElementById('next');
+ const notes=document.getElementById('notes-panel'),noteButton=document.getElementById('notes-button');
+ let current=0;
+ slides.forEach((s,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${String(i+1).padStart(2,'0')} · ${s.querySelector('h2').textContent}`;select.append(o)});
+ function fillNotes(){document.getElementById('notes-title').textContent=`Notes · ${current+1} / ${slides.length}`;document.getElementById('notes-content').innerHTML=slides[current].querySelector('template').innerHTML;}
+ function setNotes(open){notes.hidden=!open;noteButton.setAttribute('aria-expanded',String(open));if(open)fillNotes();}
+ function show(i,hash=true){current=Math.max(0,Math.min(slides.length-1,i));slides.forEach((s,j)=>s.hidden=j!==current);prev.disabled=current===0;next.disabled=current===slides.length-1;select.value=current;document.getElementById('counter').textContent=`${String(current+1).padStart(2,'0')} / ${slides.length}`;document.querySelector('.progress').style.width=`${100*(current+1)/slides.length}%`;document.querySelectorAll('.chapters a').forEach(a=>{if(a.dataset.group===slides[current].dataset.group)a.setAttribute('aria-current','step');else a.removeAttribute('aria-current')});if(hash)history.replaceState(null,'',`#slide-${current+1}`);if(!notes.hidden)fillNotes();window.scrollTo(0,0);}
+ function readHash(){const m=location.hash.match(/^#slide-(\d+)$/);show(m?Number(m[1])-1:0,false);}
+ prev.onclick=()=>show(current-1);next.onclick=()=>show(current+1);select.onchange=()=>show(Number(select.value));noteButton.onclick=()=>setNotes(notes.hidden);document.getElementById('close-notes').onclick=()=>setNotes(false);document.getElementById('print').onclick=()=>window.print();window.addEventListener('hashchange',readHash);
+ document.addEventListener('keydown',e=>{if(e.altKey||e.ctrlKey||e.metaKey||e.target.closest('input,textarea,select,[contenteditable="true"]'))return;if(e.key==='Escape'){setNotes(false);return}if(e.key.toLowerCase()==='n'){setNotes(notes.hidden);return}if(e.key===' '&&e.target.closest('button,a'))return;if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(current+1)}else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(current-1)}else if(e.key==='Home'){e.preventDefault();show(0)}else if(e.key==='End'){e.preventDefault();show(slides.length-1)}});
+ const data=JSON.parse(document.getElementById('risk-data').textContent),geo=JSON.parse(document.getElementById('risk-geometry').textContent),slider=document.getElementById('risk-preference');
+ function updateRisk(){const alpha=Number(slider.value)/100;const scored=data.routes.map(r=>{const mass=Math.min(alpha,r.failure);return {...r,score:(data.failure_return*mass+r.success_return*(alpha-mass))/alpha}});const best=scored.reduce((a,b)=>b.score>a.score?b:a);document.getElementById('risk-value').textContent=`${slider.value}%`;slider.setAttribute('aria-valuetext',`Worst ${slider.value} percent of returns`);scored.forEach(r=>{document.getElementById(`score-${r.id}`).textContent=r.score.toFixed(1);document.querySelector(`[data-route="${r.id}"]`).classList.toggle('selected',r.id===best.id)});document.getElementById('risk-choice').textContent=`${best.name} selected.`;const x=geo.left+(alpha-geo.alpha_min)/(geo.alpha_max-geo.alpha_min)*(geo.right-geo.left);document.querySelector('#alpha-cursor path').setAttribute('d',`M ${x} ${geo.top} L ${x} ${geo.bottom}`);}
+ slider.addEventListener('input',updateRisk);updateRisk();readHash();
+})();
+</script></body></html>

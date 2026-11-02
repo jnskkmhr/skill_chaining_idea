@@ -1,0 +1,12 @@
+{
+  "kind": "synthetic_two_outcome_example",
+  "description": "Illustrative navigation returns, not measured robot data. Each route has one success return and one failure return.",
+  "failure_return": -100,
+  "alpha_min": 0.1,
+  "alpha_max": 1.0,
+  "routes": [
+    {"id": "walk", "name": "Walk around", "failure": 0.01, "success_return": 70, "color": "#253e54", "linestyle": "-"},
+    {"id": "support", "name": "Hand support", "failure": 0.04, "success_return": 80, "color": "#096c60", "linestyle": "--"},
+    {"id": "jump", "name": "Jump", "failure": 0.1, "success_return": 100, "color": "#a72b27", "linestyle": ":"}
+  ]
+}
